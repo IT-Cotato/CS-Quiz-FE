@@ -1,0 +1,12 @@
+@font-face {
+  font-family: 'NanumSquareRound';
+  src: url('@assets/fonts/NanumSquareRoundOTFR.otf') format('opentype');
+  font-style: normal;
+  font-weight: 400;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('@assets/fonts/Inter-Regular.ttf');
+  font-style: normal;
+  font-weight: 400;
+}
