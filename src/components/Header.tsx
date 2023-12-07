@@ -35,26 +35,35 @@ export default Header;
 const Wrapper = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-between !important;
   align-items: center;
   width: 100%;
-  height: 80px;
+  box-sizing: border-box;
+  height: 72px;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  padding: 0 60px;
+  @media screen and (max-width: 960px) {
+  }
 `;
 
 const Logo = styled.img`
-  width: 152px;
+  width: 144px;
 `;
 
 const MenuSection = styled.div`
   display: flex;
   flex-direction: row;
-  margin-left: 132px;
+  margin-right: 100px;
+  justify-content: space-between;
+  /* width: 312px; */
+  @media screen and (max-width: 1280px) {
+    margin-right: -100px;
+  }
 `;
 
 const MenuItem = styled(Link)`
   color: rgba(0, 0, 0, 0.6);
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 400;
   text-decoration: none;
   margin-right: 80px;
@@ -62,19 +71,25 @@ const MenuItem = styled(Link)`
   &:hover {
     color: #000;
   }
+  @media screen and (max-width: 960px) {
+    margin-right: 40px;
+  }
 `;
 
 const LoginSection = styled.div`
   display: flex;
   flex-direction: row;
-  margin-left: 220px;
+  margin-left: 50px;
+  @media screen and (max-width: 1280px) {
+    margin-right: 100px;
+  }
 `;
 
 const LoginWrapper = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-right: 40px;
+  /* margin-right: 40px; */
   width: 100px;
   img {
     width: 20px;
@@ -84,7 +99,7 @@ const LoginWrapper = styled.div`
 
 const LoginItem = styled(Link)`
   color: var(--pointcolor-4, #259c2e);
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 400;
   text-decoration: none;
   margin-left: 8px;
