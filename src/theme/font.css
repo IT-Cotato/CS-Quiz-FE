@@ -10,3 +10,9 @@
   font-style: normal;
   font-weight: 400;
 }
+@font-face {
+  font-family: 'NanumPen';
+  src: url('@assets/fonts/NanumPenScript-Regular.ttf');
+  font-style: normal;
+  font-weight: 400;
+}

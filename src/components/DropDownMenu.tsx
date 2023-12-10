@@ -8,7 +8,7 @@ const DropDownMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <>
+    <div style={{ marginLeft: '-100px' }}>
       {isOpen ? (
         <OpenedMenu>
           <MenuWrapper>
@@ -35,7 +35,7 @@ const DropDownMenu = () => {
           </MenuWrapper>
         </ClosedMenu>
       )}
-    </>
+    </div>
   );
 };
 
@@ -46,19 +46,19 @@ const OpenedMenu = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  margin-top: 116px;
+  margin-top: 120px;
   position: relative;
   color: #93c6fe;
   font-size: 1.2rem;
   font-weight: 500;
-  margin-left: 36px;
-  width: 220px;
+  /* margin-left: 36px; */
+  width: 212px;
   height: 168px;
   border: 3px solid #93c6fe;
-  border-radius: 50px;
+  border-radius: 44px;
   background-color: #fff;
   img {
-    width: 24px;
+    width: 20px;
     margin-left: 10px;
   }
   ul {
@@ -85,6 +85,7 @@ const MenuWrapper = styled.div`
   align-items: center;
   justify-content: center;
   font-weight: 500;
+  font-size: 1.1rem;
   p {
     margin-top: 13px;
   }
@@ -105,15 +106,16 @@ const ClosedMenu = styled.div`
   justify-content: center;
   position: relative;
   color: #93c6fe;
+  background-color: #fff;
   font-size: 1.2rem;
   font-weight: 500;
-  margin-left: 36px;
-  width: 220px;
-  height: 52px;
+  /* margin-left: 36px; */
+  width: 212px;
+  height: 48px;
   border: 3px solid #93c6fe;
   border-radius: 50px;
   img {
-    width: 24px;
+    width: 20px;
     margin-left: 10px;
   }
 `;
