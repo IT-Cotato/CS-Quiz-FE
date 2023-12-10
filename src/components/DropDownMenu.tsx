@@ -52,7 +52,7 @@ const OpenedMenu = styled.div`
   font-size: 1.2rem;
   font-weight: 500;
   /* margin-left: 36px; */
-  width: 208px;
+  width: 212px;
   height: 168px;
   border: 3px solid #93c6fe;
   border-radius: 44px;
@@ -110,7 +110,7 @@ const ClosedMenu = styled.div`
   font-size: 1.2rem;
   font-weight: 500;
   /* margin-left: 36px; */
-  width: 208px;
+  width: 212px;
   height: 48px;
   border: 3px solid #93c6fe;
   border-radius: 50px;
