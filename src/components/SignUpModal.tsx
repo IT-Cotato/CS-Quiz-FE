@@ -33,7 +33,7 @@ const Container = styled.div`
   h3 {
     color: ${({ theme }) => theme.color.green};
     font-family: NanumPen;
-    font-size: 3rem;
+    font-size: 3.2rem;
     font-weight: 400;
     margin-bottom: 48px;
     margin-top: 0;
@@ -47,5 +47,7 @@ const Container = styled.div`
     background-color: ${({ theme }) => theme.color.lightGreen};
     color: #259c2e;
     font-family: NanumSquareRound;
+    border: none;
+    cursor: pointer;
   }
 `;
