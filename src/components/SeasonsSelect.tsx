@@ -1,66 +1,94 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { css, styled } from 'styled-components';
 import arrow_down_thin from '@assets/arrow_dwon_thin.svg';
 import arrow_up_thin from '@assets/arrow_up_thin.svg';
 
-// interface Props {
-//   onSelect: () => void;
-// }
+/*
+생각해 볼것
+
+폰트는 어떻게 수정할지
+*/
 
 /*
+수정 사항
 
-SeasonList를 ul로 잡지 말고 wrapper로 감싸서 구현할 방법 생각
-
- */
+화살표에 마진이 먹어서 아이콘보다 왼쪽을 클릭해도 반응
+SeasonList 배경 피그마 나오면 변경
+*/
 
 /*
+논의 사항
 
-기수 선택시 박스 안에 기수가 어디 위치에 보여질지 디자인 필요
-seaons 배열에서 일단 8기로 잡나왔지만, 어떻게 동적으로 바뀔지는 프론트들이랑 얘기가 필요할 듯
 
 */
 
-const SeasonsSelect = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isOpen, setIsOpen] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [selectedSeason, setSelectedSeason] = useState(0);
+interface Props {
+  /**
+   * 기수 변경시 발생해야 하는 로직을 담는 함수
+   * @param season
+   * @returns
+   */
+  onChangeSeason: (season: number) => void;
+  /**
+   * 현재 선택된 기수
+   */
+  selectedSeason: number;
+}
 
-  const seasons = Array.from({ length: 8 }, (v, i) => i + 1).reverse();
+const SeasonsSelect = ({ onChangeSeason, selectedSeason }: Props) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [seasonLength, setSeasonLength] = useState(0);
+
+  useEffect(() => {
+    // 기수의 최대값을 받아와야 함
+    setSeasonLength(8);
+  }, [seasonLength]);
 
   const onClickSeason = useCallback((season: number) => {
-    setSelectedSeason(season);
+    onChangeSeason(season);
     setIsOpen(false);
   }, []);
 
   return (
-    <SelectMenu isopen={isOpen}>
-      <p>{selectedSeason === 0 ? `기수 선택` : `${selectedSeason}기`}</p>
-      {isOpen ? (
-        <img src={arrow_up_thin} alt="arrow-up" onClick={() => setIsOpen(!isOpen)} />
-      ) : (
-        <img src={arrow_down_thin} alt="arrow-down" onClick={() => setIsOpen(!isOpen)} />
-      )}
-      {isOpen && (
-        <SeasonsList>
-          {seasons.map((season) => (
-            <li key={season} onClick={() => onClickSeason(season)}>{`${season}기`}</li>
-          ))}
-        </SeasonsList>
-      )}
-    </SelectMenu>
+    <SeasonSelectWrapper>
+      <SelectMenu isopen={isOpen ? 'open' : 'close'}>
+        <p>{selectedSeason === 0 ? `기수 선택` : `${selectedSeason}기`}</p>
+        {isOpen ? (
+          <img src={arrow_up_thin} alt="arrow-up" onClick={() => setIsOpen(!isOpen)} />
+        ) : (
+          <img src={arrow_down_thin} alt="arrow-down" onClick={() => setIsOpen(!isOpen)} />
+        )}
+        {isOpen && (
+          <SeasonsList>
+            <ul>
+              {Array.from({ length: seasonLength }, (v, i) => i + 1)
+                .reverse()
+                .map((season) => (
+                  <li key={season} onClick={() => onClickSeason(season)}>{`${season}기`}</li>
+                ))}
+            </ul>
+          </SeasonsList>
+        )}
+      </SelectMenu>
+    </SeasonSelectWrapper>
   );
 };
 
 export default SeasonsSelect;
 
-interface SelectMenuProps {
-  isopen: boolean;
-}
-
-const SelectMenu = styled.div<SelectMenuProps>`
+const SeasonSelectWrapper = styled.div`
   position: relative;
   width: 127px;
+`;
+
+interface SelectMenuProps {
+  isopen: string;
+}
+const SelectMenu = styled.div<SelectMenuProps>`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
   height: 40px;
   flex-shrink: 0;
   border-radius: 5px;
@@ -68,45 +96,48 @@ const SelectMenu = styled.div<SelectMenuProps>`
   background: #fff;
 
   p {
-    position: absolute;
-    top: -3px;
-    left: 10px;
+    margin-left: 16px;
     font-family: NanumSquareRound;
     font-size: 16px;
     font-style: normal;
+    line-height: normal;
     ${(props) =>
-      !props.isopen
+      props.isopen === 'open'
         ? css`
-            color: #969595;
-            font-weight: 400;
-          `
-        : css`
             color: #000;
             font-weight: 500;
+          `
+        : css`
+            color: #969595;
+            font-weight: 400;
           `}
-
-    line-height: normal;
   }
 
   img {
     cursor: pointer;
-    position: absolute;
-    top: 4.5px;
-    right: 6px;
+    margin-right: 4px;
   }
 `;
 
-const SeasonsList = styled.ul`
+const SeasonsList = styled.div`
   position: absolute;
-  top: 26px;
-  left: -1.6px;
-  width: 90px;
+  top: 44px;
+  width: 100%;
   flex-shrink: 0;
   border-radius: 5px;
   background: #fff;
   background: #e4e4e4;
 
+  ul {
+    display: flex;
+    flex-direction: column;
+    padding: 0px;
+    margin: 0px;
+  }
+
   li {
+    display: flex;
+    justify-content: flex-start;
     list-style: none;
     cursor: pointer;
     color: #000;
@@ -115,7 +146,6 @@ const SeasonsList = styled.ul`
     font-style: normal;
     font-weight: 500;
     line-height: normal;
-    padding: 8px;
-    margin-left: -110px;
+    margin: 12px 16px;
   }
 `;
