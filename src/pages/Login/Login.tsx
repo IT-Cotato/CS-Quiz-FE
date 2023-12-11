@@ -28,7 +28,7 @@ const Login = () => {
 
   return (
     <Wrapper>
-      <h3>Sign In to Cotato</h3>
+      <h3>Sign In</h3>
       <Form onSubmit={onSubmit}>
         <InputBox>
           <img src="https://raw.githubusercontent.com/MinJaeSon/assets/fc85a00960fa2f2a33ed4409b435484864454f73/icon_user.svg" />
