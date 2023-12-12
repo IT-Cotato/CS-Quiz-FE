@@ -197,6 +197,7 @@ const Wrapper = styled.div`
   margin-top: 80px;
   h3 {
     font-size: 1.5rem;
+    margin-bottom: 56px;
   }
 `;
 
