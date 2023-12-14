@@ -49,7 +49,7 @@ const Login = () => {
       <LinkContainer>
         <StyledLink to="/joinus">비밀번호 찾기</StyledLink>
         <img src={line} />
-        <StyledLink to="/joinus">아이디 찾기</StyledLink>
+        <StyledLink to="/findid">아이디 찾기</StyledLink>
         <img src={line} />
         <StyledLink to="/joinus">회원가입</StyledLink>
       </LinkContainer>

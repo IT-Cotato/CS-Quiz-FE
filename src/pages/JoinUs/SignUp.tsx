@@ -93,7 +93,7 @@ const SignUp = () => {
   }, []);
 
   const onChangeTel = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    // const telRegex = /^\d{9,11}$/;
+    // const telRegex = /^01(?:0|1|[6-9])(?:\d{3}|\d{4})\d{4}$/;
     setTel(e.target.value);
     if (!e.target.value) {
       setTelMessage('필수 입력 항목입니다!');

@@ -14,6 +14,7 @@ import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from '@theme/GlobalStyle';
 import { theme } from '@theme/theme';
 import Footer from '@components/Footer';
+import FindID from '@pages/Login/FindID';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
                 <Route path="/cs" element={<CSHome />} />
                 <Route path="/session" element={<SessionHome />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/findid" element={<FindID />} />
                 <Route path="/joinus" element={<SignUp />} />
                 <Route path="/mypage" element={<MyPage />} />
               </Routes>
