@@ -1,25 +1,22 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { css, styled } from 'styled-components';
 import arrow_down_thin from '@assets/arrow_dwon_thin.svg';
 import arrow_up_thin from '@assets/arrow_up_thin.svg';
 
 /*
-생각해 볼것
+수정해야 하는것
 
-폰트는 어떻게 수정할지
-*/
-
-/*
-수정 사항
-
-화살표에 마진이 먹어서 아이콘보다 왼쪽을 클릭해도 반응
 SeasonList 배경 피그마 나오면 변경
 */
 
 /*
 논의 사항
 
+기수 부분에서 박스 자체가 클릭이 되게 구현
 
+기수 선택에서 초기 값은 마지막 기수로 해야 하나? ex) 지금은 8기로 고정
+그러면 드롭박스는 기수 선택 문구가 없고 항상 몇기로 표시되어 있을듯
+이게 초기 기수 선택 상황에서는 기수가 선택되어 있지 않아 기록을 불러오거나 업로드 하기에 예외 발생
 */
 
 interface Props {
@@ -39,6 +36,18 @@ const SeasonsSelect = ({ onChangeSeason, selectedSeason }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [seasonLength, setSeasonLength] = useState(0);
 
+  const seasonDropRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (seasonDropRef.current && !seasonDropRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener('mousedown', handleClick);
+    return () => window.removeEventListener('mousedown', handleClick);
+  }, [seasonDropRef]);
+
   useEffect(() => {
     // 기수의 최대값을 받아와야 함
     setSeasonLength(8);
@@ -50,13 +59,13 @@ const SeasonsSelect = ({ onChangeSeason, selectedSeason }: Props) => {
   }, []);
 
   return (
-    <SeasonSelectWrapper>
-      <SelectMenu isopen={isOpen ? 'open' : 'close'}>
+    <SeasonSelectWrapper ref={seasonDropRef}>
+      <SelectMenu isopen={isOpen ? 'open' : 'close'} onClick={() => setIsOpen(!isOpen)}>
         <p>{selectedSeason === 0 ? `기수 선택` : `${selectedSeason}기`}</p>
         {isOpen ? (
-          <img src={arrow_up_thin} alt="arrow-up" onClick={() => setIsOpen(!isOpen)} />
+          <img src={arrow_up_thin} alt="arrow-up" /> // onClick={() => setIsOpen(!isOpen)} />
         ) : (
-          <img src={arrow_down_thin} alt="arrow-down" onClick={() => setIsOpen(!isOpen)} />
+          <img src={arrow_down_thin} alt="arrow-down" /> // onClick={() => setIsOpen(!isOpen)} />
         )}
         {isOpen && (
           <SeasonsList>
@@ -95,7 +104,7 @@ const SelectMenu = styled.div<SelectMenuProps>`
   border: 2px solid #bebebe;
   background: #fff;
 
-  p {
+  > p {
     margin-left: 16px;
     font-family: NanumSquareRound;
     font-size: 16px;
@@ -113,7 +122,7 @@ const SelectMenu = styled.div<SelectMenuProps>`
           `}
   }
 
-  img {
+  > img {
     cursor: pointer;
     margin-right: 4px;
   }
@@ -146,6 +155,6 @@ const SeasonsList = styled.div`
     font-style: normal;
     font-weight: 500;
     line-height: normal;
-    margin: 12px 16px;
+    padding: 12px 16px;
   }
 `;
