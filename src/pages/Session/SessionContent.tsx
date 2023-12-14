@@ -10,8 +10,8 @@ interface Props {
 const SessionContent = ({ session }: Props) => {
   return (
     <Content>
-      <img src={initial_session} alt="initial_session" />
-      <div>{session.id}</div>
+      <div className="session-img" />
+      <div className="description">{session.id}</div>
     </Content>
   );
 };
@@ -21,21 +21,23 @@ export default SessionContent;
 const Content = styled.div`
   display: flex;
   flex-direction: column;
-  width: 24rem;
-  height: 20rem;
+  width: 356px;
+  height: 292px;
+  margin: 20px 4px;
 
-  // id number
-  font-size: 100px;
+  // id number size
+  font-size: 80px;
 
-  img {
-    width: 100%;
-    height: 14rem;
-    border-radius: 0.625rem;
+  > .session-img {
+    background-image: url(${initial_session});
+    background-size: 100%;
+    height: 200px;
+    border-radius: 10px;
   }
 
-  div {
-    width: 100%;
-    height: 6rem;
+  > .description {
     background: #efeff0;
+    border-radius: 10px;
+    height: calc(100% - 200px);
   }
 `;
