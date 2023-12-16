@@ -10,8 +10,6 @@ import ToggleButton from '@components/ToggleButton';
 
 페이지 전체 height가 작아지면 모달 위에가 짤리는 부분이 있음
 
-이미지 업로드에서 기본 아이콘에서 사진 업로드 되는 잠깐 사이에 기본 아이콘 사이즈가 100%로 되어버림
-
 이미지를 업로드 하는 과정에서 drag zone에 이미지가 안들어가면 브라우저에서 그냥 이미지를 불러오기 해서 이거를 막을수 있을까
 */
 
@@ -20,9 +18,11 @@ import ToggleButton from '@components/ToggleButton';
 
 모달 백그라운드 투명도 어떻게 할지
 블러 처리를 줄지, 그냥 투명으로 할지
+근데 투명보다는 뭐가 있긴 해야할듯
 
 모달을 끄는 방법은 상단 우측 x버튼을 눌러서만?
 그러면 추가하다가 끄기 전에 아라트로 알려줘야 하는지 
+그러면 삭제도 알림이 필요할련지
 
 글자 입력시에 대한 폰트 속성도 피그마에서 필요
 placehorder랑 value랑 font 설정 -> color랑 weight 정도
@@ -30,11 +30,13 @@ placehorder랑 value랑 font 설정 -> color랑 weight 정도
 근데 검은색 주니간 토글 옆에 글씨들하고 통일성이 안맞음
 이거는 토글 옆 글씨를 건들여 주면 해결 가능할 듯
 
-이미지 박스 오른쪽 위에 x버튼은 사진 삭제하는 용도??
 그리고 이미지를 업로드 하는 방식은 드래그만 하는지, 아니면 파일 선택도 되게 만들지
 이미지는 하나만 허용? 하나만 허용한다면, 만약 두개 이상 업로드 하는경우 어떻게 예외처리 할지
+이미지는 꽉채우기로 해서 세로로 찍은 사진은 비율 깨짐
 
 이미지 드래그 하는동안 이미지가 드래그 되는거를 표시해줄지
+
+이미지 파일 heic는 크롬에서는 안되고 사파리는 가능
 
 토글 hover에 효과를 줄지
 
@@ -50,7 +52,7 @@ interface Props {
 }
 
 const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
-  const [img, setImg] = useState<File | null>(null);
+  const [image, setImage] = useState<File | null>(null);
   const [title, setTitle] = useState('');
   const [itNews, setItNews] = useState(false);
   const [csEdu, setCsEdu] = useState(false);
@@ -64,12 +66,16 @@ const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
   }, [mode]);
 
   const cleanInputState = useCallback(() => {
-    setImg(null);
+    setImage(null);
     setTitle('');
     setItNews(false);
     setCsEdu(false);
     setNetworking(false);
     setDescription('');
+  }, []);
+
+  const onCloseImage = useCallback(() => {
+    setImage(null);
   }, []);
 
   const onChangeTitle = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -92,15 +98,21 @@ const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
     setDescription(e.target.value);
   }, []);
 
-  const onClickButton = useCallback(
+  const onClickDeleteButton = useCallback((e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    console.log('delete');
+    // 삭제 이후 모달을 끄는 동작 필요
+  }, []);
+
+  const onClickAddButton = useCallback(
     (e: MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
       if (mode === 'add') {
         // 업로드 요청
         console.log('upload');
       } else {
-        // 삭제 요청
-        console.log('delete');
+        // 수정 요청
+        console.log('modify');
       }
 
       // 제출 이후 모달을 끄는 동작 필요
@@ -117,15 +129,13 @@ const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
         if (e.dataTransfer.items[i].kind === 'file') {
           const file = e.dataTransfer.items[i].getAsFile();
           if (file) {
-            console.log('... file[' + i + '].name = ' + file.name);
-            setImg(file);
+            setImage(file);
           }
         }
       }
     } else {
       for (let i = 0; i < e.dataTransfer.files.length; i++) {
-        console.log('... file[' + i + '].name = ' + e.dataTransfer.files[i].name);
-        setImg(e.dataTransfer.files[i]);
+        setImage(e.dataTransfer.files[i]);
       }
     }
   }, []);
@@ -160,20 +170,21 @@ const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
       onAfterClose={cleanInputState}
     >
       <ModalWrapper>
-        <CloseButton>
+        <ModalCloseButton>
           <img src={close_icon} alt="close-button" onClick={onCloseModal} />
-        </CloseButton>
+        </ModalCloseButton>
         <Header>
           <h3>{mode === 'add' ? '세션 추가' : '세션 수정'}</h3>
         </Header>
         <BoxContainer>
-          <ImageBox onDrop={onDrop} onDragOver={onDragOver}>
-            <UploadImg
-              src={img ? URL.createObjectURL(img) : undefined_img}
-              alt="upload-img"
-              uploaded={img ? 'upload' : 'undefined'}
-            />
-            {!img && <p>이미지를 드래그해서 추가</p>}
+          <ImageBox onDrop={onDrop} onDragOver={onDragOver} image={image}>
+            <ImageCloseButton src={close_icon} alt="close-button" onClick={onCloseImage} />
+            {!image && (
+              <UndefinedImage>
+                <img src={undefined_img} alt="undefined-img" />
+                <p>이미지를 드래그해서 추가</p>
+              </UndefinedImage>
+            )}
           </ImageBox>
           <TitleBox>
             <textarea value={title} onChange={onChangeTitle} placeholder="제목을 입력하세요" />
@@ -195,10 +206,10 @@ const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
           </DescriptionBox>
         </BoxContainer>
         <ButtonContainer>
-          <DeleteButton type="button" onClick={onClickButton}>
+          <DeleteButton type="button" onClick={onClickDeleteButton}>
             삭제
           </DeleteButton>
-          <UploadButton type="button" onClick={onClickButton}>
+          <UploadButton type="button" onClick={onClickAddButton}>
             업로드
           </UploadButton>
         </ButtonContainer>
@@ -215,7 +226,7 @@ const ModalWrapper = styled.div`
   width: 100%;
 `;
 
-const CloseButton = styled.div`
+const ModalCloseButton = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: end;
@@ -261,38 +272,48 @@ const Box = styled.div`
   margin-top: 10px;
 `;
 
-const ImageBox = styled(Box)`
-  display: flex;
-  align-items: center;
-  flex-direction: column;
+interface ImageBoxProps {
+  image: File | null;
+}
+const ImageBox = styled(Box)<ImageBoxProps>`
+  position: relative;
   height: 280px;
   width: 496px;
   margin-bottom: 24px;
   border: 2px dashed #a9a9a9;
+
+  background-image: ${(props) =>
+    props.image ? `url(${URL.createObjectURL(props.image)})` : `none`};
+  background-size: 100% 100%;
+`;
+
+const ImageCloseButton = styled.img`
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 33px;
+  height: 32px;
+  cursor: pointer;
+`;
+
+const UndefinedImage = styled.div`
+  position: absolute;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  top: 80px;
+
+  > img {
+    width: 120px;
+    height: 120px;
+  }
 
   > p {
     ${fontStyle}
     color: #898787;
     margin: 4px;
   }
-`;
-
-interface UploadImgProps {
-  uploaded: string;
-}
-const UploadImg = styled.img<UploadImgProps>`
-  border-radius: 10px;
-  ${(props) =>
-    props.uploaded === 'upload'
-      ? css`
-          width: 100%;
-          height: 100%;
-        `
-      : css`
-          width: 120px;
-          height: 120px;
-          margin-top: 80px;
-        `}
 `;
 
 const TitleBox = styled(Box)`

@@ -71,7 +71,7 @@ const SessionHome = () => {
         <SessionContentsContainer>
           {sessionData.length === 0 ? (
             <SessionReady className="session-ready">
-              <img src={setting_icon} alt={setting_icon} />
+              <img src={setting_icon} alt="setting-icon" />
               <p>세션 준비중입니다.</p>
             </SessionReady>
           ) : (
