@@ -88,6 +88,7 @@ export default SeasonsSelect;
 const SeasonSelectWrapper = styled.div`
   position: relative;
   width: 127px;
+  z-index: 1;
 `;
 
 interface SelectMenuProps {
