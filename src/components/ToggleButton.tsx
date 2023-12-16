@@ -1,6 +1,13 @@
 import React from 'react';
 import { styled } from 'styled-components';
 
+/*
+해결해야 하는데 어떻게 해야하는거지
+
+토글 이벤트 발생시 크롬에서는 잘 되는데 사파리에서 모달 overlay 배경이 잠깐 변경됨
+해결해 볼려 했는데 안됨
+*/
+
 interface Props {
   /**
    * 토글 활성화 여부
@@ -56,7 +63,7 @@ const Toggle = styled.span`
     width: 20px;
     flex-shrink: 0;
     left: 3px;
-    bottom: 2.6px;
+    bottom: 2.5px;
     background-color: #fff;
     border-radius: 50%;
     transition: 0.3s;
