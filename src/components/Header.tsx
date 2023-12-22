@@ -3,10 +3,18 @@ import styled from 'styled-components';
 import logo from '@assets/logo.svg';
 import login from '@assets/login_icon.svg';
 import joinus from '@assets/joinus_icon.svg';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import DropDownMenu from './DropDownMenu';
 
 const Header = () => {
+  const navigate = useNavigate();
+  const navigateToLogin = () => {
+    navigate('/login');
+  };
+  const navigateToJoinUs = () => {
+    navigate('/joinus');
+  };
+
   return (
     <Wrapper>
       <Logo src={logo} onClick={() => window.location.replace('/')} style={{ cursor: 'pointer' }} />
@@ -16,13 +24,13 @@ const Header = () => {
         <MenuItem to="/team">팀 멤버</MenuItem>
       </MenuSection>
       <LoginSection>
-        <LoginWrapper>
+        <LoginWrapper onClick={navigateToLogin}>
           <img src={login} />
-          <LoginItem to="/login">로그인</LoginItem>
+          <LoginItem>로그인</LoginItem>
         </LoginWrapper>
-        <LoginWrapper>
+        <LoginWrapper onClick={navigateToJoinUs}>
           <img src={joinus} />
-          <LoginItem to="/joinus">Join Us</LoginItem>
+          <LoginItem>Join Us</LoginItem>
         </LoginWrapper>
       </LoginSection>
       <DropDownMenu />
@@ -91,13 +99,14 @@ const LoginWrapper = styled.div`
   align-items: center;
   /* margin-right: 40px; */
   width: 100px;
+  cursor: pointer;
   img {
     width: 20px;
     height: 20px;
   }
 `;
 
-const LoginItem = styled(Link)`
+const LoginItem = styled.p`
   color: var(--pointcolor-4, #259c2e);
   font-size: 1.1rem;
   font-weight: 400;

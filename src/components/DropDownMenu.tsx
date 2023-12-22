@@ -11,9 +11,9 @@ const DropDownMenu = () => {
     <div style={{ marginLeft: '-100px' }}>
       {isOpen ? (
         <OpenedMenu>
-          <MenuWrapper>
+          <MenuWrapper onClick={() => setIsOpen(!isOpen)}>
             <p>Members Only</p>
-            <img onClick={() => setIsOpen(!isOpen)} src={isOpen ? arrowUp : arrowDown} />
+            <img src={isOpen ? arrowUp : arrowDown} />
           </MenuWrapper>
           <ul>
             <li>
@@ -29,9 +29,9 @@ const DropDownMenu = () => {
         </OpenedMenu>
       ) : (
         <ClosedMenu>
-          <MenuWrapper>
+          <MenuWrapper onClick={() => setIsOpen(!isOpen)}>
             Members Only
-            <img onClick={() => setIsOpen(!isOpen)} src={isOpen ? arrowUp : arrowDown} />
+            <img src={isOpen ? arrowUp : arrowDown} />
           </MenuWrapper>
         </ClosedMenu>
       )}
@@ -86,6 +86,7 @@ const MenuWrapper = styled.div`
   justify-content: center;
   font-weight: 500;
   font-size: 1.1rem;
+  cursor: pointer;
   p {
     margin-top: 13px;
   }
