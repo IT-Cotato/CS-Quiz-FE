@@ -1,46 +1,43 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { styled } from 'styled-components';
 import SessionContent from '@pages/Session/SessionContent';
 import SeasonsSelect from '@components/SeasonsSelect';
 import add_icon from '@assets/add_icon.svg';
 import SessionModal from '@pages/Session/SessionModal';
 import setting_icon from '@assets/setting_icon.svg';
-
-/*
-해야 할 것
-
-헤더랑 세팅 마진 비율 계산해서 반영
-세션 추가 모달
-*/
-
-/*
-회의 후 수정 사항
-
-기수를 Home 컴포넌트에서 관리해야, Modal 에서 세션 기록 설정할때 기수 넘겨주기 가능
-박스는 살려두고 블러 처리에서 표현 -> 박스에는 제목이랑 아이콘, 블러된 화면에는 세부 설명
-*/
+import modify_icon from '@assets/modify_icon.svg';
 
 /*
 논의 사항
+수정 시나리오
 
-운영진은 세션 수정을 어떻게 할지
-클릭으로 한다면, hover 상태에서는 블러처리 후 상세 정보가 보여지고, 운영진은 클릭이 가능해서 수정 모달로 넘어가는지
-
-세션 콘텐츠 전체적인 레이아웃 비율 조정이 필요
-SessionContentContainer width를 줄이고, 그러면 SessionContent의 크기도 같이 줄여아 할듯
+페이지 마진이 CS랑 다른지
 */
 
-// 임시 세션 타입 (id만 가지는)
+// 임시 세션 타입
 export interface ISession {
   id: number;
+  title: string;
+  image: File | null;
+  description: string;
 }
-const sessionData: ISession[] = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }];
+const sessionData: ISession[] = [
+  { id: 1, title: 'OT', image: null, description: '코테이토 8기 첫 만남 OT를 진행하였습니다' },
+  { id: 2, title: '1주차 세션', image: null, description: '1주차 세션을 진행하였습니다.' },
+  { id: 3, title: '2주차 세션', image: null, description: '2주차 세션을 진행하였습니다.' },
+  { id: 4, title: '3주차 세션', image: null, description: '3주차 세션을 진행하였습니다.' },
+];
 // const sessionData: ISession[] = [];
 
 const SessionHome = () => {
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
   const [sessionModalMode, setSessionModalMode] = useState('');
   const [selectedSeason, setSelectedSeason] = useState(0);
+
+  useEffect(() => {
+    // 기수의 최대값
+    setSelectedSeason(8);
+  }, []);
 
   const onChangeSeason = useCallback(
     (season: number) => {
@@ -55,6 +52,11 @@ const SessionHome = () => {
     setSessionModalMode('add');
   }, []);
 
+  const onClickModifyButton = useCallback(() => {
+    setIsSessionModalOpen(true);
+    setSessionModalMode('modify');
+  }, []);
+
   const onCloseModal = useCallback(() => {
     setIsSessionModalOpen(false);
   }, [isSessionModalOpen]);
@@ -66,7 +68,10 @@ const SessionHome = () => {
         <SessionSetting>
           <SeasonsSelect onChangeSeason={onChangeSeason} selectedSeason={selectedSeason} />
           {/* 권한에 따라 add는 선택적으로 보여지게 */}
-          <img src={add_icon} alt="add-icon" onClick={onClickAddButton} />
+          <ButtonWrapper>
+            <img src={modify_icon} alt="modify-icon" onClick={onClickModifyButton} />
+            <img src={add_icon} alt="add-icon" onClick={onClickAddButton} />
+          </ButtonWrapper>
         </SessionSetting>
         <SessionContentsContainer>
           {sessionData.length === 0 ? (
@@ -75,9 +80,7 @@ const SessionHome = () => {
               <p>세션 준비중입니다.</p>
             </SessionReady>
           ) : (
-            [...sessionData]
-              .reverse()
-              .map((session) => <SessionContent key={session.id} session={session} />)
+            sessionData.map((session) => <SessionContent key={session.id} session={session} />)
           )}
         </SessionContentsContainer>
       </SessiontWrapper>
@@ -115,12 +118,15 @@ const SessionSetting = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 76%;
+  width: 70%;
   margin-bottom: 12px;
+`;
 
-  img {
-    width: 32.087px;
-    height: 32.082px;
+const ButtonWrapper = styled.div`
+  > img {
+    margin-left: 8px;
+    width: 32px;
+    height: 32px;
     cursor: pointer;
   }
 `;
@@ -131,7 +137,7 @@ const SessionContentsContainer = styled.div`
   justify-content: space-between;
   flex-direction: row;
   align-content: start;
-  width: 76%;
+  width: 70%;
   height: 1000px;
   margin-top: 28px;
 
