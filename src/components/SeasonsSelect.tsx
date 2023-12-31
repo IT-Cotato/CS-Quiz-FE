@@ -61,7 +61,7 @@ const SeasonsSelect = ({ onChangeSeason, selectedSeason }: Props) => {
   return (
     <SeasonSelectWrapper ref={seasonDropRef}>
       <SelectMenu isopen={isOpen ? 'open' : 'close'} onClick={() => setIsOpen(!isOpen)}>
-        <p>{selectedSeason === 0 ? `기수 선택` : `${selectedSeason}기`}</p>
+        <p>{`${selectedSeason}기`}</p>
         {isOpen ? (
           <img src={arrow_up_thin} alt="arrow-up" /> // onClick={() => setIsOpen(!isOpen)} />
         ) : (
@@ -88,7 +88,6 @@ export default SeasonsSelect;
 const SeasonSelectWrapper = styled.div`
   position: relative;
   width: 127px;
-  z-index: 1;
 `;
 
 interface SelectMenuProps {
@@ -103,7 +102,7 @@ const SelectMenu = styled.div<SelectMenuProps>`
   flex-shrink: 0;
   border-radius: 5px;
   border: 2px solid #bebebe;
-  background: #fff;
+  background: #f3f7ff;
 
   > p {
     margin-left: 16px;
@@ -130,13 +129,14 @@ const SelectMenu = styled.div<SelectMenuProps>`
 `;
 
 const SeasonsList = styled.div`
+  z-index: 1;
   position: absolute;
   top: 44px;
   width: 100%;
   flex-shrink: 0;
   border-radius: 5px;
   background: #fff;
-  background: #e4e4e4;
+  background: #f3f7ff;
 
   ul {
     display: flex;
