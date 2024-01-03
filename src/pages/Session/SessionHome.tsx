@@ -3,15 +3,14 @@ import { styled } from 'styled-components';
 import SessionContent from '@pages/Session/SessionContent';
 import SeasonsSelect from '@components/SeasonsSelect';
 import add_icon from '@assets/add_icon.svg';
-import SessionModal from '@pages/Session/SessionModal';
+import SessionModal from '@pages/Session/SessionModal/SessionModal';
 import setting_icon from '@assets/setting_icon.svg';
 import modify_icon from '@assets/modify_icon.svg';
 
 /*
 논의 사항
 수정 시나리오
-
-페이지 마진이 CS랑 다른지
+버튼을 누르는데 몇번째 세션인지 어떻게 찾아야 할지
 */
 
 // 임시 세션 타입
@@ -63,7 +62,7 @@ const SessionHome = () => {
 
   return (
     <>
-      <SessiontWrapper>
+      <SessionWrapper>
         <SessionHeader>세션 기록</SessionHeader>
         <SessionSetting>
           <SeasonsSelect onChangeSeason={onChangeSeason} selectedSeason={selectedSeason} />
@@ -83,7 +82,7 @@ const SessionHome = () => {
             sessionData.map((session) => <SessionContent key={session.id} session={session} />)
           )}
         </SessionContentsContainer>
-      </SessiontWrapper>
+      </SessionWrapper>
       <SessionModal
         isOpen={isSessionModalOpen}
         onCloseModal={onCloseModal}
@@ -106,7 +105,7 @@ const SessionHeader = styled.h1`
   line-height: normal;
 `;
 
-const SessiontWrapper = styled.div`
+const SessionWrapper = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
