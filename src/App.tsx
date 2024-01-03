@@ -14,6 +14,7 @@ import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from '@theme/GlobalStyle';
 import { theme } from '@theme/Theme';
 import Footer from '@components/Footer';
+import CSMain from '@pages/CS/CSMain';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
                 <Route path="/team" element={<Team />} />
                 <Route path="/projects" element={<Projects />} />
                 <Route path="/cs" element={<CSHome />} />
+                <Route path="/cs/start" element={<CSMain />} />
                 <Route path="/session" element={<SessionHome />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/joinus" element={<SignUp />} />
