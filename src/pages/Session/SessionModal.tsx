@@ -1,8 +1,9 @@
 import React, { ChangeEvent, DragEvent, MouseEvent, useCallback, useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
 import { css, styled } from 'styled-components';
-import close_icon from '@assets/close_icon.svg';
-import undefined_img from '@assets/undefined_img.svg';
+import { ReactComponent as CloseIcon } from '@assets/close_icon.svg';
+import { ReactComponent as UndefinedImg } from '@assets/undefined_img.svg';
+import { ReactComponent as UploadIcon } from '@assets/upload_icon.svg';
 import ToggleButton from '@components/ToggleButton';
 
 /*
@@ -16,33 +17,7 @@ import ToggleButton from '@components/ToggleButton';
 /*
 논의 사항
 
-모달 백그라운드 투명도 어떻게 할지
-블러 처리를 줄지, 그냥 투명으로 할지
-근데 투명보다는 뭐가 있긴 해야할듯
-
-모달을 끄는 방법은 상단 우측 x버튼을 눌러서만?
-그러면 추가하다가 끄기 전에 아라트로 알려줘야 하는지 
-그러면 삭제도 알림이 필요할련지
-
-글자 입력시에 대한 폰트 속성도 피그마에서 필요
-placehorder랑 value랑 font 설정 -> color랑 weight 정도
-현재는 value에 대해서는 font-color가 검은색
-근데 검은색 주니간 토글 옆에 글씨들하고 통일성이 안맞음
-이거는 토글 옆 글씨를 건들여 주면 해결 가능할 듯
-
-그리고 이미지를 업로드 하는 방식은 드래그만 하는지, 아니면 파일 선택도 되게 만들지
-이미지는 하나만 허용? 하나만 허용한다면, 만약 두개 이상 업로드 하는경우 어떻게 예외처리 할지
-이미지는 꽉채우기로 해서 세로로 찍은 사진은 비율 깨짐
-
-이미지 드래그 하는동안 이미지가 드래그 되는거를 표시해줄지
-
-이미지 파일 heic는 크롬에서는 안되고 사파리는 가능
-
-토글 hover에 효과를 줄지
-
-업로드나 삭제 이후 어떤 화면 보여줘야 할지
-
-백엔드랑 이미지 파일 어떤 타입으로 주고받을지
+허용 파일 (png, jpeg, jpg)
 */
 
 interface Props {
@@ -54,10 +29,12 @@ interface Props {
 const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
   const [image, setImage] = useState<File | null>(null);
   const [title, setTitle] = useState('');
-  const [itNews, setItNews] = useState(false);
-  const [csEdu, setCsEdu] = useState(false);
+  const [itNews, setItNews] = useState(true);
+  const [csEdu, setCsEdu] = useState(true);
   const [networking, setNetworking] = useState(false);
   const [description, setDescription] = useState('');
+  const [dragOver, setDragOver] = useState(false);
+  const [dragError, setDragError] = useState(false);
 
   useEffect(() => {
     if (mode === 'modify') {
@@ -68,8 +45,8 @@ const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
   const cleanInputState = useCallback(() => {
     setImage(null);
     setTitle('');
-    setItNews(false);
-    setCsEdu(false);
+    setItNews(true);
+    setCsEdu(true);
     setNetworking(false);
     setDescription('');
   }, []);
@@ -125,24 +102,51 @@ const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
     console.log(e.dataTransfer.items);
 
     if (e.dataTransfer.items) {
-      for (let i = 0; i < e.dataTransfer.items.length; i++) {
-        if (e.dataTransfer.items[i].kind === 'file') {
-          const file = e.dataTransfer.items[i].getAsFile();
+      if (e.dataTransfer.items.length > 1) {
+        console.log('file dropped over 1');
+      } else {
+        if (e.dataTransfer.items[0].kind === 'file') {
+          const file = e.dataTransfer.items[0].getAsFile();
           if (file) {
             setImage(file);
           }
         }
       }
     } else {
-      for (let i = 0; i < e.dataTransfer.files.length; i++) {
-        setImage(e.dataTransfer.files[i]);
+      if (e.dataTransfer.files.length > 1) {
+        console.log('file dropped over 1');
+      } else {
+        setImage(e.dataTransfer.files[0]);
       }
     }
+
+    setDragOver(false);
   }, []);
 
   const onDragOver = useCallback((e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
+    console.log(e.dataTransfer.items);
+    setDragOver(true);
+
+    if (e.dataTransfer.items.length > 1 || e.dataTransfer.files.length > 1) {
+      setDragError(true);
+    } else {
+      setDragError(false);
+    }
+  }, []);
+
+  const onDragLeave = useCallback((e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
     console.log(e);
+    setDragOver(false);
+    setDragError(false);
+  }, []);
+
+  const onClickImageUpload = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    if (e.target.files) {
+      setImage(e.target.files[0]);
+    }
   }, []);
 
   return (
@@ -150,8 +154,6 @@ const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
       isOpen={isOpen}
       style={{
         overlay: {
-          // background-color 기본값
-          backgroundColor: ' rgba(255, 255, 255, 0.75)',
           overflow: 'auto',
         },
         content: {
@@ -171,17 +173,40 @@ const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
     >
       <ModalWrapper>
         <ModalCloseButton>
-          <img src={close_icon} alt="close-button" onClick={onCloseModal} />
+          <CloseIcon width="57" height="56" fill="#686868" onClick={onCloseModal} />
         </ModalCloseButton>
         <Header>
           <h3>{mode === 'add' ? '세션 추가' : '세션 수정'}</h3>
         </Header>
         <BoxContainer>
-          <ImageBox onDrop={onDrop} onDragOver={onDragOver} image={image}>
-            <ImageCloseButton src={close_icon} alt="close-button" onClick={onCloseImage} />
+          <ImageBox
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            onDragLeave={onDragLeave}
+            image={image}
+            dragging={dragOver ? (dragError ? 'error' : 'drag') : 'drop'}
+          >
+            <ButtonWrapper>
+              <label htmlFor="upload-image">
+                <UploadIcon stroke={dragOver ? '#CECCCC' : '#7B7B7B'} />
+              </label>
+              <input
+                type="file"
+                id="upload-image"
+                accept="image/jpg, image/png, image/jpeg"
+                style={{ display: 'none' }}
+                onChange={onClickImageUpload}
+              />
+              <CloseIcon
+                width="33"
+                height="32"
+                fill={dragOver ? '#CECCCC' : '#686868'}
+                onClick={onCloseImage}
+              />
+            </ButtonWrapper>
             {!image && (
-              <UndefinedImage>
-                <img src={undefined_img} alt="undefined-img" />
+              <UndefinedImage dragging={dragOver ? 'drag' : 'drop'}>
+                <UndefinedImg fill={dragOver ? '#CECCCC' : '#a8a8a8a8'} />
                 <p>이미지를 드래그해서 추가</p>
               </UndefinedImage>
             )}
@@ -189,14 +214,14 @@ const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
           <TitleBox>
             <textarea value={title} onChange={onChangeTitle} placeholder="제목을 입력하세요" />
           </TitleBox>
-          <ButtonBox>
+          <ToggleButtonBox>
             <p>it 뉴스</p>
             <ToggleButton toggled={itNews} onClick={onChangeItNews} />
             <p>CS 교육</p>
             <ToggleButton toggled={csEdu} onClick={onChangeCsEdu} />
             <p>네트워킹</p>
             <ToggleButton toggled={networking} onClick={onChangeNetworking} />
-          </ButtonBox>
+          </ToggleButtonBox>
           <DescriptionBox>
             <textarea
               value={description}
@@ -206,9 +231,11 @@ const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
           </DescriptionBox>
         </BoxContainer>
         <ButtonContainer>
-          <DeleteButton type="button" onClick={onClickDeleteButton}>
-            삭제
-          </DeleteButton>
+          {mode === 'modify' && (
+            <DeleteButton type="button" onClick={onClickDeleteButton}>
+              세션 삭제
+            </DeleteButton>
+          )}
           <UploadButton type="button" onClick={onClickAddButton}>
             업로드
           </UploadButton>
@@ -230,12 +257,7 @@ const ModalCloseButton = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: end;
-
-  > img {
-    width: 57px;
-    height: 56px;
-    cursor: pointer;
-  }
+  cursor: pointer;
 `;
 
 const fontStyle = css`
@@ -260,6 +282,10 @@ const Header = styled.div`
 `;
 
 const BoxContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
   margin: 0 auto;
   width: 500px;
 `;
@@ -274,29 +300,36 @@ const Box = styled.div`
 
 interface ImageBoxProps {
   image: File | null;
+  dragging: string;
 }
 const ImageBox = styled(Box)<ImageBoxProps>`
+  display: flex;
+  justify-content: end;
+  align-items: baseline;
   position: relative;
+  width: 280px;
   height: 280px;
-  width: 496px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   border: 2px dashed #a9a9a9;
 
   background-image: ${(props) =>
     props.image ? `url(${URL.createObjectURL(props.image)})` : `none`};
   background-size: 100% 100%;
+
+  border: ${(props) => props.dragging === 'drag' && '2px solid #93C6FE'};
+  border: ${(props) => props.dragging === 'error' && '2px solid #EB5353'};
 `;
 
-const ImageCloseButton = styled.img`
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 33px;
-  height: 32px;
-  cursor: pointer;
+const ButtonWrapper = styled.div`
+  margin-top: 8px;
+  margin-right: 8px;
+
+  svg {
+    cursor: pointer;
+  }
 `;
 
-const UndefinedImage = styled.div`
+const UndefinedImage = styled.div<{ dragging: string }>`
   position: absolute;
   display: flex;
   align-items: center;
@@ -304,14 +337,9 @@ const UndefinedImage = styled.div`
   width: 100%;
   top: 80px;
 
-  > img {
-    width: 120px;
-    height: 120px;
-  }
-
   > p {
     ${fontStyle}
-    color: #898787;
+    color: ${(props) => (props.dragging === 'drag' ? '#CECCCC' : '#898787')};
     margin: 4px;
   }
 `;
@@ -340,7 +368,7 @@ const TitleBox = styled(Box)`
   }
 `;
 
-const ButtonBox = styled(Box)`
+const ToggleButtonBox = styled(Box)`
   align-items: center;
   height: 59px;
 
@@ -371,10 +399,10 @@ const Button = styled.button`
 `;
 
 const DeleteButton = styled(Button)`
-  background: #fff;
+  background: #eb5353;
   border: 2px solid #c6c6c6;
   ${fontStyle}
-  color: #5C5C5C;
+  color: #fff;
 `;
 
 const UploadButton = styled(Button)`
