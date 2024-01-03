@@ -42,6 +42,9 @@ const Wrapper = styled.div`
   height: 72px;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   padding: 0 60px;
+  position: fixed;
+  z-index: 100;
+  background-color: #fff;
   @media screen and (max-width: 960px) {
   }
 `;
