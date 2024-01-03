@@ -5,6 +5,7 @@ import { ReactComponent as CloseIcon } from '@assets/close_icon.svg';
 import ToggleButton from '@components/ToggleButton';
 import ImageBox from '@pages/Session/SessionModal/ImageBox';
 import TextBox from '@pages/Session/SessionModal/TextBox';
+import PopUp from '@pages/Session/SessionModal/PopUp';
 
 /*
 논의 사항
@@ -26,6 +27,8 @@ const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
   const [csEdu, setCsEdu] = useState(true);
   const [networking, setNetworking] = useState(false);
   const [description, setDescription] = useState('');
+
+  const [isPopUpOpen, setIsPopUpOpen] = useState(false);
 
   useEffect(() => {
     if (mode === 'modify') {
@@ -84,6 +87,10 @@ const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
     [mode, title, itNews, csEdu, networking, description],
   );
 
+  const closePopUp = useCallback(() => {
+    setIsPopUpOpen(false);
+  }, []);
+
   return (
     <ReactModal
       isOpen={isOpen}
@@ -114,7 +121,7 @@ const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
           <h3>{mode === 'add' ? '세션 추가' : '세션 수정'}</h3>
         </Header>
         <BoxContainer>
-          <ImageBox image={image} setImage={setImage} />
+          <ImageBox image={image} setImage={setImage} setIsPopUpOpen={setIsPopUpOpen} />
           <TextBox value={title} onChange={onChangeTitle} textType="title" />
           <ToggleButtonBox>
             <p>it 뉴스</p>
@@ -136,6 +143,7 @@ const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
             업로드
           </UploadButton>
         </ButtonContainer>
+        {isPopUpOpen && <PopUp closePopUp={closePopUp} text="하나의 이미지만 드래그 해주세요." />}
       </ModalWrapper>
     </ReactModal>
   );
@@ -144,6 +152,7 @@ const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
 export default SessionModal;
 
 const ModalWrapper = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;

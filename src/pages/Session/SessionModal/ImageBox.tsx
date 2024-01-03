@@ -7,9 +7,10 @@ import { ReactComponent as CloseIcon } from '@assets/close_icon.svg';
 interface Props {
   image: File | null;
   setImage: React.Dispatch<React.SetStateAction<File | null>>;
+  setIsPopUpOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ImageBox = ({ image, setImage }: Props) => {
+const ImageBox = ({ image, setImage, setIsPopUpOpen }: Props) => {
   const [dragOver, setDragOver] = useState(false);
   const [dragError, setDragError] = useState(false);
 
@@ -24,6 +25,7 @@ const ImageBox = ({ image, setImage }: Props) => {
     if (e.dataTransfer.items) {
       if (e.dataTransfer.items.length > 1) {
         console.log('file dropped over 1');
+        setIsPopUpOpen(true);
       } else {
         if (e.dataTransfer.items[0].kind === 'file') {
           const file = e.dataTransfer.items[0].getAsFile();
@@ -35,6 +37,7 @@ const ImageBox = ({ image, setImage }: Props) => {
     } else {
       if (e.dataTransfer.files.length > 1) {
         console.log('file dropped over 1');
+        setIsPopUpOpen(true);
       } else {
         setImage(e.dataTransfer.files[0]);
       }
