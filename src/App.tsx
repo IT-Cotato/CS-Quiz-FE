@@ -15,6 +15,7 @@ import { GlobalStyle } from '@theme/GlobalStyle';
 import { theme } from '@theme/Theme';
 import Footer from '@components/Footer';
 import CSMain from '@pages/CS/CSMain';
+import CSUpload from '@pages/CS/admin/CSUpload';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
                 <Route path="/projects" element={<Projects />} />
                 <Route path="/cs" element={<CSHome />} />
                 <Route path="/cs/start" element={<CSMain />} />
+                <Route path="/cs/upload" element={<CSUpload />} />
                 <Route path="/session" element={<SessionHome />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/joinus" element={<SignUp />} />
