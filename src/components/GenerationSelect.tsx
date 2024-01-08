@@ -3,97 +3,84 @@ import { css, styled } from 'styled-components';
 import arrow_down_thin from '@assets/arrow_dwon_thin.svg';
 import arrow_up_thin from '@assets/arrow_up_thin.svg';
 
-/*
-수정해야 하는것
-
-SeasonList 배경 피그마 나오면 변경
-*/
-
-/*
-논의 사항
-
-기수 부분에서 박스 자체가 클릭이 되게 구현
-
-기수 선택에서 초기 값은 마지막 기수로 해야 하나? ex) 지금은 8기로 고정
-그러면 드롭박스는 기수 선택 문구가 없고 항상 몇기로 표시되어 있을듯
-이게 초기 기수 선택 상황에서는 기수가 선택되어 있지 않아 기록을 불러오거나 업로드 하기에 예외 발생
-*/
-
 interface Props {
   /**
    * 기수 변경시 발생해야 하는 로직을 담는 함수
-   * @param season
+   * @param generation
    * @returns
    */
-  onChangeSeason: (season: number) => void;
+  onChangeGeneration: (generation: number) => void;
   /**
    * 현재 선택된 기수
    */
-  selectedSeason: number;
+  selectedGeneration: number;
 }
 
-const SeasonsSelect = ({ onChangeSeason, selectedSeason }: Props) => {
+const GenerationSelect = ({
+  onChangeGeneration: onChangeGeneration,
+  selectedGeneration: selectedGeneration,
+}: Props) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [seasonLength, setSeasonLength] = useState(0);
+  const [generationLength, setGenerationLength] = useState(selectedGeneration);
 
-  const seasonDropRef = useRef<HTMLDivElement>(null);
+  const generationDropRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      if (seasonDropRef.current && !seasonDropRef.current.contains(e.target as Node)) {
+      if (generationDropRef.current && !generationDropRef.current.contains(e.target as Node)) {
         setIsOpen(false);
       }
     };
     window.addEventListener('mousedown', handleClick);
     return () => window.removeEventListener('mousedown', handleClick);
-  }, [seasonDropRef]);
+  }, [generationDropRef]);
 
   useEffect(() => {
-    // 기수의 최대값을 받아와야 함
-    setSeasonLength(8);
-  }, [seasonLength]);
+    // 기수의 최대값
+    setGenerationLength(8);
+  });
 
-  const onClickSeason = useCallback((season: number) => {
-    onChangeSeason(season);
+  const onClickGeneration = useCallback((generation: number) => {
+    onChangeGeneration(generation);
     setIsOpen(false);
   }, []);
 
   return (
-    <SeasonSelectWrapper ref={seasonDropRef}>
+    <GenerationSelectWrapper ref={generationDropRef}>
       <SelectMenu isopen={isOpen ? 'open' : 'close'} onClick={() => setIsOpen(!isOpen)}>
-        <p>{`${selectedSeason}기`}</p>
+        <p>{`${selectedGeneration}기`}</p>
         {isOpen ? (
           <img src={arrow_up_thin} alt="arrow-up" /> // onClick={() => setIsOpen(!isOpen)} />
         ) : (
           <img src={arrow_down_thin} alt="arrow-down" /> // onClick={() => setIsOpen(!isOpen)} />
         )}
         {isOpen && (
-          <SeasonsList>
+          <GenerationList>
             <ul>
-              {Array.from({ length: seasonLength }, (v, i) => i + 1)
+              {Array.from({ length: generationLength }, (v, i) => i + 1)
                 .reverse()
-                .map((season) => (
-                  <li key={season} onClick={() => onClickSeason(season)}>{`${season}기`}</li>
+                .map((generation) => (
+                  <li
+                    key={generation}
+                    onClick={() => onClickGeneration(generation)}
+                  >{`${generation}기`}</li>
                 ))}
             </ul>
-          </SeasonsList>
+          </GenerationList>
         )}
       </SelectMenu>
-    </SeasonSelectWrapper>
+    </GenerationSelectWrapper>
   );
 };
 
-export default SeasonsSelect;
+export default GenerationSelect;
 
-const SeasonSelectWrapper = styled.div`
+const GenerationSelectWrapper = styled.div`
   position: relative;
   width: 127px;
 `;
 
-interface SelectMenuProps {
-  isopen: string;
-}
-const SelectMenu = styled.div<SelectMenuProps>`
+const SelectMenu = styled.div<{ isopen: string }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -128,7 +115,7 @@ const SelectMenu = styled.div<SelectMenuProps>`
   }
 `;
 
-const SeasonsList = styled.div`
+const GenerationList = styled.div`
   z-index: 1;
   position: absolute;
   top: 44px;
