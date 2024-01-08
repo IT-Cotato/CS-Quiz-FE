@@ -1,21 +1,22 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { ICSEdu } from '@pages/CS/CSHome';
 import { styled, css } from 'styled-components';
-
-/*
-논의 사항
-
-콘텐츠 사이즈는 우선 세션꺼랑 똑같이 잡아둠
-근데 얘는 좀 줄일 필요가 있나??
-*/
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   cs: ICSEdu;
+  generation: number;
 }
 
-const CSContent = ({ cs }: Props) => {
+const CSContent = ({ cs, generation }: Props) => {
+  const navigate = useNavigate();
+
+  const onclickContent = useCallback(() => {
+    navigate(`/cs/start/?generation=${generation}&week=${cs.week}`);
+  }, [generation, cs.week]);
+
   return (
-    <Content>
+    <Content onClick={onclickContent}>
       <ContentWeek>{`${cs.week}주차 문제`}</ContentWeek>
       <ContentTitle>{cs.title}</ContentTitle>
     </Content>
@@ -29,11 +30,12 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 356px;
-  height: 292px;
+  width: 300px;
+  height: 300px;
   border-radius: 10px;
   background: #e4ecfd;
   margin: 20px 4px;
+  cursor: pointer;
 `;
 
 const fontStyle = css`

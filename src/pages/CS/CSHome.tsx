@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { styled } from 'styled-components';
 import CSContent from '@pages/CS/CSContent';
 import SeasonsSelect from '@components/SeasonsSelect';
@@ -14,6 +14,9 @@ CS도 모달로 추가와 삭제를 가지나??
 데이터가 없을때 띄어질 문구
 */
 
+/*
+cs 추가할때 세션이랑 연결
+*/
 // 임시 CS 타입 (id만 가지는)
 export interface ICSEdu {
   week: number;
@@ -30,6 +33,11 @@ const CSData: ICSEdu[] = [
 
 const CSHome = () => {
   const [selectedSeason, setSelectedSeason] = useState(0);
+
+  useEffect(() => {
+    // 기수의 최대값
+    setSelectedSeason(8);
+  }, []);
 
   const onChangeSeason = useCallback(
     (season: number) => {
@@ -52,7 +60,9 @@ const CSHome = () => {
             <p>CS 문제풀이 준비중입니다.</p>
           </CSReady>
         ) : (
-          [...CSData].reverse().map((cs) => <CSContent key={cs.week} cs={cs} />)
+          [...CSData]
+            .reverse()
+            .map((cs) => <CSContent key={cs.week} cs={cs} generation={selectedSeason} />)
         )}
       </CSContentsContainer>
     </CSWrapper>
@@ -84,7 +94,7 @@ const CSSetting = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 76%;
+  width: 70%;
   margin-bottom: 12px;
 
   img {
@@ -100,7 +110,7 @@ const CSContentsContainer = styled.div`
   justify-content: space-between;
   flex-direction: row;
   align-content: start;
-  width: 76%;
+  width: 70%;
   height: 1000px;
   margin-top: 28px;
 
