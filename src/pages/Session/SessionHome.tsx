@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { styled } from 'styled-components';
 import SessionContent from '@pages/Session/SessionContent';
-import SeasonsSelect from '@components/SeasonsSelect';
 import add_icon from '@assets/add_icon.svg';
 import SessionModal from '@pages/Session/SessionModal/SessionModal';
 import setting_icon from '@assets/setting_icon.svg';
 import modify_icon from '@assets/modify_icon.svg';
+import GenerationSelect from '@components/GenerationSelect';
 
 /*
 논의 사항
@@ -31,19 +31,19 @@ const sessionData: ISession[] = [
 const SessionHome = () => {
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
   const [sessionModalMode, setSessionModalMode] = useState('');
-  const [selectedSeason, setSelectedSeason] = useState(0);
+  const [selectedGeneration, setSelectedGeneration] = useState(0);
 
   useEffect(() => {
     // 기수의 최대값
-    setSelectedSeason(8);
+    setSelectedGeneration(8);
   }, []);
 
-  const onChangeSeason = useCallback(
-    (season: number) => {
-      setSelectedSeason(season);
+  const onChangeGeneration = useCallback(
+    (generation: number) => {
+      setSelectedGeneration(generation);
       // 그리고 여기서 api 요청을 보낼듯
     },
-    [selectedSeason],
+    [selectedGeneration],
   );
 
   const onClickAddButton = useCallback(() => {
@@ -65,7 +65,10 @@ const SessionHome = () => {
       <SessionWrapper>
         <SessionHeader>세션 기록</SessionHeader>
         <SessionSetting>
-          <SeasonsSelect onChangeSeason={onChangeSeason} selectedSeason={selectedSeason} />
+          <GenerationSelect
+            onChangeGeneration={onChangeGeneration}
+            selectedGeneration={selectedGeneration}
+          />
           {/* 권한에 따라 add는 선택적으로 보여지게 */}
           <ButtonWrapper>
             <img src={modify_icon} alt="modify-icon" onClick={onClickModifyButton} />

@@ -1,22 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { styled } from 'styled-components';
 import CSContent from '@pages/CS/CSContent';
-import SeasonsSelect from '@components/SeasonsSelect';
 import setting_icon from '@assets/setting_icon.svg';
+import GenerationSelect from '@components/GenerationSelect';
 
-/*
-논의 사항
-
-CS도 모달로 추가와 삭제를 가지나??
-우선 추가하는건 빼놓은 상태
-세션 추가할때 CS를 선택하는데, 이게 거기서 같이 연동이 되어서 자동적으로 오는지 erd를 봐야 알듯
-
-데이터가 없을때 띄어질 문구
-*/
-
-/*
-cs 추가할때 세션이랑 연결
-*/
 // 임시 CS 타입 (id만 가지는)
 export interface ICSEdu {
   week: number;
@@ -32,26 +19,29 @@ const CSData: ICSEdu[] = [
 // const CSData: ICSEdu[] = [];
 
 const CSHome = () => {
-  const [selectedSeason, setSelectedSeason] = useState(0);
+  const [selectedGeneration, setSelectedGeneration] = useState(0);
 
   useEffect(() => {
     // 기수의 최대값
-    setSelectedSeason(8);
+    setSelectedGeneration(8);
   }, []);
 
-  const onChangeSeason = useCallback(
-    (season: number) => {
-      setSelectedSeason(season);
+  const onChangeGeneration = useCallback(
+    (generation: number) => {
+      setSelectedGeneration(generation);
       // 그리고 여기서 api 요청을 보낼듯
     },
-    [selectedSeason],
+    [selectedGeneration],
   );
 
   return (
     <CSWrapper>
       <CSHeader>CS 문제풀이</CSHeader>
       <CSSetting>
-        <SeasonsSelect onChangeSeason={onChangeSeason} selectedSeason={selectedSeason} />
+        <GenerationSelect
+          onChangeGeneration={onChangeGeneration}
+          selectedGeneration={selectedGeneration}
+        />
       </CSSetting>
       <CSContentsContainer>
         {CSData.length === 0 ? (
@@ -62,7 +52,7 @@ const CSHome = () => {
         ) : (
           [...CSData]
             .reverse()
-            .map((cs) => <CSContent key={cs.week} cs={cs} generation={selectedSeason} />)
+            .map((cs) => <CSContent key={cs.week} cs={cs} generation={selectedGeneration} />)
         )}
       </CSContentsContainer>
     </CSWrapper>
