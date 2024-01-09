@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { styled } from 'styled-components';
 import CSManageLayout from '@pages/CS/CSManage/CSManageLayout';
 import QuizContent from '@pages/CS/CSManage/QuizContent';
+import { useLocation } from 'react-router-dom';
 
 export interface IQuizContent {
   quizNumber: number;
@@ -18,12 +19,20 @@ const QuizContents: IQuizContent[] = [
 ];
 
 const CSManage = () => {
+  const location = useLocation();
+  const search = location.search;
+  const generation = search.split('&')[0].split('=')[1];
+  const week = search.split('&')[1].split('=')[1];
+
+  console.log('generation', generation);
+  console.log('week', week);
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [quizState, setQuizState] = useState('ready');
+  const [quizStarted, setQuizStarted] = useState(false);
 
   const onClickQuizButton = useCallback(() => {
-    console.log('quiz button click');
-  }, []);
+    setQuizStarted(!quizStarted);
+  }, [quizStarted]);
 
   const onClickCheckAllScorer = useCallback(() => {
     console.log('all scorer click');
@@ -34,7 +43,7 @@ const CSManage = () => {
       <ManageWrapper>
         <ButtonWrapper>
           <Button color="#477FEB" onClick={onClickQuizButton}>
-            {quizState === 'ready' ? '교육 시작하기' : '몰루?'}
+            {quizStarted ? '몰루?' : '교육 시작하기'}
           </Button>
           <Button color="#000" onClick={onClickCheckAllScorer}>
             전체 득점자 확인
@@ -42,7 +51,7 @@ const CSManage = () => {
         </ButtonWrapper>
         <QuizContentsWrapper>
           {QuizContents.map((quiz) => (
-            <QuizContent key={quiz.quizNumber} quiz={quiz} />
+            <QuizContent key={quiz.quizNumber} quiz={quiz} generation={generation} week={week} />
           ))}
         </QuizContentsWrapper>
       </ManageWrapper>
