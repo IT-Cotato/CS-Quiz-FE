@@ -3,27 +3,34 @@ import { IQuizContent } from '@pages/CS/CSManage/CSManage';
 import { css, styled } from 'styled-components';
 import ToggleButton from '@components/ToggleButton';
 import { ReactComponent as ArrowBack } from '@assets/arrow_back.svg';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   quiz: IQuizContent;
+  generation: string;
+  week: string;
 }
 
-const QuizContent = ({ quiz }: Props) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+const QuizContent = ({ quiz, generation, week }: Props) => {
   const [isApproach, setIsApproach] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isQuizStart, setQuizStart] = useState(false);
+  const [isQuizStart, setIsQuizStart] = useState(false);
+
+  const navigate = useNavigate();
 
   const onClickQuestionButton = useCallback(() => {
-    console.log('question click');
-  }, []);
+    navigate(`/cs/quizscorer?generation=${generation}&week=${week}&quiz=${quiz.quizNumber}`, {
+      state: {
+        question: quiz.question,
+      },
+    });
+  }, [generation, week, quiz.quizNumber, quiz.question]);
 
   const onClickApproach = useCallback(() => {
-    console.log('quiz approach');
+    setIsApproach(!isApproach);
   }, []);
 
   const onClickQuizStart = useCallback(() => {
-    console.log('quiz start');
+    setIsQuizStart(!isQuizStart);
   }, []);
 
   return (
