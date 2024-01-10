@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { styled } from 'styled-components';
 import CSManageLayout from '@pages/CS/CSManage/CSManageLayout';
 import QuizContent from '@pages/CS/CSManage/QuizContent';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export interface IQuizContent {
   quizNumber: number;
@@ -19,6 +19,7 @@ const QuizContents: IQuizContent[] = [
 ];
 
 const CSManage = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const search = location.search;
   const generation = search.split('&')[0].split('=')[1];
@@ -35,6 +36,7 @@ const CSManage = () => {
   }, [quizStarted]);
 
   const onClickCheckAllScorer = useCallback(() => {
+    navigate(`/cs/allscorer?generation=${generation}&week=${week}`);
     console.log('all scorer click');
   }, []);
 
