@@ -13,6 +13,9 @@ import MyPage from '@pages/MyPage/MyPage';
 import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from '@theme/GlobalStyle';
 import { Theme } from '@theme/Theme';
+import CSManage from '@pages/CS/CSManage/CSManage';
+import QuizScorer from '@pages/CS/CSManage/QuizScorer';
+import AllScorer from '@pages/CS/CSManage/AllScorer';
 
 function App() {
   return (
@@ -27,6 +30,9 @@ function App() {
             <Route path="/team" element={<Team />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/cs" element={<CSHome />} />
+            <Route path="/cs/manage" element={<CSManage />} />
+            <Route path="/cs/quizscorer" element={<QuizScorer />} />
+            <Route path="/cs/allscorer" element={<AllScorer />} />
             <Route path="/session" element={<SessionHome />} />
             <Route path="/login" element={<Login />} />
             <Route path="/joinus" element={<Recruitment />} />
