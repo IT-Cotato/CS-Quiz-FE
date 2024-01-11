@@ -1,43 +1,14 @@
-import React, { ChangeEvent, DragEvent, useCallback, useState } from 'react';
+import React, { ChangeEvent, DragEvent, useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { ReactComponent as ArrowBack } from '@/assets/arrow_back.svg';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-
+import DndContainer from './DndContainer';
+import { ChoiceProps, ShortProps } from '@/typing/db';
 // TODO: 컴포넌트 분리
 
 type Item = {
   isselected?: string;
 };
-
-interface ChoiceProps {
-  quiz_id: number;
-  quiz_title: string;
-  quiz_content: string;
-  quiz_type: string;
-  quiz_answer: {
-    choice_num: number;
-    choice_content: string;
-  }[];
-  choices: {
-    choice_id: number;
-    choice_content: string;
-  }[];
-  quiz_image_file: File | null;
-  quiz_preview_url: string | null;
-}
-
-interface ShortProps {
-  quiz_id: number;
-  quiz_title: string;
-  quiz_content: string;
-  quiz_type: string;
-  quiz_answer: {
-    choice_content: string;
-  }[];
-  quiz_image_file: File | null;
-  quiz_preview_url: string | null;
-}
 
 type QuizType = ChoiceProps | ShortProps;
 
@@ -79,7 +50,7 @@ const CSUpload = () => {
         },
       ],
       quiz_image_file: null,
-      quiz_preview_url: '',
+      quiz_preview_url: null,
     },
   ]);
 
@@ -119,7 +90,7 @@ const CSUpload = () => {
           },
         ],
         quiz_image_file: null,
-        quiz_preview_url: '',
+        quiz_preview_url: null,
       },
     ]);
   }, [selected]);
@@ -150,12 +121,21 @@ const CSUpload = () => {
   const deleteItem = useCallback(() => {
     const result = window.confirm('정말 삭제하시겠습니까?');
     if (!result) return;
-
+    // 이전 번호 선택
+    setSelected(selected - 1);
     setItem((prev) => {
       // selected인 item을 삭제 후, id를 재정렬
-      return prev
-        .filter((item) => item.quiz_id !== selected)
-        .map((item, index) => ({ ...item, quiz_id: index + 1 }));
+      console.log(selected);
+      const newPrev = [...prev];
+      newPrev.splice(selected - 1, 1);
+      // quiz_preview_url undefined일 경우에 대한 예외처리
+      if (newPrev[selected - 2]?.quiz_preview_url) {
+        URL.revokeObjectURL(newPrev[selected - 2].quiz_preview_url || '');
+      }
+      return newPrev.map((item, index) => ({ ...item, quiz_id: index + 1 }));
+      // return prev
+      //   .filter((item) => item.quiz_id !== selected)
+      //   .map((item, index) => ({ ...item, quiz_id: index + 1 }));
     });
   }, [selected]);
 
@@ -174,17 +154,16 @@ const CSUpload = () => {
             type,
             copySelected.quiz_id,
             copySelected.quiz_image_file,
-            copySelected.quiz_preview_url,
+            copySelected.quiz_preview_url || null,
           );
         } else {
           newPrev[selected - 1] = changeType(
             type,
             copySelected.quiz_id,
             copySelected.quiz_image_file,
-            copySelected.quiz_preview_url,
+            copySelected.quiz_preview_url || null,
           );
         }
-        console.log(copySelected);
         return [...newPrev];
       });
     },
@@ -197,7 +176,6 @@ const CSUpload = () => {
   const changeType = useCallback(
     (type: string, id: number, image: File | null, preview_url: string | null) => {
       // 들어온 type이 choice일 경우, choice를 제외한 나머지를 복사
-      console.log(type);
       if (type === 'choice') {
         return {
           quiz_id: id,
@@ -229,7 +207,7 @@ const CSUpload = () => {
             },
           ],
           quiz_image_file: image,
-          quiz_preview_url: preview_url,
+          quiz_preview_url: preview_url || null,
         };
       } else {
         return {
@@ -243,7 +221,7 @@ const CSUpload = () => {
             },
           ],
           quiz_image_file: image,
-          quiz_preview_url: preview_url,
+          quiz_preview_url: preview_url || null,
         };
       }
     },
@@ -255,7 +233,7 @@ const CSUpload = () => {
       const newPrev = [...prev];
       const copySelected = newPrev[selected - 1];
       if (!isChoiceProps(copySelected)) {
-        // quiz_answer를 하나 추가
+        // 주관식 quiz_answer를 하나 추가
         copySelected.quiz_answer.push({
           choice_content: '',
         });
@@ -263,26 +241,6 @@ const CSUpload = () => {
       return [...newPrev];
     });
   }, [selected, item]);
-
-  const handleDragEnd = useCallback(
-    (result: any) => {
-      if (!result.destination) {
-        return;
-      }
-
-      const items = Array.from(item);
-      const [reorderedItem] = items.splice(result.source.index, 1);
-      items.splice(result.destination.index, 0, reorderedItem);
-      // id 재정렬
-      const itemsWithNewIds = items.map((item, index) => ({
-        ...item,
-        quiz_id: index + 1,
-      }));
-      setItem(itemsWithNewIds);
-      setSelected(result.destination.index + 1);
-    },
-    [item],
-  );
 
   const onDrop = useCallback(
     (e: DragEvent<HTMLElement>) => {
@@ -307,10 +265,20 @@ const CSUpload = () => {
 
   const onDragOver = useCallback((e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-
     if (e.dataTransfer.items.length > 1 || e.dataTransfer.files.length > 1) {
       window.alert('이미지는 한 장만 업로드 가능합니다.');
     }
+  }, []);
+
+  // 컴포넌트 언마운트 시 preview_url을 제거
+  useEffect(() => {
+    return () => {
+      item.forEach((item) => {
+        if (item.quiz_preview_url) {
+          URL.revokeObjectURL(item.quiz_preview_url);
+        }
+      });
+    };
   }, []);
 
   // 타입 가드
@@ -334,7 +302,6 @@ const CSUpload = () => {
         } else {
           copySelected.quiz_answer[0].choice_content = e.target.value;
         }
-        console.log(newPrev);
         return [...newPrev];
       });
     },
@@ -363,7 +330,6 @@ const CSUpload = () => {
       setItem((prev) => {
         const newPrev = [...prev];
         const copySelected = newPrev[selected - 1];
-        console.log(id);
         if (!isChoiceProps(copySelected)) {
           copySelected.quiz_answer.splice(id, 1);
         }
@@ -372,46 +338,6 @@ const CSUpload = () => {
     },
     [selected, item],
   );
-
-  // Drag and Drop 컨테이너
-  const DndContainer = () => {
-    return (
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId="droppable">
-          {(provided) => (
-            <List {...provided.droppableProps} ref={provided.innerRef}>
-              {item.map((item, index) => (
-                <Draggable
-                  key={`draggable-${item.quiz_id}`}
-                  draggableId={`draggable-${item.quiz_id}`}
-                  index={index}
-                >
-                  {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
-                      <Item
-                        key={item.quiz_id}
-                        isselected={selected === item.quiz_id ? 'true' : 'false'}
-                        onClick={() => {
-                          setSelected(item.quiz_id);
-                        }}
-                      >
-                        {item.quiz_id}
-                      </Item>
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </List>
-          )}
-        </Droppable>
-      </DragDropContext>
-    );
-  };
 
   return (
     <>
@@ -432,7 +358,7 @@ const CSUpload = () => {
             >
               주제
             </Item>
-            <DndContainer />
+            {DndContainer(item, setItem, setSelected, selected)}
             <button
               style={{ background: '#477FEB', color: 'white' }}
               onClick={() => {
@@ -516,28 +442,29 @@ const CSUpload = () => {
                   </ChoiceDiv>
                 ) : (
                   <Short>
-                    {(item[selected - 1] as ShortProps).quiz_answer.map((answer, index) => (
-                      <div key={index}>
-                        <input
-                          type="text"
-                          placeholder={`답안 ${index + 1}`}
-                          onChange={(e) => {
-                            onChangeShorts(e, `${index + 1}`);
-                          }}
-                          value={answer.choice_content}
-                        />
-                        <img
-                          onClick={() => {
-                            deleteShortAnswer(index);
-                          }}
-                          src="https://velog.velcdn.com/images/ea_st_ring/post/d5f4409f-39c9-43bd-bb35-c6d4fa8774be/image.svg"
-                        />
-                      </div>
-                    ))}
+                    {(item[selected - 1] as ShortProps).quiz_answer.map(
+                      (answer: { choice_content: string }, index: number) => (
+                        <div key={index}>
+                          <input
+                            type="text"
+                            placeholder={`답안 ${index + 1}`}
+                            onChange={(e) => {
+                              onChangeShorts(e, `${index + 1}`);
+                            }}
+                            value={answer.choice_content}
+                          />
+                          <img
+                            onClick={() => {
+                              deleteShortAnswer(index);
+                            }}
+                            src="https://velog.velcdn.com/images/ea_st_ring/post/d5f4409f-39c9-43bd-bb35-c6d4fa8774be/image.svg"
+                          />
+                        </div>
+                      ),
+                    )}
                     <button
                       onClick={() => {
                         addShortAnswer();
-                        console.log(item[selected - 1]);
                       }}
                     >
                       답안 추가
@@ -589,12 +516,14 @@ const CSUpload = () => {
                       {item[selected - 1].quiz_answer[0].choice_content}
                     </div>
                   ) : (
-                    (item[selected - 1] as ShortProps).quiz_answer.map((answer, index) => (
-                      <div key={index}>
-                        <img src="https://velog.velcdn.com/images/ea_st_ring/post/555ec60e-4c31-48e7-80d1-ec3cb60350d2/image.svg" />
-                        {answer.choice_content}
-                      </div>
-                    ))
+                    (item[selected - 1] as ShortProps).quiz_answer.map(
+                      (answer: { choice_content: string }, index: number) => (
+                        <div key={index}>
+                          <img src="https://velog.velcdn.com/images/ea_st_ring/post/555ec60e-4c31-48e7-80d1-ec3cb60350d2/image.svg" />
+                          {answer.choice_content}
+                        </div>
+                      ),
+                    )
                   )}
                 </AnswerBox>
               </>
@@ -678,11 +607,6 @@ const LeftBox = styled.div`
   }
 `;
 
-const List = styled.div`
-  flex-direction: column;
-  height: fit-content !important;
-`;
-
 const Item = styled.div<Item>`
   width: 200px;
   height: 48px;
@@ -750,6 +674,13 @@ const UploadDiv = styled.div<any>`
     font-family: Inter;
     font-size: 14px;
     font-weight: 400;
+  }
+  img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    -user-drag: none;
   }
 `;
 
