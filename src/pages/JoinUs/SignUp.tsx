@@ -3,6 +3,7 @@ import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import SignUpModal from '@components/SignUpModal';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const SignUp = () => {
   const [id, setId] = useState('');
@@ -110,6 +111,19 @@ const SignUp = () => {
       console.log(id, password, passwordCheck, name, tel);
       if (!mismatchError) {
         console.log('서버로 회원가입하기');
+        try {
+          axios.post(
+            'http://ec2-43-203-67-153.ap-northeast-2.compute.amazonaws.com:8080/v1/api/auth/join',
+            {
+              email: id,
+              password: password,
+              name: name,
+              phoneNumber: tel,
+            },
+          );
+        } catch (err) {
+          console.log(err);
+        }
       }
     },
     [id, password, passwordCheck, name, tel, mismatchError],
@@ -117,7 +131,7 @@ const SignUp = () => {
 
   return (
     <Wrapper>
-      <h3>Sign Up</h3>
+      <h3>회원가입</h3>
       <Form onSubmit={onSubmit}>
         <Label>
           <span>아이디</span>
