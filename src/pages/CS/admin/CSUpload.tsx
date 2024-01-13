@@ -19,7 +19,7 @@ const CSUpload = () => {
   const week = search.split('&')[1].split('=')[1];
 
   // 전체 슬라이드를 담기 위한 state
-  const [item, setItem] = useState<QuizType[]>([
+  const [quiz, setQuiz] = useState<QuizType[]>([
     {
       quiz_id: 1,
       quiz_title: '제목',
@@ -57,8 +57,8 @@ const CSUpload = () => {
   // 현재 선택된 슬라이드를 나타내기 위한 state
   const [selected, setSelected] = useState(0); // selected가 0인 경우에는 주제, 1 이상인 경우에는 슬라이드의 문제 번호를 나타냄
 
-  const addItem = useCallback(() => {
-    setItem((prev) => [
+  const addQuiz = useCallback(() => {
+    setQuiz((prev) => [
       ...prev,
       {
         quiz_id: prev.length + 1,
@@ -103,7 +103,7 @@ const CSUpload = () => {
   const checkOnlyOne = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       if (e.target.checked) {
-        setItem((prev) => {
+        setQuiz((prev) => {
           const newPrev = [...prev];
           const copySelected = newPrev[selected - 1];
           if (isChoiceProps(copySelected)) {
@@ -115,7 +115,7 @@ const CSUpload = () => {
         });
       }
     },
-    [selected, item, choices],
+    [selected, quiz, choices],
   );
 
   const deleteItem = useCallback(() => {
@@ -123,8 +123,8 @@ const CSUpload = () => {
     if (!result) return;
     // 이전 번호 선택
     setSelected(selected - 1);
-    setItem((prev) => {
-      // selected인 item을 삭제 후, id를 재정렬
+    setQuiz((prev) => {
+      // selected인 quiz을 삭제 후, id를 재정렬
       console.log(selected);
       const newPrev = [...prev];
       newPrev.splice(selected - 1, 1);
@@ -132,10 +132,10 @@ const CSUpload = () => {
       if (newPrev[selected - 2]?.quiz_preview_url) {
         URL.revokeObjectURL(newPrev[selected - 2].quiz_preview_url || '');
       }
-      return newPrev.map((item, index) => ({ ...item, quiz_id: index + 1 }));
+      return newPrev.map((quiz, index) => ({ ...quiz, quiz_id: index + 1 }));
       // return prev
-      //   .filter((item) => item.quiz_id !== selected)
-      //   .map((item, index) => ({ ...item, quiz_id: index + 1 }));
+      //   .filter((quiz) => quiz.quiz_id !== selected)
+      //   .map((quiz, index) => ({ ...quiz, quiz_id: index + 1 }));
     });
   }, [selected]);
 
@@ -144,8 +144,8 @@ const CSUpload = () => {
    */
   const onClickType = useCallback(
     (type: string) => {
-      if (item[selected - 1].quiz_type === type) return;
-      setItem((prev) => {
+      if (quiz[selected - 1].quiz_type === type) return;
+      setQuiz((prev) => {
         const newPrev = [...prev];
         const copySelected = newPrev[selected - 1];
         if (type === 'short') {
@@ -167,7 +167,7 @@ const CSUpload = () => {
         return [...newPrev];
       });
     },
-    [selected, item],
+    [selected, quiz],
   );
 
   /**
@@ -225,11 +225,11 @@ const CSUpload = () => {
         };
       }
     },
-    [selected, item],
+    [selected, quiz],
   );
 
   const addShortAnswer = useCallback(() => {
-    setItem((prev) => {
+    setQuiz((prev) => {
       const newPrev = [...prev];
       const copySelected = newPrev[selected - 1];
       if (!isChoiceProps(copySelected)) {
@@ -240,7 +240,7 @@ const CSUpload = () => {
       }
       return [...newPrev];
     });
-  }, [selected, item]);
+  }, [selected, quiz]);
 
   const onDrop = useCallback(
     (e: DragEvent<HTMLElement>) => {
@@ -251,16 +251,16 @@ const CSUpload = () => {
           if (e.dataTransfer.items[i].kind === 'file') {
             const file = e.dataTransfer.items[i].getAsFile();
             if (file) {
-              const newPrev = [...item];
+              const newPrev = [...quiz];
               newPrev[selected - 1].quiz_image_file = file;
               newPrev[selected - 1].quiz_preview_url = URL.createObjectURL(file);
-              setItem(newPrev);
+              setQuiz(newPrev);
             }
           }
         }
       }
     },
-    [selected, item],
+    [selected, quiz],
   );
 
   const onDragOver = useCallback((e: DragEvent<HTMLDivElement>) => {
@@ -273,17 +273,17 @@ const CSUpload = () => {
   // 컴포넌트 언마운트 시 preview_url을 제거
   useEffect(() => {
     return () => {
-      item.forEach((item) => {
-        if (item.quiz_preview_url) {
-          URL.revokeObjectURL(item.quiz_preview_url);
+      quiz.forEach((quiz) => {
+        if (quiz.quiz_preview_url) {
+          URL.revokeObjectURL(quiz.quiz_preview_url);
         }
       });
     };
   }, []);
 
   // 타입 가드
-  const isChoiceProps = (item: ChoiceProps | ShortProps): item is ChoiceProps => {
-    return (item as ChoiceProps).choices !== undefined;
+  const isChoiceProps = (quiz: ChoiceProps | ShortProps): quiz is ChoiceProps => {
+    return (quiz as ChoiceProps).choices !== undefined;
   };
 
   /**
@@ -291,7 +291,7 @@ const CSUpload = () => {
    */
   const onChangeChoices = useCallback(
     (e: ChangeEvent<HTMLInputElement>, id: string) => {
-      setItem((prev) => {
+      setQuiz((prev) => {
         const newPrev = [...prev];
         const copySelected = newPrev[selected - 1];
         if (isChoiceProps(copySelected)) {
@@ -305,12 +305,12 @@ const CSUpload = () => {
         return [...newPrev];
       });
     },
-    [selected, item],
+    [selected],
   );
 
   const onChangeShorts = useCallback(
     (e: ChangeEvent<HTMLInputElement>, id: string) => {
-      setItem((prev) => {
+      setQuiz((prev) => {
         const newPrev = [...prev];
         const copySelected = newPrev[selected - 1];
         if (!isChoiceProps(copySelected)) {
@@ -319,7 +319,7 @@ const CSUpload = () => {
         return [...newPrev];
       });
     },
-    [selected, item],
+    [selected],
   );
 
   /**
@@ -327,7 +327,7 @@ const CSUpload = () => {
    */
   const deleteShortAnswer = useCallback(
     (id: number) => {
-      setItem((prev) => {
+      setQuiz((prev) => {
         const newPrev = [...prev];
         const copySelected = newPrev[selected - 1];
         if (!isChoiceProps(copySelected)) {
@@ -336,7 +336,7 @@ const CSUpload = () => {
         return [...newPrev];
       });
     },
-    [selected, item],
+    [selected],
   );
 
   return (
@@ -358,15 +358,15 @@ const CSUpload = () => {
             >
               주제
             </Item>
-            {DndContainer(item, setItem, setSelected, selected)}
+            {DndContainer(quiz, setQuiz, setSelected, selected)}
             <button
               style={{ background: '#477FEB', color: 'white' }}
               onClick={() => {
-                if (item.length >= 10) {
+                if (quiz.length >= 10) {
                   window.alert('슬라이드는 최대 10개까지만 추가할 수 있습니다.');
                   return;
                 }
-                addItem();
+                addQuiz();
               }}
             >
               슬라이드 추가
@@ -378,7 +378,7 @@ const CSUpload = () => {
                   window.alert('슬라이드를 선택해주세요.');
                   return;
                 }
-                if (item.length === 1) {
+                if (quiz.length === 1) {
                   window.alert('슬라이드가 1개 이상이어야 합니다.');
                   return;
                 }
@@ -400,16 +400,16 @@ const CSUpload = () => {
                 <UploadDiv
                   onDrop={onDrop}
                   onDragOver={onDragOver}
-                  image={item[selected - 1].quiz_preview_url || null}
+                  image={quiz[selected - 1].quiz_preview_url || null}
                 >
-                  {item[selected - 1].quiz_preview_url ? null : (
+                  {quiz[selected - 1].quiz_preview_url ? null : (
                     <>
                       <img src="https://velog.velcdn.com/images/ea_st_ring/post/5bc62320-dd59-497f-9741-79945c54de6a/image.svg" />
                       <p>컴퓨터에서 이미지를 드래그 및 가져오기</p>
                     </>
                   )}
                 </UploadDiv>
-                {item[selected - 1].quiz_type === 'choice' ? (
+                {quiz[selected - 1].quiz_type === 'choice' ? (
                   <ChoiceDiv>
                     {Array.from(Array(choices)).map((_, index) => (
                       <Choice key={index}>
@@ -420,8 +420,8 @@ const CSUpload = () => {
                             onChangeChoices(e, `${index + 1}`);
                           }}
                           value={
-                            isChoiceProps(item[selected - 1])
-                              ? (item[selected - 1] as ChoiceProps).choices[index].choice_content
+                            isChoiceProps(quiz[selected - 1])
+                              ? (quiz[selected - 1] as ChoiceProps).choices[index].choice_content
                               : ''
                           }
                           id={`${index + 1}`}
@@ -433,7 +433,7 @@ const CSUpload = () => {
                             checkOnlyOne(e);
                           }}
                           checked={
-                            (item[selected - 1] as ChoiceProps).quiz_answer[0].choice_num ===
+                            (quiz[selected - 1] as ChoiceProps).quiz_answer[0].choice_num ===
                             index + 1
                           }
                         />
@@ -442,7 +442,7 @@ const CSUpload = () => {
                   </ChoiceDiv>
                 ) : (
                   <Short>
-                    {(item[selected - 1] as ShortProps).quiz_answer.map(
+                    {(quiz[selected - 1] as ShortProps).quiz_answer.map(
                       (answer: { choice_content: string }, index: number) => (
                         <div key={index}>
                           <input
@@ -483,7 +483,7 @@ const CSUpload = () => {
                   <button
                     id="choice"
                     style={
-                      item[selected - 1]?.quiz_type === 'choice'
+                      quiz[selected - 1]?.quiz_type === 'choice'
                         ? { background: '#C1C1C1', color: 'white' }
                         : { background: '#fff', color: 'black' }
                     }
@@ -496,7 +496,7 @@ const CSUpload = () => {
                   <button
                     id="short"
                     style={
-                      item[selected - 1]?.quiz_type === 'short'
+                      quiz[selected - 1]?.quiz_type === 'short'
                         ? { background: '#C1C1C1', color: 'white' }
                         : { background: '#fff', color: 'black' }
                     }
@@ -509,14 +509,14 @@ const CSUpload = () => {
                 </div>
                 <p>정답</p>
                 <AnswerBox>
-                  {item[selected - 1].quiz_type === 'choice' ? (
+                  {quiz[selected - 1].quiz_type === 'choice' ? (
                     <div>
                       <img src="https://velog.velcdn.com/images/ea_st_ring/post/555ec60e-4c31-48e7-80d1-ec3cb60350d2/image.svg" />
-                      {(item[selected - 1] as ChoiceProps).quiz_answer[0].choice_num} :{' '}
-                      {item[selected - 1].quiz_answer[0].choice_content}
+                      {(quiz[selected - 1] as ChoiceProps).quiz_answer[0].choice_num} :{' '}
+                      {quiz[selected - 1].quiz_answer[0].choice_content}
                     </div>
                   ) : (
-                    (item[selected - 1] as ShortProps).quiz_answer.map(
+                    (quiz[selected - 1] as ShortProps).quiz_answer.map(
                       (answer: { choice_content: string }, index: number) => (
                         <div key={index}>
                           <img src="https://velog.velcdn.com/images/ea_st_ring/post/555ec60e-4c31-48e7-80d1-ec3cb60350d2/image.svg" />
