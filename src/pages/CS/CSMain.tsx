@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const CSMain = () => {
@@ -9,6 +9,7 @@ const CSMain = () => {
   const search = location.search;
   const generation = search.split('&')[0].split('=')[1];
   const week = search.split('&')[1].split('=')[1];
+  const navigate = useNavigate();
 
   const role = 'admin';
 
@@ -39,7 +40,13 @@ const CSMain = () => {
         {role === 'admin' ? (
           <>
             <UploadButton>
-              <p>문제 업로드</p>
+              <p
+                onClick={() => {
+                  navigate('/cs/upload' + search);
+                }}
+              >
+                문제 업로드
+              </p>
             </UploadButton>
             <ManageButton>
               <p>문제풀이 관리</p>
