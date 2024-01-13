@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const FindID = () => {
   const [tel, setTel] = useState('');
-  const [telMessage, setTelMessage] = useState('');
+  const [errMessage, setErrMessage] = useState('');
   const [isTel, setIsTel] = useState(false);
 
   const [showResult, setShowResult] = useState(false);
@@ -16,10 +16,10 @@ const FindID = () => {
       const telCurrent = e.target.value;
       setTel(telCurrent);
       if (!telRegex.test(telCurrent)) {
-        setTelMessage('올바른 전화번호 형식이 아닙니다.');
+        setErrMessage('올바른 전화번호 형식이 아닙니다.');
         setIsTel(false);
       } else {
-        setTelMessage('');
+        setErrMessage('');
         setIsTel(true);
       }
     },
@@ -56,6 +56,14 @@ const FindID = () => {
     console.log(`선택된 국가코드:`, selectedOption);
   };
 
+  const onSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      console.log(tel);
+    },
+    [tel],
+  );
+
   return (
     <Wrapper>
       <h3>내 계정 ID 찾기</h3>
@@ -72,7 +80,7 @@ const FindID = () => {
         ) : (
           <InputWrapper>
             <p>내 계정 ID를 찾으려면, 회원가입 시 입력한 전화번호를 기입해주세요.</p>
-            <Form>
+            <Form onSubmit={onSubmit}>
               <InputSection>
                 <StyledSelect
                   defaultValue={countryCode[0]}
@@ -92,7 +100,7 @@ const FindID = () => {
                     value={tel}
                     onChange={onChangeTel}
                   />
-                  {!isTel && <Error>{telMessage}</Error>}
+                  {!isTel && <Error>{errMessage}</Error>}
                 </InputBox>
               </InputSection>
               <Button type="submit" bgColor={isTel} onClick={onResultHandler}>
@@ -163,7 +171,7 @@ const Wrapper = styled.div`
   align-items: center;
   margin-top: 120px;
   h3 {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     margin-bottom: 28px;
   }
   p {
@@ -235,7 +243,7 @@ const Error = styled.p`
 `;
 
 const Button = styled.button<{ bgColor?: boolean }>`
-  width: 400px;
+  width: 500px;
   height: 52px;
   background: ${(props) => (props.bgColor ? '#85C88A' : '#D7E5CA')};
   color: #fff;
