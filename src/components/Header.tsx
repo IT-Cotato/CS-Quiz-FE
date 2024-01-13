@@ -3,11 +3,12 @@ import styled from 'styled-components';
 import logo from '@assets/logo.svg';
 import login from '@assets/login_icon.svg';
 import joinus from '@assets/joinus_icon.svg';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import DropDownMenu from './DropDownMenu';
 
 const Header = () => {
   const [isTop, setIsTop] = useState(true);
+  const navigate = useNavigate();
   useEffect(() => {
     window.addEventListener('scroll', () => {
       if (window.scrollY > 0) {
@@ -31,7 +32,7 @@ const Header = () => {
           <img
             src={login}
             onClick={() => {
-              window.location.replace('/login');
+              navigate('/login');
             }}
           />
           <LoginItem to="/login">로그인</LoginItem>
@@ -40,7 +41,7 @@ const Header = () => {
           <img
             src={joinus}
             onClick={() => {
-              window.location.replace('/joinus');
+              navigate('/joinus');
             }}
           />
           <LoginItem to="/joinus">Join Us</LoginItem>
