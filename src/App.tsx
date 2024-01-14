@@ -14,6 +14,10 @@ import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from '@theme/GlobalStyle';
 import { theme } from '@theme/Theme';
 import Footer from '@components/Footer';
+import FindID from '@pages/Login/FindID';
+import FindPW from '@pages/Login/FindPW';
+import EmailAuth from '@pages/Login/EmailAuth';
+import FindPWProcess from '@pages/Login/FindPWProcess';
 import CSMain from '@pages/CS/CSMain';
 import CSUpload from '@pages/CS/admin/CSUpload';
 
@@ -36,6 +40,8 @@ function App() {
                 <Route path="/cs/upload" element={<CSUpload />} />
                 <Route path="/session" element={<SessionHome />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/findid" element={<FindID />} />
+                <Route path="/findpw" element={<FindPWProcess />} />
                 <Route path="/joinus" element={<SignUp />} />
                 <Route path="/mypage" element={<MyPage />} />
               </Routes>

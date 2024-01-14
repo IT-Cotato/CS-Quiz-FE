@@ -124,6 +124,7 @@ const LoginWrapper = styled.div`
   align-items: center;
   /* margin-right: 40px; */
   width: 100px;
+  cursor: pointer;
   img {
     width: 20px;
     height: 20px;
@@ -131,7 +132,7 @@ const LoginWrapper = styled.div`
   }
 `;
 
-const LoginItem = styled(Link)`
+const LoginItem = styled.p`
   color: var(--pointcolor-4, #259c2e);
   font-size: 1.1rem;
   font-weight: 400;

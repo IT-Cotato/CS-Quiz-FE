@@ -3,8 +3,16 @@ import React, { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import line from '@assets/Line 1.svg';
+import useSWR from 'swr';
+import fetcher from '@utils/fetcher';
+import axios from 'axios';
 
 const Login = () => {
+  // const { data, error } = useSWR(
+  //   'http://ec2-43-203-67-153.ap-northeast-2.compute.amazonaws.com:8080/login',
+  //   fetcher,
+  // );
+
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState(false);
@@ -21,14 +29,21 @@ const Login = () => {
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       setLoginError(false);
-      console.log(id, password);
+      try {
+        axios.post('http://ec2-43-203-67-153.ap-northeast-2.compute.amazonaws.com:8080/login', {
+          email: id,
+          password: password,
+        });
+      } catch (error) {
+        console.log(error);
+      }
     },
     [id, password],
   );
 
   return (
     <Wrapper>
-      <h3>Sign In to Cotato</h3>
+      <h3>로그인</h3>
       <Form onSubmit={onSubmit}>
         <InputBox>
           <img src="https://raw.githubusercontent.com/MinJaeSon/assets/fc85a00960fa2f2a33ed4409b435484864454f73/icon_user.svg" />
@@ -47,9 +62,9 @@ const Login = () => {
         <LoginButton type="submit">로그인</LoginButton>
       </Form>
       <LinkContainer>
-        <StyledLink to="/joinus">비밀번호 찾기</StyledLink>
+        <StyledLink to="/findpw">비밀번호 찾기</StyledLink>
         <img src={line} />
-        <StyledLink to="/joinus">아이디 찾기</StyledLink>
+        <StyledLink to="/findid">아이디 찾기</StyledLink>
         <img src={line} />
         <StyledLink to="/joinus">회원가입</StyledLink>
       </LinkContainer>

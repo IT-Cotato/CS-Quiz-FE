@@ -2,6 +2,8 @@
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import SignUpModal from '@components/SignUpModal';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const SignUp = () => {
   const [id, setId] = useState('');
@@ -26,8 +28,20 @@ const SignUp = () => {
   const [isTel, setIsTel] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => {
-    setIsModalOpen(true);
+  const onApply = () => {
+    if (isId && isPassword && !mismatchError && isName && isTel) {
+      setIsModalOpen(true);
+    } else {
+      alert('입력값을 확인해주세요.');
+      setIsModalOpen(false);
+    }
+  };
+
+  const navigate = useNavigate();
+  const onCancel = () => {
+    if (confirm('가입을 취소합니다.')) {
+      navigate('/');
+    }
   };
 
   const onChangeId = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,7 +94,7 @@ const SignUp = () => {
   }, []);
 
   const onChangeTel = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    // const telRegex = /^\d{9,11}$/;
+    // const telRegex = /^01(?:0|1|[6-9])(?:\d{3}|\d{4})\d{4}$/;
     setTel(e.target.value);
     if (!e.target.value) {
       setTelMessage('필수 입력 항목입니다!');
@@ -97,6 +111,19 @@ const SignUp = () => {
       console.log(id, password, passwordCheck, name, tel);
       if (!mismatchError) {
         console.log('서버로 회원가입하기');
+        try {
+          axios.post(
+            'http://ec2-43-203-67-153.ap-northeast-2.compute.amazonaws.com:8080/v1/api/auth/join',
+            {
+              email: id,
+              password: password,
+              name: name,
+              phoneNumber: tel,
+            },
+          );
+        } catch (err) {
+          console.log(err);
+        }
       }
     },
     [id, password, passwordCheck, name, tel, mismatchError],
@@ -159,11 +186,15 @@ const SignUp = () => {
           {!isTel && <Error>{telMessage}</Error>}
         </Label>
         <ButtonSection>
-          <button type="submit" onClick={showModal}>
+          <Button
+            type="submit"
+            onClick={onApply}
+            bgColor={isId && isPassword && !mismatchError && isName && isTel}
+          >
             가입신청
-          </button>
+          </Button>
           {isModalOpen && <SignUpModal />}
-          <button>가입취소</button>
+          <Button onClick={onCancel}>가입취소</Button>
         </ButtonSection>
       </Form>
     </Wrapper>
@@ -180,6 +211,7 @@ const Wrapper = styled.div`
   margin-top: 80px;
   h3 {
     font-size: 1.5rem;
+    margin-bottom: 56px;
   }
 `;
 
@@ -224,18 +256,19 @@ const ButtonSection = styled.div`
   align-items: center;
   justify-content: space-around;
   margin-top: 48px;
-  button {
-    width: 200px;
-    height: 52px;
-    font-size: 1.1rem;
-    font-weight: 400;
-    border-radius: 10px;
-    border: 1px solid #d7e5ca;
-    background: ${({ theme }) => theme.color.lightGreen};
-    color: #fff;
-    &:hover {
-      cursor: pointer;
-    }
+`;
+
+const Button = styled.button<{ bgColor?: boolean }>`
+  width: 200px;
+  height: 52px;
+  font-size: 1.1rem;
+  font-weight: 400;
+  border-radius: 10px;
+  border: 1px solid #d7e5ca;
+  background: ${(props) => (props.bgColor ? '#85C88A' : '#D7E5CA')};
+  color: #fff;
+  &:hover {
+    cursor: pointer;
   }
 `;
 
