@@ -15,6 +15,9 @@ import { GlobalStyle } from '@theme/GlobalStyle';
 import { theme } from '@theme/theme';
 import Footer from '@components/Footer';
 import FindID from '@pages/Login/FindID';
+import FindPW from '@pages/Login/FindPW';
+import EmailAuth from '@pages/Login/EmailAuth';
+import FindPWProcess from '@pages/Login/FindPWProcess';
 
 function App() {
   return (
@@ -34,6 +37,7 @@ function App() {
                 <Route path="/session" element={<SessionHome />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/findid" element={<FindID />} />
+                <Route path="/findpw" element={<FindPWProcess />} />
                 <Route path="/joinus" element={<SignUp />} />
                 <Route path="/mypage" element={<MyPage />} />
               </Routes>
