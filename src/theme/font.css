@@ -16,3 +16,10 @@
   font-style: normal;
   font-weight: 400;
 }
+
+@font-face {
+  font-family: 'Mogra';
+  src: url('@assets/fonts/Mogra-Regular.ttf');
+  font-style: normal;
+  font-weight: 400;
+}
