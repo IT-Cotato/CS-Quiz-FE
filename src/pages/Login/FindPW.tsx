@@ -1,18 +1,29 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
-import Select, { SingleValue } from 'react-select';
-import { useNavigate } from 'react-router-dom';
 import EmailAuth from './EmailAuth';
 
-const FindPW = () => {
+interface FindPWProps {
+  goToNextStep: () => void;
+  isEmail: boolean;
+  setIsEmail: React.Dispatch<React.SetStateAction<boolean>>;
+  isPassword: boolean;
+  isPasswordCheck: boolean;
+}
+
+const FindPW: React.FC<FindPWProps> = ({
+  goToNextStep,
+  isEmail,
+  setIsEmail,
+  isPassword,
+  isPasswordCheck,
+}) => {
   const [email, setEmail] = useState('');
   const [errMessage, setErrMessage] = useState('');
-  const [isEmail, setIsEmail] = useState(false);
+  // const [isEmail, setIsEmail] = useState(false);
 
-  const [showEmailAuth, setShowEmailAuth] = useState(false);
-
-  const [isFindPage, setIsFindPage] = useState(true);
+  // const [showEmailAuth, setShowEmailAuth] = useState(false);
 
   const onChangeEmail = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,21 +46,20 @@ const FindPW = () => {
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (isEmail) {
-        setShowEmailAuth(true);
+        // setShowEmailAuth(true);
         console.log(email);
-      } else if (!isEmail && isFindPage) {
+        goToNextStep();
+      } else if (!isEmail) {
         alert('이메일을 입력해주세요.');
-        return;
-      } else {
         return;
       }
     },
     [email],
   );
 
-  if (showEmailAuth) {
-    return <EmailAuth />;
-  }
+  // if (showEmailAuth) {
+  //   return <EmailAuth />;
+  // }
 
   return (
     <Wrapper>

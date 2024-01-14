@@ -2,11 +2,15 @@ import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import ResetPW from './ResetPW';
 
-const EmailAuth = () => {
+interface EmailAuthProps {
+  goToNextStep: () => void;
+}
+
+const EmailAuth: React.FC<EmailAuthProps> = ({ goToNextStep }) => {
   const [inputs, setInputs] = useState<number[]>(Array(6).fill(null));
   const inputRef = useRef<any>([]);
 
-  const [showFindPW, setShowFindPW] = useState(false);
+  // const [showFindPW, setShowFindPW] = useState(false);
 
   // 컴포넌트 마운트시 inputRef.current[0].focus() 실행
   useEffect(() => {
@@ -27,15 +31,16 @@ const EmailAuth = () => {
   const onClickButton = () => {
     if (!inputs.some((el) => el === null)) {
       alert('인증이 완료되었습니다.');
-      setShowFindPW(true);
+      // setShowFindPW(true);
+      goToNextStep();
     } else {
       alert('인증번호를 입력해주세요.');
     }
   };
 
-  if (showFindPW) {
-    return <ResetPW />;
-  }
+  // if (showFindPW) {
+  //   return <ResetPW />;
+  // }
 
   return (
     <Wrapper>

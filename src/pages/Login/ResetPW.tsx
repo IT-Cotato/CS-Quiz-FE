@@ -1,29 +1,52 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
-const ResetPW = () => {
+interface ResetPWProps {
+  isPassword: boolean;
+  setIsPassword: React.Dispatch<React.SetStateAction<boolean>>;
+  isPasswordCheck: boolean;
+  setIsPasswordCheck: React.Dispatch<React.SetStateAction<boolean>>;
+  mismatchError: boolean;
+  setMismatchError: React.Dispatch<React.SetStateAction<boolean>>;
+  isEmail: boolean;
+  setIsEmail: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const ResetPW: React.FC<ResetPWProps> = ({
+  isPassword,
+  setIsPassword,
+  isPasswordCheck,
+  setIsPasswordCheck,
+  mismatchError,
+  setMismatchError,
+  isEmail,
+  setIsEmail,
+}) => {
   const [password, setPassword] = useState('');
   const [passwordCheck, setPasswordCheck] = useState('');
-  const [mismatchError, setMismatchError] = useState(false);
+  // const [mismatchError, setMismatchError] = useState(false);
 
   const [passwordMessage, setPasswordMessage] = useState('');
   const [passwordCheckMessage, setPasswordCheckMessage] = useState('');
 
-  const [isPassword, setIsPassword] = useState(false);
-  const [isPasswordCheck, setIsPasswordCheck] = useState(false);
+  // const [isPassword, setIsPassword] = useState(false);
+  // const [isPasswordCheck, setIsPasswordCheck] = useState(false);
 
   const navigate = useNavigate();
 
   const onSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (isPassword && isPasswordCheck && !mismatchError) {
+      console.log('password: ' + password + '\n' + 'passwordCheck: ' + passwordCheck);
+      console.log(isPassword, isPasswordCheck, mismatchError, isEmail);
+      if (isPassword && isPasswordCheck && !mismatchError && isEmail) {
         console.log(password);
+        alert('비밀번호 변경이 완료되었습니다.');
         navigate('/login');
       } else {
-        alert('이메일을 입력해주세요.');
+        alert('입력값을 확인해주세요.');
         return;
       }
     },
@@ -49,22 +72,17 @@ const ResetPW = () => {
   const onChangePasswordCheck = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setPasswordCheck(e.target.value);
-      setMismatchError(e.target.value !== password);
+      if (e.target.value === password) {
+        setIsPasswordCheck(true);
+        setMismatchError(false);
+      } else {
+        setPasswordCheckMessage('비밀번호가 일치하지 않습니다.');
+        setIsPasswordCheck(false);
+        setMismatchError(true);
+      }
     },
     [password],
   );
-
-  const onClickButton = () => {
-    if (isPassword && isPasswordCheck && !mismatchError) {
-      alert('비밀번호가 재설정되었습니다.');
-      navigate('/login');
-    } else if (!isPassword || !isPasswordCheck || mismatchError) {
-      alert('입력값을 확인해주세요.');
-      return;
-    } else {
-      return;
-    }
-  };
 
   return (
     <Wrapper>
@@ -91,13 +109,9 @@ const ResetPW = () => {
             value={passwordCheck}
             onChange={onChangePasswordCheck}
           />
-          {mismatchError && <Error>비밀번호가 일치하지 않습니다.</Error>}
+          {mismatchError && <Error>{passwordCheckMessage}</Error>}
         </Label>
-        <Button
-          type="submit"
-          bgColor={isPassword && isPasswordCheck && !mismatchError}
-          onClick={onClickButton}
-        >
+        <Button type="submit" bgColor={isPassword && isPasswordCheck && !mismatchError}>
           비밀번호 재설정
         </Button>
       </Form>
