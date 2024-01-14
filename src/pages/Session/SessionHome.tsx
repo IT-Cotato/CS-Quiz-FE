@@ -1,93 +1,114 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { styled } from 'styled-components';
 import SessionContent from '@pages/Session/SessionContent';
-import SeasonsSelect from '@components/SeasonsSelect';
 import add_icon from '@assets/add_icon.svg';
-import SessionModal from '@pages/Session/SessionModal';
+import SessionModal from '@pages/Session/SessionModal/SessionModal';
+import setting_icon from '@assets/setting_icon.svg';
+import modify_icon from '@assets/modify_icon.svg';
+import GenerationSelect from '@components/GenerationSelect';
 
 /*
-해야 할 것
-
-헤더랑 세팅 마진 비율 계산해서 반영
-세션 추가 모달
+논의 사항
+수정 시나리오
+버튼을 누르는데 몇번째 세션인지 어떻게 찾아야 할지
 */
 
-/*
-예기를 해 볼것
-
-세션 페이지에서 세션 콘텐츠가 생기면 위에 세팅이랑 몇 비율로 떨어저야 할지
-react select 쓸지 고민 -> 쓰면 검색이 가능 ? 드롭 다운에 대해 통일이 필요
-기수선택 배경 흰색이라 잘 안보여시 이렇게 갈지 논의
-옆에 인스타랑 메일 버튼은 무엇?
-세션 수정이랑 삭제에 대해서는 어떻게 흘러가는지. 이것도 모달로? 세션 클릭으로?
-
-
-*/
-
-// 임시 세션 타입 (id만 가지는)
+// 임시 세션 타입
 export interface ISession {
   id: number;
+  title: string;
+  image: File | null;
+  description: string;
 }
-const sessiontData: ISession[] = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }];
+const sessionData: ISession[] = [
+  { id: 1, title: 'OT', image: null, description: '코테이토 8기 첫 만남 OT를 진행하였습니다' },
+  { id: 2, title: '1주차 세션', image: null, description: '1주차 세션을 진행하였습니다.' },
+  { id: 3, title: '2주차 세션', image: null, description: '2주차 세션을 진행하였습니다.' },
+  { id: 4, title: '3주차 세션', image: null, description: '3주차 세션을 진행하였습니다.' },
+];
+// const sessionData: ISession[] = [];
 
 const SessionHome = () => {
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
   const [sessionModalMode, setSessionModalMode] = useState('');
+  const [selectedGeneration, setSelectedGeneration] = useState(0);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const onSeasonChange = useCallback(() => {}, []);
+  useEffect(() => {
+    // 기수의 최대값
+    setSelectedGeneration(8);
+  }, []);
+
+  const onChangeGeneration = useCallback(
+    (generation: number) => {
+      setSelectedGeneration(generation);
+      // 그리고 여기서 api 요청을 보낼듯
+    },
+    [selectedGeneration],
+  );
+
   const onClickAddButton = useCallback(() => {
     setIsSessionModalOpen(true);
     setSessionModalMode('add');
   }, []);
 
+  const onClickModifyButton = useCallback(() => {
+    setIsSessionModalOpen(true);
+    setSessionModalMode('modify');
+  }, []);
+
+  const onCloseModal = useCallback(() => {
+    setIsSessionModalOpen(false);
+  }, [isSessionModalOpen]);
+
   return (
     <>
-      <SessiontWrapper>
-        <SessionHeader>
-          <h1>세션 기록</h1>
-        </SessionHeader>
+      <SessionWrapper>
+        <SessionHeader>세션 기록</SessionHeader>
         <SessionSetting>
-          <SeasonsSelect />
+          <GenerationSelect
+            onChangeGeneration={onChangeGeneration}
+            selectedGeneration={selectedGeneration}
+          />
           {/* 권한에 따라 add는 선택적으로 보여지게 */}
-          <img src={add_icon} alt="add-icon" onClick={onClickAddButton} />
+          <ButtonWrapper>
+            <img src={modify_icon} alt="modify-icon" onClick={onClickModifyButton} />
+            <img src={add_icon} alt="add-icon" onClick={onClickAddButton} />
+          </ButtonWrapper>
         </SessionSetting>
         <SessionContentsContainer>
-          {sessiontData.map((session) => (
-            <SessionContent key={session.id} session={session} />
-          ))}
+          {sessionData.length === 0 ? (
+            <SessionReady className="session-ready">
+              <img src={setting_icon} alt="setting-icon" />
+              <p>세션 준비중입니다.</p>
+            </SessionReady>
+          ) : (
+            sessionData.map((session) => <SessionContent key={session.id} session={session} />)
+          )}
         </SessionContentsContainer>
-      </SessiontWrapper>
-      <SessionModal isOpen={isSessionModalOpen} mode={sessionModalMode} />
+      </SessionWrapper>
+      <SessionModal
+        isOpen={isSessionModalOpen}
+        onCloseModal={onCloseModal}
+        mode={sessionModalMode}
+      />
     </>
   );
 };
 
-/*
-margin-left : 11.88
-margin-right: 11.75
-full page rem : 90
-*/
-
 export default SessionHome;
 
-// 구지 헤더 태그 안만드는 방법 생각 필요
-const SessionHeader = styled.div`
-  height: 15rem;
-  display: flex;
-  align-items: center;
+const SessionHeader = styled.h1`
+  margin: 144px 0 100px;
 
-  h1 {
-    color: #1d1d1d;
-    font-family: NanumSquareRound;
-    font-size: 2.25rem;
-    font-style: normal;
-    font-weight: 800;
-    line-height: normal;
-  }
+  color: #1d1d1d;
+  font-family: NanumSquareRound;
+  font-size: 2.25rem;
+  font-style: normal;
+  font-weight: 800;
+  line-height: normal;
 `;
 
-const SessiontWrapper = styled.div`
+const SessionWrapper = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -99,11 +120,15 @@ const SessionSetting = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 85%;
+  width: 70%;
+  margin-bottom: 12px;
+`;
 
-  img {
-    width: 32.087px;
-    height: 32.082px;
+const ButtonWrapper = styled.div`
+  > img {
+    margin-left: 8px;
+    width: 32px;
+    height: 32px;
     cursor: pointer;
   }
 `;
@@ -113,9 +138,28 @@ const SessionContentsContainer = styled.div`
   flex-wrap: wrap;
   justify-content: space-between;
   flex-direction: row;
-  width: 85%;
+  align-content: start;
+  width: 70%;
   height: 1000px;
+  margin-top: 28px;
 
-  margin-top: 1rem;
-  /* background-color: pink; */
+  @media only screen and (max-width: 957px) {
+    justify-content: center;
+  }
+
+  .session-ready {
+    margin: auto;
+    margin-top: 200px;
+  }
+`;
+
+const SessionReady = styled.div`
+  p {
+    color: #9a9a9a;
+    font-family: NanumSquareRound;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+  }
 `;

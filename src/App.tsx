@@ -13,6 +13,9 @@ import MyPage from '@pages/MyPage/MyPage';
 import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from '@theme/GlobalStyle';
 import { theme } from '@theme/Theme';
+import CSManage from '@pages/CS/CSManage/CSManage';
+import QuizScorer from '@pages/CS/CSManage/QuizScorer';
+import AllScorer from '@pages/CS/CSManage/AllScorer';
 import Footer from '@components/Footer';
 import FindID from '@pages/Login/FindID';
 import FindPW from '@pages/Login/FindPW';
@@ -38,6 +41,9 @@ function App() {
                 <Route path="/cs" element={<CSHome />} />
                 <Route path="/cs/start" element={<CSMain />} />
                 <Route path="/cs/upload" element={<CSUpload />} />
+                <Route path="/cs/manage" element={<CSManage />} />
+                <Route path="/cs/quizscorer" element={<QuizScorer />} />
+                <Route path="/cs/allscorer" element={<AllScorer />} />
                 <Route path="/session" element={<SessionHome />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/findid" element={<FindID />} />
