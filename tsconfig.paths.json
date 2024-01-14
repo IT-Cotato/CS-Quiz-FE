@@ -6,6 +6,7 @@
       "@components/*": ["src/components/*"],
       "@pages/*": ["src/pages/*"],
       "@theme/*": ["src/theme/*"],
+      "@utils/*": ["src/utils/*"],
       "@/*": ["src/*"]
     }
   }

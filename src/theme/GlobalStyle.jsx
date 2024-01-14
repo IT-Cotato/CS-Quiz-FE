@@ -5,4 +5,11 @@ export const GlobalStyle = createGlobalStyle`
     ${(props) => props.theme}
   }
 
+  * {
+	box-sizing: border-box;
+  }
+  
+  body {
+    font-family: NanumSquareRound;
+  }
 `;
