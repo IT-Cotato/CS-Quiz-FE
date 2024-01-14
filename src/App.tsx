@@ -12,12 +12,17 @@ import SignUp from '@pages/JoinUs/SignUp';
 import MyPage from '@pages/MyPage/MyPage';
 import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from '@theme/GlobalStyle';
-import { theme } from '@theme/theme';
+import { theme } from '@theme/Theme';
+import CSManage from '@pages/CS/CSManage/CSManage';
+import QuizScorer from '@pages/CS/CSManage/QuizScorer';
+import AllScorer from '@pages/CS/CSManage/AllScorer';
 import Footer from '@components/Footer';
 import FindID from '@pages/Login/FindID';
 import FindPW from '@pages/Login/FindPW';
 import EmailAuth from '@pages/Login/EmailAuth';
 import FindPWProcess from '@pages/Login/FindPWProcess';
+import CSMain from '@pages/CS/CSMain';
+import CSUpload from '@pages/CS/admin/CSUpload';
 
 function App() {
   return (
@@ -34,6 +39,11 @@ function App() {
                 <Route path="/team" element={<Team />} />
                 <Route path="/projects" element={<Projects />} />
                 <Route path="/cs" element={<CSHome />} />
+                <Route path="/cs/start" element={<CSMain />} />
+                <Route path="/cs/upload" element={<CSUpload />} />
+                <Route path="/cs/manage" element={<CSManage />} />
+                <Route path="/cs/quizscorer" element={<QuizScorer />} />
+                <Route path="/cs/allscorer" element={<AllScorer />} />
                 <Route path="/session" element={<SessionHome />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/findid" element={<FindID />} />
