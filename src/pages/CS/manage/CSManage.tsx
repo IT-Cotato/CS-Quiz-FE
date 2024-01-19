@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { styled } from 'styled-components';
-import CSManageLayout from '@pages/CS/CSManage/CSManageLayout';
-import QuizContent from '@pages/CS/CSManage/QuizContent';
+import CSManageLayout from '@pages/CS/manage/CSManageLayout';
+import QuizContent from '@pages/CS/manage/QuizContent';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 export interface IQuizContent {
