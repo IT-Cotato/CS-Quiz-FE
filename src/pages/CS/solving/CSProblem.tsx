@@ -242,7 +242,7 @@ const CSProblem = () => {
         {problems[index].shortAnswer && (
           <ShortAnswer shortAns={shortAns} onChangeShortAns={onChangeShortAns} />
         )}
-        <Light style={{ position: 'absolute', left: '300px', top: '320px', width: '52px' }} />
+        <Light style={{ position: 'absolute', left: '300px', top: '320px', width: '40px' }} />
       </QuizContainer>
       <ButtonContainer>
         <button onClick={nextProblem}>다음문제</button>
@@ -316,7 +316,7 @@ const Wrapper = styled.div`
   align-items: center;
   width: 100%;
   position: relative;
-  padding: 0 220px;
+  padding: 0 300px;
 `;
 
 const IndexContainer = styled.div`
@@ -336,7 +336,7 @@ const IndexContainer = styled.div`
 `;
 
 const QuizContainer = styled.div`
-  width: 1000px;
+  width: 920px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -348,8 +348,8 @@ const Container = styled.div`
 `;
 
 const QuestionContainer = styled.div`
-  width: 1000px;
-  height: 96px;
+  width: 920px;
+  height: 88px;
   border-radius: 5px;
   background: #fff;
   box-shadow: 2px 4px 10px 0px rgba(0, 0, 0, 0.25);
@@ -376,8 +376,8 @@ const QuestionContainer = styled.div`
 
 const ImageContainer = styled.div<ResizeProps>`
   position: relative;
-  width: 603px;
-  height: 344px;
+  width: 528px;
+  height: 301px;
   margin-bottom: 52px;
   ${(props) =>
     props.bigger
@@ -416,7 +416,7 @@ const ChoiceContainer = styled.div`
 `;
 
 const ChoiceBtn = styled.div<ChoiceProps>`
-  width: 494px;
+  width: 454px;
   height: 68px;
   border-radius: 5px;
   background: #fff;
@@ -437,7 +437,7 @@ const ButtonContainer = styled.div`
   flex-direction: row;
   align-items: center;
   margin-top: 60px;
-  width: 1000px;
+  width: 920px;
   justify-content: flex-end;
   button {
     width: 96px;
