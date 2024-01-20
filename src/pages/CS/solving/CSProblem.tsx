@@ -87,11 +87,38 @@ const CSProblem = () => {
         },
       ],
     },
+    {
+      number: 3,
+      type: 'MULTIPLE_QUIZ',
+      question: 'CS플젝 마감 일자를 고르시오.',
+      image: defaultImg,
+      multiple: [
+        {
+          choiceNum: 1,
+          choice: '1월 31일',
+          isAnswer: 'NO_ANSWER',
+        },
+        {
+          choiceNum: 2,
+          choice: '2월 16일',
+          isAnswer: 'ANSWER',
+        },
+        {
+          choiceNum: 3,
+          choice: '2월 23일',
+          isAnswer: 'NO_ANSWER',
+        },
+        {
+          choiceNum: 4,
+          choice: '2월 29일',
+          isAnswer: 'NO_ANSWER',
+        },
+      ],
+    },
   ];
 
   // 전체 문제의 정답 배열 생성
   const answers: (number | string[])[] = []; // [4, ['손민재', '조원영', '황동현'], ...]
-  const shortAnswers: string[] = [];
 
   problems.forEach((el) => {
     if (el.multiple) {
@@ -101,23 +128,26 @@ const CSProblem = () => {
         }
       });
     } else if (el.shortAnswer) {
+      const shortAnswers: string[] = [];
       el.shortAnswer.forEach((ans) => {
         shortAnswers.push(ans.answer);
-        answers.push(shortAnswers);
       });
+      answers.push(shortAnswers);
     }
   });
 
   // 객관식 문제의 선지 배열 생성
   const choices: string[][] = []; // [['Apache', 'Nginx', 'IIS', 'Tomcat'], ...]]
-  const eachChoices: string[] = [];
 
   problems.forEach((el) => {
     if (el.multiple) {
+      const eachChoices: string[] = [];
       el.multiple.forEach((ch) => {
         eachChoices.push(ch.choice);
-        choices.push(eachChoices);
       });
+      choices.push(eachChoices);
+    } else {
+      choices.push([]);
     }
   });
 
@@ -135,6 +165,8 @@ const CSProblem = () => {
       }
       window.scrollTo(0, 0);
     }, 2000);
+    console.log(choices);
+    console.log(answers);
   };
 
   // 제출하기 클릭 이벤트
