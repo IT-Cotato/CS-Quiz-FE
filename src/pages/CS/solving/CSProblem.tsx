@@ -1,10 +1,11 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import defaultImg from '@assets/cotato_icon.png';
 import { ReactComponent as Light } from '@assets/light.svg';
 import Header from '@components/Header';
 import BgCorrect from '@pages/CS/solving/BgCorrect';
 import BgIncorrect from '@pages/CS/solving/BgIncorrect';
+import BgWaiting from './BgWaiting';
 
 // 전체 문제 데이터(res) 받아와서 한 번만 까서 일단 문제 리스트에 다 넣기
 // problems.push(res.multiples)
@@ -36,6 +37,7 @@ const CSProblem = () => {
   const [chose, setChose] = useState(0);
   const [shortAns, setShortAns] = useState('');
 
+  const [showWaiting, setShowWaiting] = useState(false);
   const [showCorrect, setShowCorrect] = useState(false);
   const [showIncorrect, setShowIncorrect] = useState(false);
 
@@ -126,10 +128,13 @@ const CSProblem = () => {
 
   // 다음문제 클릭 이벤트
   const nextProblem = () => {
-    if (index < 9) {
-      setIndex(index + 1);
-    }
-    window.scrollTo(0, 0);
+    setShowWaiting(true);
+    setTimeout(() => {
+      if (index < 9) {
+        setIndex(index + 1);
+      }
+      window.scrollTo(0, 0);
+    }, 2000);
   };
 
   // 제출하기 클릭 이벤트
@@ -143,6 +148,7 @@ const CSProblem = () => {
       } else {
         setShowCorrect(true);
         setShowIncorrect(false);
+        nextProblem();
       }
       console.log(answers);
       console.log(chose);
@@ -155,10 +161,26 @@ const CSProblem = () => {
       } else {
         setShowCorrect(true);
         setShowIncorrect(false);
+        nextProblem();
       }
       console.log(shortAns);
     }
   };
+
+  useEffect(() => {
+    if (showIncorrect) {
+      const timeoutId = setTimeout(() => setShowIncorrect(false), 3800);
+      return () => clearTimeout(timeoutId); // 컴포넌트가 언마운트되면 setTimeout 취소
+    }
+    if (showCorrect) {
+      const timeoutId = setTimeout(() => setShowCorrect(false), 3800);
+      return () => clearTimeout(timeoutId);
+    }
+    if (showWaiting) {
+      const timeoutId = setTimeout(() => setShowWaiting(false), 7000);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [showIncorrect, showCorrect, showWaiting]);
 
   return (
     <Wrapper>
@@ -185,6 +207,7 @@ const CSProblem = () => {
         <button onClick={nextProblem}>다음문제</button>
         <button onClick={sumbitProblem}>제출하기</button>
       </ButtonContainer>
+      {showWaiting && <BgWaiting />}
       {showCorrect && <BgCorrect />}
       {showIncorrect && <BgIncorrect />}
     </Wrapper>
