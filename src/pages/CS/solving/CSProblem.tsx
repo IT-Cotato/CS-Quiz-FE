@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import defaultImg from '@assets/cotato_icon.png';
 import { ReactComponent as Light } from '@assets/light.svg';
+import Header from '@components/Header';
+import BgCorrect from '@pages/CS/solving/BgCorrect';
+import BgIncorrect from '@pages/CS/solving/BgIncorrect';
 
 // 전체 문제 데이터(res) 받아와서 한 번만 까서 일단 문제 리스트에 다 넣기
 // problems.push(res.multiples)
 // problems.push(res.shortQuizzes)
 // number 기준으로 1번 문제부터 오름차순 정렬
 // map으로 1번부터 10번까지 문제 뿌려주기
-// 이때 multiple이면 multiple 컴포넌트, shortQuiz면 shortQuiz 컴포넌트 사용
 
 type Problem = {
   number: number;
@@ -22,7 +24,7 @@ type Problem = {
 type Choices = {
   choiceNum: number;
   choice: string;
-  isAnswer: boolean;
+  isAnswer: string;
 };
 
 type ShortAnswer = {
@@ -32,6 +34,10 @@ type ShortAnswer = {
 const CSProblem = () => {
   const [index, setIndex] = useState(0);
   const [chose, setChose] = useState(0);
+  const [shortAns, setShortAns] = useState('');
+
+  const [showCorrect, setShowCorrect] = useState(false);
+  const [showIncorrect, setShowIncorrect] = useState(false);
 
   const problems: Problem[] = [
     {
@@ -43,22 +49,22 @@ const CSProblem = () => {
         {
           choiceNum: 1,
           choice: 'Apache',
-          isAnswer: false,
+          isAnswer: 'NO_ANSWER',
         },
         {
           choiceNum: 2,
           choice: 'Nginx',
-          isAnswer: false,
+          isAnswer: 'NO_ANSWER',
         },
         {
           choiceNum: 3,
           choice: 'IIS',
-          isAnswer: false,
+          isAnswer: 'NO_ANSWER',
         },
         {
           choiceNum: 4,
           choice: 'Tomcat',
-          isAnswer: true,
+          isAnswer: 'ANSWER',
         },
       ],
     },
@@ -81,6 +87,44 @@ const CSProblem = () => {
     },
   ];
 
+  // 전체 문제의 정답 배열 생성
+  const answers: (number | string[])[] = []; // [4, ['손민재', '조원영', '황동현'], ...]
+  const shortAnswers: string[] = [];
+
+  problems.forEach((el) => {
+    if (el.multiple) {
+      el.multiple.forEach((num) => {
+        if (num.isAnswer === 'ANSWER') {
+          answers.push(num.choiceNum);
+        }
+      });
+    } else if (el.shortAnswer) {
+      el.shortAnswer.forEach((ans) => {
+        shortAnswers.push(ans.answer);
+        answers.push(shortAnswers);
+      });
+    }
+  });
+
+  // 객관식 문제의 선지 배열 생성
+  const choices: string[][] = []; // [['Apache', 'Nginx', 'IIS', 'Tomcat'], ...]]
+  const eachChoices: string[] = [];
+
+  problems.forEach((el) => {
+    if (el.multiple) {
+      el.multiple.forEach((ch) => {
+        eachChoices.push(ch.choice);
+        choices.push(eachChoices);
+      });
+    }
+  });
+
+  // 주관식 문제 입력 이벤트
+  const onChangeShortAns = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setShortAns(e.target.value);
+  }, []);
+
+  // 다음문제 클릭 이벤트
   const nextProblem = () => {
     if (index < 9) {
       setIndex(index + 1);
@@ -88,31 +132,61 @@ const CSProblem = () => {
     window.scrollTo(0, 0);
   };
 
+  // 제출하기 클릭 이벤트
   const sumbitProblem = () => {
-    if (chose === 0) {
-      alert('답을 입력 후 제출해주세요.');
+    if (problems[index].multiple) {
+      if (chose === 0) {
+        alert('답을 선택한 후 제출해주세요.');
+      } else if (chose !== answers[index]) {
+        setShowIncorrect(true);
+        setShowCorrect(false);
+      } else {
+        setShowCorrect(true);
+        setShowIncorrect(false);
+      }
+      console.log(answers);
+      console.log(chose);
+    } else if (problems[index].shortAnswer) {
+      if (!shortAns) {
+        alert('답을 입력한 후 제출해주세요.');
+      } else if (!(answers[index] as string[]).includes(shortAns)) {
+        setShowIncorrect(true);
+        setShowCorrect(false);
+      } else {
+        setShowCorrect(true);
+        setShowIncorrect(false);
+      }
+      console.log(shortAns);
     }
   };
 
   return (
     <Wrapper>
       <QuizContainer>
-        <IndexContainer>{problems[index].number} / 10</IndexContainer>
-        <QuestionContainer>
-          <p>문제 {problems[index].number}</p>
-          <span>{problems[index].question}</span>
-        </QuestionContainer>
+        <Container>
+          <IndexContainer>{problems[index].number} / 10</IndexContainer>
+          <QuestionContainer>
+            <p>문제 {problems[index].number}</p>
+            <span>{problems[index].question}</span>
+          </QuestionContainer>
+        </Container>
         {problems[index].image && (
           <Image src={problems[index].image} alt={`문제${problems[index].number}의 이미지`} />
         )}
-        {problems[index].multiple && <Choice chose={chose} setChose={setChose} />}
-        {problems[index].shortAnswer && <ShortAnswer />}
+        {problems[index].multiple && (
+          <Choice chose={chose} setChose={setChose} items={choices} index={index} />
+        )}
+        {problems[index].shortAnswer && (
+          <ShortAnswer shortAns={shortAns} onChangeShortAns={onChangeShortAns} />
+        )}
         <Light style={{ position: 'absolute', left: '300px', top: '320px', width: '52px' }} />
       </QuizContainer>
       <ButtonContainer>
         <button onClick={nextProblem}>다음문제</button>
         <button onClick={sumbitProblem}>제출하기</button>
       </ButtonContainer>
+      {showCorrect && <BgCorrect />}
+      {showIncorrect && <BgIncorrect />}
     </Wrapper>
   );
 };
@@ -122,33 +196,46 @@ type ChoiceProps = {
 };
 
 interface choiceProps {
-  chose: number;
+  chose: number; // 선택한 선지의 번호
   setChose: React.Dispatch<React.SetStateAction<number>>;
+  items: string[][]; // 선지의 내용들
+  index: number;
 }
 
-const Choice: React.FC<choiceProps> = ({ chose, setChose }) => {
+const Choice: React.FC<choiceProps> = ({ chose, setChose, items, index }) => {
   return (
     <ChoiceContainer>
       <ChoiceBtn clicked={chose === 1} onClick={() => setChose(1)}>
-        답안 1
+        {items[index][0]}
       </ChoiceBtn>
       <ChoiceBtn clicked={chose === 2} onClick={() => setChose(2)}>
-        답안 2
+        {items[index][1]}
       </ChoiceBtn>
       <ChoiceBtn clicked={chose === 3} onClick={() => setChose(3)}>
-        답안 3
+        {items[index][2]}
       </ChoiceBtn>
       <ChoiceBtn clicked={chose === 4} onClick={() => setChose(4)}>
-        답안 4
+        {items[index][3]}
       </ChoiceBtn>
     </ChoiceContainer>
   );
 };
 
-const ShortAnswer = () => {
+interface ShortAnsProps {
+  shortAns: string;
+  onChangeShortAns: React.ChangeEventHandler<HTMLInputElement>;
+}
+
+const ShortAnswer: React.FC<ShortAnsProps> = ({ shortAns, onChangeShortAns }) => {
   return (
     <div>
-      <input type="text" />
+      <input
+        type="text"
+        id="shortAns"
+        name="shortAns"
+        value={shortAns}
+        onChange={onChangeShortAns}
+      />
     </div>
   );
 };
@@ -185,6 +272,11 @@ const QuizContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+`;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: row;
 `;
 
 const QuestionContainer = styled.div`
@@ -267,6 +359,7 @@ const ButtonContainer = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
     &:last-child {
       background: #477feb;
       border: none;
