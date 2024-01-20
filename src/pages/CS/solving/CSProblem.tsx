@@ -2,7 +2,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import defaultImg from '@assets/cotato_icon.png';
 import { ReactComponent as Light } from '@assets/light.svg';
-import Header from '@components/Header';
+import bigger from '@assets/expand.svg';
+import smaller from '@assets/compress.svg';
 import BgCorrect from '@pages/CS/solving/BgCorrect';
 import BgIncorrect from '@pages/CS/solving/BgIncorrect';
 import BgWaiting from './BgWaiting';
@@ -40,6 +41,8 @@ const CSProblem = () => {
   const [showWaiting, setShowWaiting] = useState(false);
   const [showCorrect, setShowCorrect] = useState(false);
   const [showIncorrect, setShowIncorrect] = useState(false);
+
+  const [biggerImg, setBiggerImg] = useState(false);
 
   const problems: Problem[] = [
     {
@@ -225,7 +228,13 @@ const CSProblem = () => {
           </QuestionContainer>
         </Container>
         {problems[index].image && (
-          <Image src={problems[index].image} alt={`문제${problems[index].number}의 이미지`} />
+          <ImageContainer bigger={biggerImg}>
+            <Image src={problems[index].image} alt={`문제${problems[index].number}의 이미지`} />
+            <ResizeIcon
+              src={biggerImg ? smaller : bigger}
+              onClick={() => setBiggerImg(!biggerImg)}
+            />
+          </ImageContainer>
         )}
         {problems[index].multiple && (
           <Choice chose={chose} setChose={setChose} items={choices} index={index} />
@@ -248,6 +257,10 @@ const CSProblem = () => {
 
 type ChoiceProps = {
   clicked?: boolean;
+};
+
+type ResizeProps = {
+  bigger?: boolean;
 };
 
 interface choiceProps {
@@ -361,12 +374,37 @@ const QuestionContainer = styled.div`
   }
 `;
 
-const Image = styled.img`
+const ImageContainer = styled.div<ResizeProps>`
+  position: relative;
   width: 603px;
   height: 344px;
+  margin-bottom: 52px;
+  ${(props) =>
+    props.bigger
+      ? `
+      transform: scale(1.2);
+      transition: transform 0.3s;
+      margin-top: 36px;
+      margin-bottom: 84px;
+    `
+      : `
+        transform: scale(1);
+        transition: transform 0.3s;
+      `};
+`;
+
+const Image = styled.img`
+  width: 100%;
+  height: 100%;
   border-radius: 5px;
   box-shadow: 2px 4px 10px 0px rgba(0, 0, 0, 0.25);
-  margin-bottom: 52px;
+`;
+
+const ResizeIcon = styled.img`
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  width: 20px;
 `;
 
 const ChoiceContainer = styled.div`
