@@ -1,18 +1,18 @@
 import React from 'react';
 import styled from 'styled-components';
-import background from '@assets/bg_correct.svg';
-import { ReactComponent as Check } from '@assets/check_icon.svg';
+import background from '@assets/bg_waiting.svg';
+import { ReactComponent as X } from '@assets/x.svg';
 
-const BgCorrect = () => {
+const BgIncorrect = () => {
   return (
     <Wrapper>
-      <p>정답입니다!</p>
-      <Check style={{ width: '200px' }} />
+      <p>오답입니다!</p>
+      <X style={{ width: '200px' }} />
     </Wrapper>
   );
 };
 
-export default BgCorrect;
+export default BgIncorrect;
 
 const Wrapper = styled.div`
   background: url(${background});

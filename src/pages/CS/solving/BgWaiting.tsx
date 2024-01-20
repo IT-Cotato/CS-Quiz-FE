@@ -24,6 +24,7 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   padding-top: 140px;
+  position: fixed;
   div {
     margin-top: 40px;
     display: flex;
@@ -38,4 +39,25 @@ const Wrapper = styled.div`
     font-size: 1.2rem;
     font-weight: 700;
   }
+
+  @keyframes slide_down {
+    0% {
+      transform: translateY(-100%);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+  @keyframes slide_up {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-100%);
+    }
+  }
+  animation:
+    slide_down 1s ease-in-out,
+    slide_up 2s ease-in-out 5s;
+  animation-fill-mode: forwards;
 `;
