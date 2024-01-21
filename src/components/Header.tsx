@@ -132,7 +132,7 @@ const LoginWrapper = styled.div`
   }
 `;
 
-const LoginItem = styled.p`
+const LoginItem = styled(Link)`
   color: var(--pointcolor-4, #259c2e);
   font-size: 1.1rem;
   font-weight: 400;
