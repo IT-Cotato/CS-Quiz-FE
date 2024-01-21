@@ -83,7 +83,7 @@ const TitleWrapper = styled.div`
 
 const QuizNumber = styled.p`
   width: 100px;
-  width: 100px;
+  padding-left: 16px;
   ${fontStyle}
   color: #477feb;
   font-size: 20px;

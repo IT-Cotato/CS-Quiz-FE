@@ -4,23 +4,17 @@ import CSManageLayout from './CSManageLayout';
 import { css, styled } from 'styled-components';
 
 /*
-제출 수 나열에서 오답도 같이 제출되면 phone이 유일한 값이 되지 못함
-오답 이후에 또 오답이나 정답을 제출 가능
-이거를 보여주는 취지는 운영진의 권한으로 시스템상 오답으로 처리 되었지만 정답으로 고치게 해주는거 아니였나?
-api로 왔다갔다 할거는 뭐뭐인지
-
-득적자랑 제출 순 나열이랑 어떻게 매칭시킬지
-
-변경버튼을 누르면 체크된 제출자로 득점자가 바뀌고, 확인버튼 누르면 뭐하지?
+백에서 제출 값 처리 어떻게 하는지?
+객관식인지 주관식이지 구분 가능해야 객관식에서 {record}번 식의 스트링 처리가 가능
 */
 
 const submitList = [
-  { id: 1, name: '조원영', phone: 1111 },
-  { id: 2, name: '조원영', phone: 2222 },
-  { id: 3, name: '조원영', phone: 3333 },
-  { id: 4, name: '조원영', phone: 4444 },
-  { id: 5, name: '조원영', phone: 5555 },
-  { id: 6, name: '조원영', phone: 6666 },
+  { id: 1, name: '조원영', phone: 1111, record: 1 },
+  { id: 2, name: '조원영', phone: 2222, record: 2 },
+  { id: 3, name: '조원영', phone: 3333, record: 3 },
+  { id: 4, name: '조원영', phone: 4444, record: 4 },
+  { id: 5, name: '조원영', phone: 5555, record: 1 },
+  { id: 6, name: '조원영', phone: 6666, record: 2 },
 ];
 
 const QuizScorer = () => {
@@ -60,21 +54,21 @@ const QuizScorer = () => {
           <HalfContainer width="55%">
             <p>제출 순 나열</p>
             <SubmitBox>
-              {/* 여기서 쓰는값들이 index랑 phone이랑 섞여있이서 쫌 맛탱이가 가버림 */}
               {/* 컴포넌트 분리 고민 */}
               {submitList.map((submit) => (
                 <SubmitContent key={submit.id}>
                   <label>
-                    <p>
-                      {submit.name}({submit.phone})
-                    </p>
                     <input
                       type="radio"
                       value={submit.id}
                       checked={submit.id === checkedScorer.id}
                       onChange={onChangeRadio}
                     />
+                    <p>
+                      {submit.name}({submit.phone})
+                    </p>
                   </label>
+                  <SubmitResult>{submit.record}번</SubmitResult>
                 </SubmitContent>
               ))}
             </SubmitBox>
@@ -126,6 +120,7 @@ const TitleWrapper = styled.div`
 
   .quiz-number {
     ${fontStyle}
+    text-align: center;
     color: #477feb;
     width: 100px;
   }
@@ -173,18 +168,17 @@ const SubmitContent = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 95%;
+  padding: 0 12px;
   border-bottom: 1px solid rgba(28, 28, 28, 0.3);
 
   > label {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    width: 100%;
     cursor: pointer;
 
     > p {
       ${fontStyle}
-      margin: 16px 8px;
+      margin-left: 12px;
     }
 
     > input {
@@ -214,6 +208,11 @@ const ScorerBox = styled(Box)`
     ${fontStyle}
     margin: 8px;
   }
+`;
+
+const SubmitResult = styled.p`
+  ${fontStyle};
+  color: #85c88a;
 `;
 
 const ButtonWrapper = styled.div`
