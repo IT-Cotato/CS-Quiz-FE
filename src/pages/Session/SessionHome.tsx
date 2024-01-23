@@ -8,9 +8,9 @@ import modify_icon from '@assets/modify_icon.svg';
 import GenerationSelect from '@components/GenerationSelect';
 
 /*
-논의 사항
-수정 시나리오
-버튼을 누르는데 몇번째 세션인지 어떻게 찾아야 할지
+세션 api 논의
+디자인에서 수정되는 시나리오
+description의 표시
 */
 
 // 임시 세션 타입
