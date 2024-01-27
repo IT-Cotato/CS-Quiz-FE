@@ -3,7 +3,7 @@ import { styled } from 'styled-components';
 
 interface Props {
   value: string;
-  onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+  onChange?: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   textType: string;
 }
 
@@ -14,6 +14,7 @@ const TextBox = ({ value, onChange, textType }: Props) => {
         value={value}
         onChange={onChange}
         placeholder={textType === 'title' ? '제목을 입력하세요.' : '내용을 입력하세요.'}
+        readOnly={textType === 'title'}
       />
     </Box>
   );
@@ -37,7 +38,7 @@ const Box = styled.div<{ height: string }>`
     resize: none;
     padding: 20px;
 
-    color: #000;
+    color: #7b7b7b;
     font-family: NanumSquareRound;
     font-size: 16px;
     font-style: normal;

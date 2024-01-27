@@ -4,33 +4,36 @@ import SessionContent from '@pages/Session/SessionContent';
 import SessionModal from '@pages/Session/SessionModal/SessionModal';
 import { ReactComponent as AddIcon } from '@assets/add_icon.svg';
 import { ReactComponent as SettingIcon } from '@assets/setting_icon.svg';
-import modify_icon from '@assets/modify_icon.svg';
 import GenerationSelect from '@components/GenerationSelect';
 
 // 임시 세션 타입
 export interface ISession {
   id: number;
-  title: string;
   image: File | null;
   description: string;
+  week: number;
 }
-const sessionData: ISession[] = [
-  { id: 1, title: 'OT', image: null, description: '코테이토 8기 첫 만남 OT를 진행하였습니다' },
-  { id: 2, title: '1주차 세션', image: null, description: '1주차 세션을 진행하였습니다.' },
-  { id: 3, title: '2주차 세션', image: null, description: '2주차 세션을 진행하였습니다.' },
-  { id: 4, title: '3주차 세션', image: null, description: '3주차 세션을 진행하였습니다.' },
+const sessions: ISession[] = [
+  { id: 1, week: 0, image: null, description: '코테이토 8기 첫 만남 OT를 진행하였습니다' },
+  { id: 2, week: 1, image: null, description: '1주차 세션을 진행하였습니다.' },
+  { id: 3, week: 2, image: null, description: '2주차 세션을 진행하였습니다.' },
+  { id: 4, week: 3, image: null, description: '3주차 세션을 진행하였습니다.' },
 ];
 // const sessionData: ISession[] = [];
 
 const SessionHome = () => {
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
-  const [sessionModalMode, setSessionModalMode] = useState('');
   const [modifySession, setModifySession] = useState<undefined | ISession>();
+  const [lastWeek, setLastWeek] = useState(0);
   const [selectedGeneration, setSelectedGeneration] = useState(0);
 
   useEffect(() => {
-    // 기수의 최대값
     setSelectedGeneration(8);
+    if (sessions.length > 0) {
+      setLastWeek(sessions[sessions.length - 1].week);
+    } else {
+      setLastWeek(-1);
+    }
   }, []);
 
   const onChangeGeneration = useCallback(
@@ -43,13 +46,11 @@ const SessionHome = () => {
 
   const onClickAddButton = useCallback(() => {
     setIsSessionModalOpen(true);
-    setSessionModalMode('add');
   }, []);
 
   const handleModifyButton = useCallback((session: ISession) => {
     setModifySession(session);
     setIsSessionModalOpen(true);
-    setSessionModalMode('modify');
   }, []);
 
   const onCloseModal = useCallback(() => {
@@ -71,13 +72,13 @@ const SessionHome = () => {
           </ButtonWrapper>
         </SessionSetting>
         <SessionContentsContainer>
-          {sessionData.length === 0 ? (
+          {sessions.length === 0 ? (
             <SessionReady className="session-ready">
               <SettingIcon />
               <p>세션 준비중입니다.</p>
             </SessionReady>
           ) : (
-            sessionData.map((session) => (
+            sessions.map((session) => (
               <SessionContent
                 key={session.id}
                 session={session}
@@ -90,8 +91,8 @@ const SessionHome = () => {
       <SessionModal
         isOpen={isSessionModalOpen}
         onCloseModal={onCloseModal}
-        mode={sessionModalMode}
         session={modifySession}
+        lastWeek={lastWeek}
       />
     </>
   );

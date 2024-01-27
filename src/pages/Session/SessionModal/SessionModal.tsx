@@ -11,13 +11,13 @@ import { ISession } from '../SessionHome';
 interface Props {
   isOpen: boolean;
   onCloseModal: () => void;
-  mode: string;
   session?: ISession;
+  lastWeek: number;
 }
 
-const SessionModal = ({ isOpen, onCloseModal, mode, session }: Props) => {
-  const [image, setImage] = useState<File | null>(null);
+const SessionModal = ({ isOpen, onCloseModal, session, lastWeek }: Props) => {
   const [title, setTitle] = useState('');
+  const [image, setImage] = useState<File | null>(null);
   const [itNews, setItNews] = useState(true);
   const [csEdu, setCsEdu] = useState(true);
   const [networking, setNetworking] = useState(false);
@@ -25,24 +25,28 @@ const SessionModal = ({ isOpen, onCloseModal, mode, session }: Props) => {
 
   const [isPopUpOpen, setIsPopUpOpen] = useState(false);
 
+  const getTitle = useCallback((week: number) => {
+    if (week === -1) {
+      return 'OT';
+    }
+    return `${week}주차 세션`;
+  }, []);
+
   useEffect(() => {
     if (session) {
-      setTitle(session.title);
+      setTitle(getTitle(session.week));
       setDescription(session.description);
+    } else {
+      setTitle(getTitle(lastWeek + 1));
     }
   }, [session]);
 
   const cleanInputState = useCallback(() => {
     setImage(null);
-    setTitle('');
     setItNews(true);
     setCsEdu(true);
     setNetworking(false);
     setDescription('');
-  }, []);
-
-  const onChangeTitle = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
-    setTitle(e.target.value);
   }, []);
 
   const onChangeItNews = useCallback(() => {
@@ -70,7 +74,10 @@ const SessionModal = ({ isOpen, onCloseModal, mode, session }: Props) => {
   const onClickAddButton = useCallback(
     (e: MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
-      if (mode === 'add') {
+      if (!session) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const week = lastWeek + 1;
+
         // 업로드 요청
         console.log('upload');
       } else {
@@ -80,7 +87,7 @@ const SessionModal = ({ isOpen, onCloseModal, mode, session }: Props) => {
 
       // 제출 이후 모달을 끄는 동작 필요
     },
-    [mode, title, itNews, csEdu, networking, description],
+    [session, itNews, csEdu, networking, description],
   );
 
   const closePopUp = useCallback(() => {
@@ -88,37 +95,17 @@ const SessionModal = ({ isOpen, onCloseModal, mode, session }: Props) => {
   }, []);
 
   return (
-    <ReactModal
-      isOpen={isOpen}
-      style={{
-        overlay: {
-          overflow: 'auto',
-        },
-        content: {
-          width: '740px',
-          height: '800px',
-          marginTop: '10%',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          borderRadius: '15px',
-          boxShadow: '0px 4px 15px 0px rgba(0, 0, 0, 0.15)',
-          display: 'flex',
-          justifyContent: 'center',
-        },
-      }}
-      onAfterClose={cleanInputState}
-    >
+    <ReactModal isOpen={isOpen} onAfterClose={cleanInputState} style={ModalStyle}>
       <ModalWrapper>
         <ModalCloseButton>
           <CloseIcon width="57" height="56" fill="#686868" onClick={onCloseModal} />
         </ModalCloseButton>
         <Header>
-          <h3>{mode === 'add' ? '세션 추가' : '세션 수정'}</h3>
+          <h3>{!session ? '세션 추가' : '세션 수정'}</h3>
         </Header>
         <BoxContainer>
           <ImageBox image={image} setImage={setImage} setIsPopUpOpen={setIsPopUpOpen} />
-          <TextBox value={title} onChange={onChangeTitle} textType="title" />
+          <TextBox value={title} textType="title" />
           <ToggleButtonBox>
             <p>it 뉴스</p>
             <ToggleButton toggled={itNews} onClick={onChangeItNews} />
@@ -130,7 +117,7 @@ const SessionModal = ({ isOpen, onCloseModal, mode, session }: Props) => {
           <TextBox value={description} onChange={onChangeDescription} textType="description" />
         </BoxContainer>
         <ButtonContainer>
-          {mode === 'modify' && (
+          {session && (
             <DeleteButton type="button" onClick={onClickDeleteButton}>
               세션 삭제
             </DeleteButton>
@@ -146,6 +133,24 @@ const SessionModal = ({ isOpen, onCloseModal, mode, session }: Props) => {
 };
 
 export default SessionModal;
+
+const ModalStyle = {
+  overlay: {
+    overflow: 'auto',
+  },
+  content: {
+    width: '740px',
+    height: '800px',
+    marginTop: '10%',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    borderRadius: '15px',
+    boxShadow: '0px 4px 15px 0px rgba(0, 0, 0, 0.15)',
+    display: 'flex',
+    justifyContent: 'center',
+  },
+};
 
 const ModalWrapper = styled.div`
   position: relative;

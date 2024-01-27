@@ -30,14 +30,14 @@ const SessionContent = ({ session, handleModifyButton }: Props) => {
       />
       {isHover ? (
         <HoverContent onMouseEnter={onMounseEnterImage} onMouseLeave={onMouseLeaveImage}>
-          <p>{session.title}</p>
+          <p>{session.week === 0 ? 'OT' : `${session.week}주차 세션`}</p>
           <p>{session.description}</p>
           {/* 운영진만 보이게 */}
           <ModifyIcon onClick={() => handleModifyButton(session)} />
         </HoverContent>
       ) : (
         <Title>
-          <p>{session.title}</p>
+          <p>{session.week === 0 ? 'OT' : `${session.week}주차 세션`}</p>
           <EmojiWrapper>
             <SessionEmoji activity="CS" />
             <SessionEmoji activity="IT" />
