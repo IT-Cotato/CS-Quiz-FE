@@ -25,6 +25,7 @@ const sessionData: ISession[] = [
 const SessionHome = () => {
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
   const [sessionModalMode, setSessionModalMode] = useState('');
+  const [modifySession, setModifySession] = useState<undefined | ISession>();
   const [selectedGeneration, setSelectedGeneration] = useState(0);
 
   useEffect(() => {
@@ -45,7 +46,8 @@ const SessionHome = () => {
     setSessionModalMode('add');
   }, []);
 
-  const onClickModifyButton = useCallback(() => {
+  const handleModifyButton = useCallback((session: ISession) => {
+    setModifySession(session);
     setIsSessionModalOpen(true);
     setSessionModalMode('modify');
   }, []);
@@ -75,7 +77,13 @@ const SessionHome = () => {
               <p>세션 준비중입니다.</p>
             </SessionReady>
           ) : (
-            sessionData.map((session) => <SessionContent key={session.id} session={session} />)
+            sessionData.map((session) => (
+              <SessionContent
+                key={session.id}
+                session={session}
+                handleModifyButton={handleModifyButton}
+              />
+            ))
           )}
         </SessionContentsContainer>
       </SessionWrapper>
@@ -83,6 +91,7 @@ const SessionHome = () => {
         isOpen={isSessionModalOpen}
         onCloseModal={onCloseModal}
         mode={sessionModalMode}
+        session={modifySession}
       />
     </>
   );

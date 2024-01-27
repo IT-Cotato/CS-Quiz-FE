@@ -6,21 +6,16 @@ import ToggleButton from '@components/ToggleButton';
 import ImageBox from '@pages/Session/SessionModal/ImageBox';
 import TextBox from '@pages/Session/SessionModal/TextBox';
 import PopUp from '@pages/Session/SessionModal/PopUp';
-
-/*
-논의 사항
-
-허용 파일 (png, jpeg, jpg)
-이미지 업로드에서 파일선택은 하나의 파일만 선택되도록 구현
-*/
+import { ISession } from '../SessionHome';
 
 interface Props {
   isOpen: boolean;
   onCloseModal: () => void;
   mode: string;
+  session?: ISession;
 }
 
-const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
+const SessionModal = ({ isOpen, onCloseModal, mode, session }: Props) => {
   const [image, setImage] = useState<File | null>(null);
   const [title, setTitle] = useState('');
   const [itNews, setItNews] = useState(true);
@@ -31,10 +26,11 @@ const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
   const [isPopUpOpen, setIsPopUpOpen] = useState(false);
 
   useEffect(() => {
-    if (mode === 'modify') {
-      // 기존에 있던 데이터 가져오기
+    if (session) {
+      setTitle(session.title);
+      setDescription(session.description);
     }
-  }, [mode]);
+  }, [session]);
 
   const cleanInputState = useCallback(() => {
     setImage(null);

@@ -3,12 +3,14 @@ import { ISession } from './SessionHome';
 import styled from 'styled-components';
 import cotato_icon from '@assets/cotato_icon.png';
 import SessionEmoji from '@pages/Session/SessionEmoji';
+import { ReactComponent as ModifyIcon } from '@assets/modify_icon.svg';
 
 interface Props {
   session: ISession;
+  handleModifyButton: (session: ISession) => void;
 }
 
-const SessionContent = ({ session }: Props) => {
+const SessionContent = ({ session, handleModifyButton }: Props) => {
   const [isHover, setIsHover] = useState(false);
 
   const onMounseEnterImage = useCallback(() => {
@@ -30,6 +32,8 @@ const SessionContent = ({ session }: Props) => {
         <HoverContent onMouseEnter={onMounseEnterImage} onMouseLeave={onMouseLeaveImage}>
           <p>{session.title}</p>
           <p>{session.description}</p>
+          {/* 운영진만 보이게 */}
+          <ModifyIcon onClick={() => handleModifyButton(session)} />
         </HoverContent>
       ) : (
         <Title>
@@ -113,9 +117,14 @@ const HoverContent = styled.div`
     color: #fff;
     font-family: NanumSquareRound;
     font-size: 16px;
-    font-style: normal;
     font-weight: 700;
-    line-height: normal;
     text-align: left;
+  }
+
+  > svg {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    cursor: pointer;
   }
 `;
