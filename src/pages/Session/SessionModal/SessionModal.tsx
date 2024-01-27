@@ -4,14 +4,14 @@ import { css, styled } from 'styled-components';
 import { ReactComponent as CloseIcon } from '@assets/close_icon.svg';
 import ToggleButton from '@components/ToggleButton';
 import ImageBox from '@pages/Session/SessionModal/ImageBox';
-import TextBox from '@pages/Session/SessionModal/TextBox';
+import TextBox from '@components/TextBox';
 import PopUp from '@pages/Session/SessionModal/PopUp';
 import { ISession } from '../SessionHome';
 
 interface Props {
   isOpen: boolean;
   onCloseModal: () => void;
-  session?: ISession;
+  session: undefined | ISession;
   lastWeek: number;
 }
 
@@ -96,7 +96,7 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek }: Props) => {
   }, []);
 
   return (
-    <ReactModal isOpen={isOpen} onAfterClose={cleanInputState} style={ModalStyle}>
+    <ReactModal isOpen={isOpen} onAfterClose={cleanInputState} style={modalStyle}>
       <ModalWrapper>
         <ModalCloseButton>
           <CloseIcon width="57" height="56" fill="#686868" onClick={onCloseModal} />
@@ -106,7 +106,7 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek }: Props) => {
         </Header>
         <BoxContainer>
           <ImageBox image={image} setImage={setImage} setIsPopUpOpen={setIsPopUpOpen} />
-          <TextBox value={title} textType="title" />
+          <TextBox value={title} height="60px" readOnly={true} />
           <ToggleButtonBox>
             <p>it 뉴스</p>
             <ToggleButton toggled={itNews} onClick={onChangeItNews} />
@@ -115,7 +115,12 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek }: Props) => {
             <p>네트워킹</p>
             <ToggleButton toggled={networking} onClick={onChangeNetworking} />
           </ToggleButtonBox>
-          <TextBox value={description} onChange={onChangeDescription} textType="description" />
+          <TextBox
+            value={description}
+            placeholder="내용을 입력해주세요."
+            onChange={onChangeDescription}
+            height="110px"
+          />
         </BoxContainer>
         <ButtonContainer>
           {session && (
@@ -135,7 +140,7 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek }: Props) => {
 
 export default SessionModal;
 
-const ModalStyle = {
+const modalStyle = {
   overlay: {
     overflow: 'auto',
   },
@@ -203,7 +208,7 @@ const ToggleButtonBox = styled.div`
   height: 60px;
   border-radius: 10px;
   background: #f1f1f1;
-  margin-top: 8px;
+  margin: 4px;
   align-items: center;
 
   > p {

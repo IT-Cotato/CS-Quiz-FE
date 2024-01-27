@@ -19,7 +19,7 @@ const sessions: ISession[] = [
   { id: 3, week: 2, image: null, description: '2주차 세션을 진행하였습니다.' },
   { id: 4, week: 3, image: null, description: '3주차 세션을 진행하였습니다.' },
 ];
-// const sessionData: ISession[] = [];
+// const sessions: ISession[] = [];
 
 const SessionHome = () => {
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
@@ -56,7 +56,7 @@ const SessionHome = () => {
 
   const onCloseModal = useCallback(() => {
     setIsSessionModalOpen(false);
-  }, [isSessionModalOpen]);
+  }, []);
 
   return (
     <>
@@ -74,7 +74,7 @@ const SessionHome = () => {
         </SessionSetting>
         <SessionContentsContainer>
           {sessions.length === 0 ? (
-            <SessionReady className="session-ready">
+            <SessionReady>
               <SettingIcon />
               <p>세션 준비중입니다.</p>
             </SessionReady>
@@ -101,6 +101,15 @@ const SessionHome = () => {
 
 export default SessionHome;
 
+const SessionWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+`;
+
 const SessionHeader = styled.h1`
   margin: 144px 0 100px;
 
@@ -110,15 +119,6 @@ const SessionHeader = styled.h1`
   font-style: normal;
   font-weight: 800;
   line-height: normal;
-`;
-
-const SessionWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  min-height: 100vh;
 `;
 
 const SessionSetting = styled.div`
@@ -150,14 +150,16 @@ const SessionContentsContainer = styled.div`
   @media only screen and (max-width: 957px) {
     justify-content: center;
   }
-
-  .session-ready {
-    margin: auto;
-    margin-top: 200px;
-  }
 `;
 
 const SessionReady = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 160px;
+
   p {
     color: #9a9a9a;
     font-family: NanumSquareRound;

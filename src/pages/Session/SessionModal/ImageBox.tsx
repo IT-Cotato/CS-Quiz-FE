@@ -97,7 +97,6 @@ const ImageBox = ({ image, setImage, setIsPopUpOpen }: Props) => {
       onDrop={onDrop}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
-      image={image}
       imageurl={imageUrl}
       dragging={dragOver ? (dragError ? 'error' : 'drag') : 'drop'}
     >
@@ -132,7 +131,6 @@ const ImageBox = ({ image, setImage, setIsPopUpOpen }: Props) => {
 export default React.memo(ImageBox);
 
 interface ImageWrapperProps {
-  image: Blob | null;
   dragging: string;
   imageurl: string;
 }
@@ -144,7 +142,7 @@ const ImageWrapper = styled.div<ImageWrapperProps>`
   position: relative;
   width: 280px;
   height: 280px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   border: 2px dashed #a9a9a9;
   border-radius: 10px;
   background-color: #f1f1f1f1;

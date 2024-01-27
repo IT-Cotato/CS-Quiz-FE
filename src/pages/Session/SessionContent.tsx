@@ -13,7 +13,7 @@ interface Props {
 const SessionContent = ({ session, handleModifyButton }: Props) => {
   const [isHover, setIsHover] = useState(false);
 
-  const onMounseEnterImage = useCallback(() => {
+  const onMouseEnterImage = useCallback(() => {
     setIsHover(true);
   }, []);
 
@@ -24,12 +24,12 @@ const SessionContent = ({ session, handleModifyButton }: Props) => {
   return (
     <Content>
       <SessionImage
-        onMouseEnter={onMounseEnterImage}
+        onMouseEnter={onMouseEnterImage}
         onMouseLeave={onMouseLeaveImage}
         ishover={isHover.toString()}
       />
       {isHover ? (
-        <HoverContent onMouseEnter={onMounseEnterImage} onMouseLeave={onMouseLeaveImage}>
+        <HoverContent onMouseEnter={onMouseEnterImage} onMouseLeave={onMouseLeaveImage}>
           <p>{session.week === 0 ? 'OT' : `${session.week}주차 세션`}</p>
           <p>{session.description}</p>
           {/* 운영진만 보이게 */}
@@ -73,10 +73,6 @@ const SessionImage = styled.div<{ ishover: string }>`
 `;
 
 const Title = styled.div`
-  z-index: -1;
-  position: absolute;
-  top: 272px;
-  left: 0;
   height: 60px;
   display: flex;
   justify-content: space-between;
@@ -84,6 +80,7 @@ const Title = styled.div`
   width: 100%;
   background: #f3f7ff;
   border-radius: 10px;
+  margin-top: -8px;
   padding-top: 8px;
 
   > p {
@@ -104,7 +101,6 @@ const HoverContent = styled.div`
   position: absolute;
   inset: 0;
   width: 100%;
-  height: 280px;
   height: 332px;
   border-radius: 10px;
   background-color: #000;
@@ -126,5 +122,6 @@ const HoverContent = styled.div`
     bottom: 16px;
     right: 16px;
     cursor: pointer;
+    fill: #f3f7ff;
   }
 `;
