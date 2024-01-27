@@ -49,6 +49,7 @@ const SessionEmoji = ({ activity }: Props) => {
 export default SessionEmoji;
 
 const EmojiBox = styled.div<{ background: string }>`
+  z-index: 1;
   position: relative;
   display: flex;
   justify-content: center;
@@ -68,6 +69,7 @@ const EmojiBox = styled.div<{ background: string }>`
 `;
 
 const EmojiDescriptsion = styled.div<{ color: string }>`
+  z-index: 1;
   position: absolute;
   bottom: 40px;
   display: flex;
@@ -92,7 +94,6 @@ const EmojiDescriptsion = styled.div<{ color: string }>`
     top: 29.5px;
     width: 0;
     height: 0;
-    /* border: 8px solid transparent; */
     border-top: 12px solid rgba(59, 59, 59, 0.92);
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;

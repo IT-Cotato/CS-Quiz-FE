@@ -1,17 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { styled } from 'styled-components';
 import SessionContent from '@pages/Session/SessionContent';
-import add_icon from '@assets/add_icon.svg';
 import SessionModal from '@pages/Session/SessionModal/SessionModal';
-import setting_icon from '@assets/setting_icon.svg';
+import { ReactComponent as AddIcon } from '@assets/add_icon.svg';
+import { ReactComponent as SettingIcon } from '@assets/setting_icon.svg';
 import modify_icon from '@assets/modify_icon.svg';
 import GenerationSelect from '@components/GenerationSelect';
-
-/*
-세션 api 논의
-디자인에서 수정되는 시나리오
-description의 표시
-*/
 
 // 임시 세션 타입
 export interface ISession {
@@ -71,14 +65,13 @@ const SessionHome = () => {
           />
           {/* 권한에 따라 add는 선택적으로 보여지게 */}
           <ButtonWrapper>
-            <img src={modify_icon} alt="modify-icon" onClick={onClickModifyButton} />
-            <img src={add_icon} alt="add-icon" onClick={onClickAddButton} />
+            <AddIcon onClick={onClickAddButton} />
           </ButtonWrapper>
         </SessionSetting>
         <SessionContentsContainer>
           {sessionData.length === 0 ? (
             <SessionReady className="session-ready">
-              <img src={setting_icon} alt="setting-icon" />
+              <SettingIcon />
               <p>세션 준비중입니다.</p>
             </SessionReady>
           ) : (
@@ -125,7 +118,7 @@ const SessionSetting = styled.div`
 `;
 
 const ButtonWrapper = styled.div`
-  > img {
+  > svg {
     margin-left: 8px;
     width: 32px;
     height: 32px;

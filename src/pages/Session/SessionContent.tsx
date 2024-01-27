@@ -48,6 +48,7 @@ const SessionContent = ({ session }: Props) => {
 export default SessionContent;
 
 const Content = styled.div`
+  z-index: 0;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -58,6 +59,7 @@ const Content = styled.div`
 `;
 
 const SessionImage = styled.div<{ ishover: string }>`
+  z-index: 0;
   background-image: url(${cotato_icon});
   background-image: url('https://velog.velcdn.com/images/whdnjsdud551/post/840b06f3-2781-4d0f-af92-27f1b3c802ee/image.jpeg');
   background-size: 100% 332px;
@@ -67,21 +69,25 @@ const SessionImage = styled.div<{ ishover: string }>`
 `;
 
 const Title = styled.div`
+  z-index: -1;
+  position: absolute;
+  top: 272px;
+  left: 0;
+  height: 60px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
   background: #f3f7ff;
   border-radius: 10px;
-  height: 52px;
+  padding-top: 8px;
 
   > p {
     margin-left: 20px;
     color: #1f1f1f;
     font-family: NanumSquareRound;
     font-size: 16px;
-    font-style: normal;
     font-weight: 700;
-    line-height: normal;
   }
 `;
 
