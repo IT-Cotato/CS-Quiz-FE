@@ -1,45 +1,67 @@
-import React, { useCallback, useState, DragEvent, ChangeEvent } from 'react';
+import React, { useCallback, useState, DragEvent, ChangeEvent, useEffect } from 'react';
 import { styled } from 'styled-components';
 import { ReactComponent as UndefinedImg } from '@assets/undefined_img.svg';
 import { ReactComponent as UploadIcon } from '@assets/upload_icon.svg';
 import { ReactComponent as CloseIcon } from '@assets/close_icon.svg';
 
 interface Props {
-  image: File | null;
-  setImage: React.Dispatch<React.SetStateAction<File | null>>;
+  image: Blob | null;
+  setImage: React.Dispatch<React.SetStateAction<Blob | null>>;
   setIsPopUpOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ImageBox = ({ image, setImage, setIsPopUpOpen }: Props) => {
+  const [imageUrl, setImageUrl] = useState('none');
   const [dragOver, setDragOver] = useState(false);
   const [dragError, setDragError] = useState(false);
 
+  useEffect(() => {
+    return () => {
+      if (imageUrl !== 'none') {
+        URL.revokeObjectURL(imageUrl);
+      }
+    };
+  }, [imageUrl]);
+
   const onCloseImage = useCallback(() => {
+    if (imageUrl !== 'none') {
+      URL.revokeObjectURL(imageUrl);
+    }
+
     setImage(null);
+    setImageUrl('none');
   }, []);
+
+  const uploadImage = useCallback(
+    (file: Blob | null) => {
+      if (!file) {
+        return;
+      }
+
+      if (imageUrl !== 'none') {
+        URL.revokeObjectURL(imageUrl);
+      }
+
+      setImage(file);
+      setImageUrl(URL.createObjectURL(file));
+    },
+    [imageUrl],
+  );
 
   const onDrop = useCallback((e: DragEvent<HTMLElement>) => {
     e.preventDefault();
-    console.log(e.dataTransfer.items);
 
     if (e.dataTransfer.items) {
       if (e.dataTransfer.items.length > 1) {
-        console.log('file dropped over 1');
         setIsPopUpOpen(true);
-      } else {
-        if (e.dataTransfer.items[0].kind === 'file') {
-          const file = e.dataTransfer.items[0].getAsFile();
-          if (file) {
-            setImage(file);
-          }
-        }
+      } else if (e.dataTransfer.items[0].kind === 'file') {
+        uploadImage(e.dataTransfer.items[0].getAsFile());
       }
     } else {
       if (e.dataTransfer.files.length > 1) {
-        console.log('file dropped over 1');
         setIsPopUpOpen(true);
       } else {
-        setImage(e.dataTransfer.files[0]);
+        uploadImage(e.dataTransfer.files[0]);
       }
     }
 
@@ -48,7 +70,6 @@ const ImageBox = ({ image, setImage, setIsPopUpOpen }: Props) => {
 
   const onDragOver = useCallback((e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    console.log(e.dataTransfer.items);
     setDragOver(true);
 
     if (e.dataTransfer.items.length > 1 || e.dataTransfer.files.length > 1) {
@@ -60,7 +81,6 @@ const ImageBox = ({ image, setImage, setIsPopUpOpen }: Props) => {
 
   const onDragLeave = useCallback((e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    console.log(e);
     setDragOver(false);
     setDragError(false);
   }, []);
@@ -68,7 +88,7 @@ const ImageBox = ({ image, setImage, setIsPopUpOpen }: Props) => {
   const onClickImageUpload = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     if (e.target.files) {
-      setImage(e.target.files[0]);
+      uploadImage(e.target.files[0]);
     }
   }, []);
 
@@ -78,6 +98,7 @@ const ImageBox = ({ image, setImage, setIsPopUpOpen }: Props) => {
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       image={image}
+      imageurl={imageUrl}
       dragging={dragOver ? (dragError ? 'error' : 'drag') : 'drop'}
     >
       <ButtonWrapper>
@@ -110,7 +131,13 @@ const ImageBox = ({ image, setImage, setIsPopUpOpen }: Props) => {
 
 export default React.memo(ImageBox);
 
-const ImageWrapper = styled.div<{ image: File | null; dragging: string }>`
+interface ImageWrapperProps {
+  image: Blob | null;
+  dragging: string;
+  imageurl: string;
+}
+
+const ImageWrapper = styled.div<ImageWrapperProps>`
   display: flex;
   justify-content: end;
   align-items: baseline;
@@ -123,8 +150,7 @@ const ImageWrapper = styled.div<{ image: File | null; dragging: string }>`
   background-color: #f1f1f1f1;
   margin-top: 10px;
 
-  background-image: ${(props) =>
-    props.image ? `url(${URL.createObjectURL(props.image)})` : `none`};
+  background-image: ${(props) => `url(${props.imageurl})`};
   background-size: 100% 100%;
 
   border: ${(props) => props.dragging === 'drag' && '2px solid #93C6FE'};

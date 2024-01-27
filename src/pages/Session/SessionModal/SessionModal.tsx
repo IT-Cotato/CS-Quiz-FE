@@ -17,7 +17,7 @@ interface Props {
 
 const SessionModal = ({ isOpen, onCloseModal, session, lastWeek }: Props) => {
   const [title, setTitle] = useState('');
-  const [image, setImage] = useState<File | null>(null);
+  const [image, setImage] = useState<Blob | null>(null);
   const [itNews, setItNews] = useState(true);
   const [csEdu, setCsEdu] = useState(true);
   const [networking, setNetworking] = useState(false);
@@ -39,7 +39,7 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek }: Props) => {
     } else {
       setTitle(getTitle(lastWeek + 1));
     }
-  }, [session]);
+  }, [session, lastWeek]);
 
   const cleanInputState = useCallback(() => {
     setTitle('');
