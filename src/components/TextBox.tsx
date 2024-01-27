@@ -3,19 +3,16 @@ import { styled } from 'styled-components';
 
 interface Props {
   value: string;
+  placeholder?: string;
   onChange?: (e: ChangeEvent<HTMLTextAreaElement>) => void;
-  textType: string;
+  height: string;
+  readOnly?: boolean;
 }
 
-const TextBox = ({ value, onChange, textType }: Props) => {
+const TextBox = ({ value, placeholder, onChange, height, readOnly }: Props) => {
   return (
-    <Box height={textType === 'title' ? '60px' : '112px'}>
-      <textarea
-        value={value}
-        onChange={onChange}
-        placeholder={textType === 'title' ? '제목을 입력하세요.' : '내용을 입력하세요.'}
-        readOnly={textType === 'title'}
-      />
+    <Box height={height}>
+      <textarea value={value} onChange={onChange} placeholder={placeholder} readOnly={readOnly} />
     </Box>
   );
 };
@@ -28,7 +25,7 @@ const Box = styled.div<{ height: string }>`
   height: ${(props) => props.height};
   border-radius: 10px;
   background: #f1f1f1;
-  margin-top: 10px;
+  margin: 4px;
 
   > textarea {
     width: 100%;
