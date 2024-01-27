@@ -1,4 +1,4 @@
-import React, { ChangeEvent, MouseEvent, useCallback, useState } from 'react';
+import React, { ChangeEvent, MouseEvent, useCallback, useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { IEducation } from '@pages/CS/CSHome';
 import ReactModal from 'react-modal';
@@ -16,9 +16,18 @@ const CSModal = ({ isOpen, onCloseModal, educatoin }: Props) => {
   const [educationNum, setEducationNum] = useState(0);
   const [subject, setSubject] = useState('');
 
+  useEffect(() => {
+    if (educatoin) {
+      setWeek(`${educatoin.week}주차 교육`);
+      setEducationNum(educatoin.week);
+      setSubject(educatoin.subject);
+    }
+  }, [educatoin]);
+
   const cleanInputState = useCallback(() => {
     setWeek('');
     setEducationNum(0);
+    setSubject('');
   }, []);
 
   // 로직을 쫌더 엄격하게 가야할듯
@@ -182,6 +191,7 @@ const ButtonContainer = styled.div`
 
 const DeleteButton = styled(Button)`
   background: #eb5353;
+  border: none;
   ${fontStyle}
   color: #fff;
 `;

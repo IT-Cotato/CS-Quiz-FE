@@ -75,7 +75,12 @@ const CSHome = () => {
             </CSReady>
           ) : (
             educations.map((education) => (
-              <CSContent key={education.week} cs={education} generation={selectedGeneration} />
+              <CSContent
+                key={education.week}
+                education={education}
+                handleModifyButton={handleModifyButton}
+                generation={selectedGeneration}
+              />
             ))
           )}
         </CSContentsContainer>
