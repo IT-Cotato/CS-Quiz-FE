@@ -26,7 +26,7 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek }: Props) => {
   const [isPopUpOpen, setIsPopUpOpen] = useState(false);
 
   const getTitle = useCallback((week: number) => {
-    if (week === -1) {
+    if (week === 0) {
       return 'OT';
     }
     return `${week}주차 세션`;
@@ -42,6 +42,7 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek }: Props) => {
   }, [session]);
 
   const cleanInputState = useCallback(() => {
+    setTitle('');
     setImage(null);
     setItNews(true);
     setCsEdu(true);

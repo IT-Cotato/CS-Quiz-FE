@@ -45,6 +45,7 @@ const SessionHome = () => {
   );
 
   const onClickAddButton = useCallback(() => {
+    setModifySession(undefined);
     setIsSessionModalOpen(true);
   }, []);
 
@@ -117,6 +118,7 @@ const SessionWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
+  min-height: 100vh;
 `;
 
 const SessionSetting = styled.div`
@@ -143,8 +145,7 @@ const SessionContentsContainer = styled.div`
   flex-direction: row;
   align-content: start;
   width: 70%;
-  height: 1000px;
-  margin-top: 28px;
+  margin: 28px 0 120px;
 
   @media only screen and (max-width: 957px) {
     justify-content: center;
