@@ -6,6 +6,7 @@ const Footer = () => {
   return (
     <Wrapper>
       <SNS src={sns} alt="Direct Icons For Our SNS" />
+      {/* 각각 이미지 요소로 수정 필요 */}
       <InfoBox>
         <h3>Cotato 코테이토</h3>
         <Sub>
@@ -27,6 +28,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  z-index: 10;
 `;
 
 const SNS = styled.img`
