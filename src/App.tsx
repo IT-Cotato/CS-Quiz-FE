@@ -12,7 +12,7 @@ import SignUp from '@pages/JoinUs/SignUp';
 import MyPage from '@pages/MyPage/MyPage';
 import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from '@theme/GlobalStyle';
-import { theme } from '@theme/theme';
+import { theme } from '@theme/Theme';
 import CSManage from '@pages/CS/manage/CSManage';
 import QuizScorer from '@pages/CS/manage/QuizScorer';
 import AllScorer from '@pages/CS/manage/AllScorer';
