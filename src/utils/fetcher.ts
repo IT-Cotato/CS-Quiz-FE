@@ -1,9 +1,12 @@
-import axios from 'axios';
+import api from '@/api/api';
 
 const fetcher = (url: string) =>
-  axios
+  api
     .get(url, {
-      withCredentials: true,
+      headers: {
+        withCredentials: true,
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
     })
     .then((res) => res.data);
 

@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useCallback, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, redirect, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import line from '@assets/Line 1.svg';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import axios from 'axios';
+import api from '@/api/api';
 
 const Login = () => {
-  // const { data, error } = useSWR(
-  //   'http://ec2-43-203-67-153.ap-northeast-2.compute.amazonaws.com:8080/login',
-  //   fetcher,
-  // );
+  const { data, error } = useSWR('/v1/api/member/info', fetcher);
+
+  const nagivate = useNavigate();
 
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
@@ -30,16 +30,26 @@ const Login = () => {
       e.preventDefault();
       setLoginError(false);
       try {
-        axios.post('http://ec2-43-203-67-153.ap-northeast-2.compute.amazonaws.com:8080/login', {
-          email: id,
-          password: password,
-        });
+        const res = api
+          .post('/login', {
+            email: id,
+            password: password,
+          })
+          .then((res) => {
+            console.log(res.headers.accesstoken);
+            localStorage.setItem('token', res.headers.accesstoken);
+          });
       } catch (error) {
         console.log(error);
       }
     },
     [id, password],
   );
+
+  if (data) {
+    console.log(data);
+    nagivate('/');
+  }
 
   return (
     <Wrapper>
