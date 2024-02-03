@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import background from '@assets/bg_waiting.svg';
+import background from '@assets/bg_incorrect.svg';
 import { ReactComponent as X } from '@assets/x.svg';
 
 const BgIncorrect = () => {
@@ -35,14 +35,14 @@ const Wrapper = styled.div`
     margin-bottom: 40px;
   }
 
-  @keyframes slide_down {
+  /* @keyframes slide_down {
     0% {
       transform: translateY(-100%);
     }
     100% {
       transform: translateY(0);
     }
-  }
+  } */
   @keyframes fade_out {
     0% {
       opacity: 1;
@@ -52,7 +52,6 @@ const Wrapper = styled.div`
     }
   }
   animation:
-    slide_down 1s ease-in-out,
-    fade_out 2s ease-in-out 1.8s;
+    /* slide_down 1s ease-in-out, */ fade_out 1s ease-in-out 1s;
   animation-fill-mode: forwards;
 `;
