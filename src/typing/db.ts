@@ -1,28 +1,21 @@
-export interface ChoiceProps {
-  quiz_id: number;
-  quiz_title: string;
-  quiz_content: string;
-  quiz_type: string;
-  quiz_answer: {
-    choice_num: number;
-    choice_content: string;
-  }[];
+export interface Multiples {
+  number: number;
+  question: string;
   choices: {
-    choice_id: number;
-    choice_content: string;
+    number: number;
+    content: string;
+    isAnswer: 'ANSWER' | 'NO_ANSWER';
   }[];
-  quiz_image_file: File | null;
-  quiz_preview_url: string | null;
+  image: File | null;
+  previewUrl: string | null;
 }
 
-export interface ShortProps {
-  quiz_id: number;
-  quiz_title: string;
-  quiz_content: string;
-  quiz_type: string;
-  quiz_answer: {
-    choice_content: string;
+export interface ShortQuizzes {
+  number: number;
+  question: string;
+  choices: {
+    answer: string;
   }[];
-  quiz_image_file: File | null;
-  quiz_preview_url: string | null;
+  image: File | null;
+  previewUrl: string | null;
 }
