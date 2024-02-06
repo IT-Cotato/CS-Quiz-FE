@@ -58,7 +58,7 @@ const Container = styled.div`
   align-items: center;
   text-align: center;
   margin-left: -100px;
-  height: 300px;
+  height: fit-content;
 `;
 
 const Menu = styled.div<{ isopen: string; menu_len: number }>`

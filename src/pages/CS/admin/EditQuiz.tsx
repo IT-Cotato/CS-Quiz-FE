@@ -158,7 +158,7 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
       ) : (
         <>
           <MakeQuestionDiv>
-            <p>여기를 눌러 문제를 만들어 보세요.</p>
+            <textarea placeholder="문제 제목을 입력해주세요." />
           </MakeQuestionDiv>
           <UploadDiv
             onDrop={onDrop}
@@ -249,7 +249,7 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
 
 const Wrapper = styled.div`
   grid-area: centerbox;
-  width: 658px;
+  width: auto;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -265,7 +265,7 @@ const Wrapper = styled.div`
 `;
 
 const MakeQuestionDiv = styled.div`
-  width: 578px;
+  min-width: 578px;
   height: 95px;
   margin-top: 16px;
   border-radius: 5px;
@@ -275,12 +275,22 @@ const MakeQuestionDiv = styled.div`
   justify-content: center;
   align-items: center;
   margin-bottom: 24px;
-  p {
-    color: #757575;
+  textarea {
+    width: 100%;
+    height: 100%;
+    color: #000;
     font-family: NanumSquareRound;
-    font-size: 20px;
+    font-size: 16px;
+    padding: 8px;
     font-style: normal;
     font-weight: 400;
+    outline: none;
+    border: none;
+    resize: none;
+    &::placeholder {
+      text-align: center;
+      vertical-align: middle;
+    }
   }
   @media screen and (max-width: 768px) {
     display: none;
@@ -338,7 +348,7 @@ const ChoiceDiv = styled.div`
 `;
 
 const Choice = styled.div`
-  width: 284px;
+  width: 100%;
   height: 160px;
   border-radius: 5px;
   padding: 10px 0px;
@@ -431,6 +441,15 @@ const Short = styled.div`
     border: 2px dashed #7aff52;
     margin-top: 16px;
     cursor: pointer;
+  }
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    div {
+      width: 100%;
+    }
+    button {
+      width: 100%;
+    }
   }
 `;
 

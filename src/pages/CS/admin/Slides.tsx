@@ -14,6 +14,10 @@ type Props = {
 
 const Slides = ({ quiz, setQuiz, selected, setSelected }: Props) => {
   const addQuiz = useCallback(() => {
+    if (quiz.length >= 10) {
+      window.alert('슬라이드는 최대 10개까지만 추가할 수 있습니다.');
+      return;
+    }
     setQuiz((prev) => [
       ...prev,
       {
@@ -77,10 +81,6 @@ const Slides = ({ quiz, setQuiz, selected, setSelected }: Props) => {
       <button
         style={{ background: '#477FEB', color: 'white' }}
         onClick={() => {
-          if (quiz.length >= 10) {
-            window.alert('슬라이드는 최대 10개까지만 추가할 수 있습니다.');
-            return;
-          }
           addQuiz();
         }}
       >
@@ -108,10 +108,13 @@ const Slides = ({ quiz, setQuiz, selected, setSelected }: Props) => {
 
 const Wrapper = styled.div`
   grid-area: leftbox;
-  width: 280px;
+  /* width: 280px; */
+  width: 100%;
   height: fit-content;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   padding: 40px;
   button {
     width: 200px;

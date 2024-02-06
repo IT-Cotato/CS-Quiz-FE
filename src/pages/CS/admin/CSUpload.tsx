@@ -131,7 +131,7 @@ const Section = styled.div`
   min-width: 100%;
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 1fr 3fr 1fr;
+  grid-template-columns: auto;
   grid-template-areas: 'leftbox centerbox rightbox';
   grid-gap: 0;
   flex-direction: row;
@@ -139,13 +139,13 @@ const Section = styled.div`
     -2px 1px 10px 1px rgba(0, 0, 0, 0.15),
     2px 4px 10px 0px rgba(0, 0, 0, 0.15);
   @media screen and (max-width: 768px) {
-    padding: 20px 0px;
+    padding: 0;
     grid-template-columns: 1fr 1fr 1fr;
-    /* grid-template-rows: 1fr 1fr 1fr; */
     grid-template-areas:
       'leftbox leftbox leftbox'
       'centerbox centerbox centerbox'
       'rightbox rightbox rightbox';
+    -ms-grid-column-align: center;
     height: fit-content;
     flex-direction: column;
   }
