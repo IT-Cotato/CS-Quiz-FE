@@ -20,7 +20,8 @@ const QuizInfo = ({ quiz, setQuiz, selected }: Props) => {
    */
   const onClickType = useCallback(
     (type: string) => {
-      // if (quiz[selected].quiz_type === type) return;
+      if (type === 'choice' && isMultiples(quiz[selected])) return;
+      if (type === 'short' && !isMultiples(quiz[selected])) return;
       setQuiz((prev) => {
         const newPrev = [...prev];
         const copySelected = newPrev[selected];
@@ -94,6 +95,38 @@ const QuizInfo = ({ quiz, setQuiz, selected }: Props) => {
     [selected, quiz],
   );
 
+  const checkUpload = useCallback(() => {
+    console.log(quiz);
+    // question이 있는지 검사
+    // 객관식 choice에 ANSWER가 있는지, content가 전부 있는지 검사
+    // 주관식 choice에 answer가 있는지 검사
+    quiz.some((quiz) => {
+      if (quiz.question === '') {
+        window.alert(`${quiz.number}번 문제를 입력해주세요.`);
+        return true;
+      }
+      if (isMultiples(quiz)) {
+        quiz.choices.some((choice) => {
+          if (choice.content === '') {
+            window.alert(`${quiz.number}번 문제 ${choice.number}번 보기를 입력해주세요.`);
+            return true;
+          }
+        });
+        if (quiz.choices.filter((choice) => choice.isAnswer === 'ANSWER').length === 0) {
+          window.alert(`${quiz.number}번 문제 정답을 선택해주세요.`);
+          return true;
+        }
+      } else {
+        quiz.choices.some((choice) => {
+          if (choice.answer === '') {
+            window.alert(`${quiz.number}번 문제 정답을 입력해주세요.`);
+            return true;
+          }
+        });
+      }
+    });
+  }, [quiz]);
+
   return (
     <Wrapper>
       <DesktopSection>
@@ -102,7 +135,6 @@ const QuizInfo = ({ quiz, setQuiz, selected }: Props) => {
           <button
             id="choice"
             style={
-              // quiz[selected]?.quiz_type === 'choice'
               isMultiples(quiz[selected])
                 ? { background: '#C1C1C1', color: 'white' }
                 : { background: '#fff', color: 'black' }
@@ -116,7 +148,6 @@ const QuizInfo = ({ quiz, setQuiz, selected }: Props) => {
           <button
             id="short"
             style={
-              // quiz[selected]?.quiz_type === 'short'
               !isMultiples(quiz[selected])
                 ? { background: '#C1C1C1', color: 'white' }
                 : { background: '#fff', color: 'black' }
@@ -130,21 +161,21 @@ const QuizInfo = ({ quiz, setQuiz, selected }: Props) => {
         </DeskTopOption>
         <p>정답</p>
         <AnswerBox>
-          {
-            // quiz[selected]?.quiz_type === 'choice'
-            isMultiples(quiz[selected]) ? (
-              <div>
-                <img src="https://velog.velcdn.com/images/ea_st_ring/post/555ec60e-4c31-48e7-80d1-ec3cb60350d2/image.svg" />
-              </div>
-            ) : (
-              (quiz[selected] as ShortQuizzes).choices.map((choice, index) => (
+          {isMultiples(quiz[selected])
+            ? (quiz[selected] as Multiples).choices
+                .filter((choice) => choice.isAnswer === 'ANSWER')
+                .map((choice, index) => (
+                  <div key={index}>
+                    <img src="https://velog.velcdn.com/images/ea_st_ring/post/555ec60e-4c31-48e7-80d1-ec3cb60350d2/image.svg" />
+                    {choice.number}번 : {choice.content}
+                  </div>
+                ))
+            : (quiz[selected] as ShortQuizzes).choices.map((choice, index) => (
                 <div key={index}>
                   <img src="https://velog.velcdn.com/images/ea_st_ring/post/555ec60e-4c31-48e7-80d1-ec3cb60350d2/image.svg" />
                   {choice.answer}
                 </div>
-              ))
-            )
-          }
+              ))}
         </AnswerBox>
       </DesktopSection>
       <MobileSection>
@@ -155,7 +186,7 @@ const QuizInfo = ({ quiz, setQuiz, selected }: Props) => {
           </select>
         </MobileOption>
         <NavBox>
-          <SaveButton>저장</SaveButton>
+          <SaveButton onClick={checkUpload}>저장</SaveButton>
           <ExitButton>나가기</ExitButton>
         </NavBox>
       </MobileSection>

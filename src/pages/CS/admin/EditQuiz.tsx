@@ -142,6 +142,10 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
    */
   const deleteShortAnswer = useCallback(
     (id: number) => {
+      if (quiz[selected].choices.length === 1) {
+        window.alert('주관식 답안은 최소 1개 이상이어야 합니다.');
+        return;
+      }
       setQuiz((prev) => {
         const newPrev = [...prev];
         const copySelected = newPrev[selected];
@@ -248,6 +252,7 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
                 addShortAnswer();
               }}
             >
+              <img src="https://velog.velcdn.com/images/ea_st_ring/post/02c4b979-5f46-4a3f-a319-1d9b10796b11/image.svg" />
               답안 추가
             </button>
           </Short>
@@ -442,15 +447,26 @@ const Short = styled.div`
     margin-top: 16px;
   }
   button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 534px;
     height: 57px;
     border-radius: 5px;
-    background: transparent;
-    opacity: 0.8;
+    background: #fff;
     box-shadow: 2px 4px 10px 0px rgba(0, 0, 0, 0.25);
-    border: 2px dashed #7aff52;
+    border: none;
     margin-top: 16px;
     cursor: pointer;
+    font-size: 14px;
+    &:hover {
+      background: #f4f4f4;
+    }
+    img {
+      width: 20px;
+      height: 20px;
+      margin-right: 4px;
+    }
   }
   @media screen and (max-width: 768px) {
     width: 100%;
