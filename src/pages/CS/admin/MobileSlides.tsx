@@ -40,16 +40,72 @@ const MobileSlides = ({ quiz, setQuiz, selected, setSelected }: Props) => {
     setIsShow(false);
   }, [selected]);
 
+  const onClickBack = useCallback(() => {
+    window.history.back();
+  }, []);
+
+  const addQuiz = useCallback(() => {
+    if (quiz.length >= 10) {
+      window.alert('슬라이드는 최대 10개까지만 추가할 수 있습니다.');
+      return;
+    }
+    setQuiz((prev) => [
+      ...prev,
+      {
+        quiz_id: prev.length + 1,
+        quiz_title: '제목',
+        quiz_content: '내용',
+        quiz_type: 'choice',
+        quiz_answer: [
+          {
+            choice_num: 1,
+            choice_content: '',
+          },
+        ],
+        choices: [
+          {
+            choice_id: 1,
+            choice_content: '',
+          },
+          {
+            choice_id: 2,
+            choice_content: '',
+          },
+          {
+            choice_id: 3,
+            choice_content: '',
+          },
+          {
+            choice_id: 4,
+            choice_content: '',
+          },
+        ],
+        quiz_image_file: null,
+        quiz_preview_url: null,
+      },
+    ]);
+    setIsShow(false);
+  }, [selected]);
+
+  const onClickOutside = useCallback(
+    (e: React.MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setIsShow(false);
+      }
+    },
+    [menuRef],
+  );
+
   return (
-    <Wrapper>
+    <Wrapper onClick={onClickOutside}>
       <Navbar>
-        <div>
+        <div onClick={onClickBack}>
           <img
             src="https://velog.velcdn.com/images/ea_st_ring/post/fa66daa9-ddeb-4ca5-894c-5fa5f38a0340/image.svg"
             style={{ transform: 'rotate(90deg)', cursor: 'pointer' }}
           />{' '}
         </div>
-        <div onClick={() => setIsShow(!isShow)}>
+        <div onClick={() => setIsShow(!isShow)} style={{ zIndex: 99 }}>
           <img
             src="https://velog.velcdn.com/images/ea_st_ring/post/cb0f63b2-1ab2-4a8c-8519-9c7d84d7a502/image.svg"
             style={{ cursor: 'pointer' }}
@@ -60,12 +116,12 @@ const MobileSlides = ({ quiz, setQuiz, selected, setSelected }: Props) => {
       {isShow && (
         <Modal top={menuBottomDistance} right={menuRightDistance}>
           <div onClick={deleteItem}>
-            <img src="https://velog.velcdn.com/images/ea_st_ring/post/4fbd5754-4c51-440b-9ca6-098f5c3a5fd0/image.svg" />
+            <img src="https://velog.velcdn.com/images/ea_st_ring/post/9dda46cf-266e-4c49-b257-928527f652bc/image.svg" />
             <p>삭제</p>
           </div>
-          <div>
-            <img src="https://velog.velcdn.com/images/ea_st_ring/post/a228849c-a89b-4ed7-96c2-09fb6e16756a/image.svg" />
-            <p>저장</p>
+          <div onClick={addQuiz}>
+            <img src="https://velog.velcdn.com/images/ea_st_ring/post/befacb9b-cc83-485b-9a2c-83c8e921aa23/image.svg" />
+            <p>추가</p>
           </div>
         </Modal>
       )}
@@ -132,6 +188,9 @@ const Title = styled.input`
   box-shadow: 0px 10px 10px -9px rgba(0, 0, 0, 0.47);
   -webkit-box-shadow: 0px 10px 10px -9px rgba(0, 0, 0, 0.47);
   -moz-box-shadow: 0px 10px 10px -9px rgba(0, 0, 0, 0.47);
+  &:focus {
+    outline: none;
+  }
 `;
 
 const Dropdown = styled.div`
