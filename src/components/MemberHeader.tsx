@@ -2,8 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import logo from '@assets/logo.svg';
+import useSWR from 'swr';
+import fetcher from '@utils/fetcher';
 
 const MemberHeader = () => {
+  const { data, error } = useSWR('/v1/api/member/info', fetcher);
+
   return (
     <Wrapper>
       <Logo src={logo} onClick={() => window.location.replace('/')} style={{ cursor: 'pointer' }} />
@@ -16,7 +20,7 @@ const MemberHeader = () => {
       </MenuSection>
       <MyInfo>
         <img src="https://raw.githubusercontent.com/MinJaeSon/assets/f29298dfeed8daa40622f7d9568a0421f5183756/potato.svg" />
-        <p>한승우</p>
+        <p>{data.name}</p>
       </MyInfo>
     </Wrapper>
   );
