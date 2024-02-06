@@ -4,8 +4,15 @@ import styled from 'styled-components';
 import SignUpModal from '@components/SignUpModal';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import useSWR from 'swr';
+import fetcher from '@utils/fetcher';
+import api from '@/api/api';
 
 const SignUp = () => {
+  const { data, error } = useSWR('', fetcher);
+
+  const navigate = useNavigate();
+
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
   const [passwordCheck, setPasswordCheck] = useState('');
@@ -37,7 +44,6 @@ const SignUp = () => {
     }
   };
 
-  const navigate = useNavigate();
   const onCancel = () => {
     if (confirm('가입을 취소합니다.')) {
       navigate('/');
@@ -112,15 +118,12 @@ const SignUp = () => {
       if (!mismatchError) {
         console.log('서버로 회원가입하기');
         try {
-          axios.post(
-            'http://ec2-43-203-67-153.ap-northeast-2.compute.amazonaws.com:8080/v1/api/auth/join',
-            {
-              email: id,
-              password: password,
-              name: name,
-              phoneNumber: tel,
-            },
-          );
+          api.post('/v1/api/auth/join', {
+            email: id,
+            password: password,
+            name: name,
+            phoneNumber: tel,
+          });
         } catch (err) {
           console.log(err);
         }
@@ -128,6 +131,11 @@ const SignUp = () => {
     },
     [id, password, passwordCheck, name, tel, mismatchError],
   );
+
+  if (data) {
+    console.log(data);
+    navigate('/');
+  }
 
   return (
     <Wrapper>

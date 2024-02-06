@@ -1,13 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 import background from '@assets/bg_correct.svg';
-import { ReactComponent as Check } from '@assets/check_icon.svg';
+import check from '@assets/check_icon.svg';
 
 const BgCorrect = () => {
   return (
     <Wrapper>
       <p>정답입니다!</p>
-      <Check style={{ width: '200px' }} />
+      <Check src={check} />
     </Wrapper>
   );
 };
@@ -35,14 +35,6 @@ const Wrapper = styled.div`
     margin-bottom: 40px;
   }
 
-  @keyframes slide_down {
-    0% {
-      transform: translateY(-100%);
-    }
-    100% {
-      transform: translateY(0);
-    }
-  }
   @keyframes fade_out {
     0% {
       opacity: 1;
@@ -51,8 +43,25 @@ const Wrapper = styled.div`
       opacity: 0;
     }
   }
-  animation:
-    slide_down 1s ease-in-out,
-    fade_out 2s ease-in-out 1.8s;
+  animation: fade_out 1s ease-in-out 1.2s;
   animation-fill-mode: forwards;
+`;
+
+const Check = styled.img`
+  width: 200px;
+  transform-origin: bottom left;
+  transform: rotate(-45deg), scale(0);
+  transition: transform 0.5s ease-in-out;
+  /* /* 
+  @keyframes emphasis {
+    0% {
+
+    }
+    50% {
+
+    }
+    100% {
+
+    } */
+  //} */
 `;
