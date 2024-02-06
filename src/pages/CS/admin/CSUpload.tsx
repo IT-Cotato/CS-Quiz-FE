@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { ReactComponent as ArrowBack } from '@/assets/arrow_back.svg';
-import { ChoiceProps, ShortProps } from '@/typing/db';
+import { Multiples, ShortQuizzes } from '@/typing/db';
 import Slides from './Slides';
 import EditQuiz from './EditQuiz';
 import QuizInfo from './QuizInfo';
@@ -13,7 +13,7 @@ type Item = {
   isselected?: string;
 };
 
-type QuizType = ChoiceProps | ShortProps;
+type QuizType = Multiples | ShortQuizzes;
 
 const CSUpload = () => {
   const location = useLocation();
@@ -24,41 +24,37 @@ const CSUpload = () => {
   // 전체 슬라이드를 담기 위한 state
   const [quiz, setQuiz] = useState<QuizType[]>([
     {
-      quiz_id: 1,
-      quiz_title: '제목',
-      quiz_content: '내용',
-      quiz_type: 'choice',
-      quiz_answer: [
-        {
-          choice_num: 1,
-          choice_content: '',
-        },
-      ],
+      number: 1,
+      question: '',
       choices: [
         {
-          choice_id: 1,
-          choice_content: '',
+          number: 1,
+          content: '',
+          isAnswer: 'NO_ANSWER',
         },
         {
-          choice_id: 2,
-          choice_content: '',
+          number: 2,
+          content: '',
+          isAnswer: 'NO_ANSWER',
         },
         {
-          choice_id: 3,
-          choice_content: '',
+          number: 3,
+          content: '',
+          isAnswer: 'NO_ANSWER',
         },
         {
-          choice_id: 4,
-          choice_content: '',
+          number: 4,
+          content: '',
+          isAnswer: 'NO_ANSWER',
         },
       ],
-      quiz_image_file: null,
-      quiz_preview_url: null,
+      image: null,
+      previewUrl: null,
     },
   ]);
 
   // 현재 선택된 슬라이드를 나타내기 위한 state
-  const [selected, setSelected] = useState(1); // selected가 0인 경우에는 주제, 1 이상인 경우에는 슬라이드의 문제 번호를 나타냄
+  const [selected, setSelected] = useState(0);
 
   return (
     <>

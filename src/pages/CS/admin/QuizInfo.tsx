@@ -1,37 +1,43 @@
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
-import { ShortProps } from '@/typing/db';
+import { Multiples, ShortQuizzes } from '@/typing/db';
+
+type QuizType = Multiples | ShortQuizzes;
 
 type Props = {
-  quiz: ShortProps[];
-  setQuiz: React.Dispatch<React.SetStateAction<ShortProps[]>>;
+  quiz: QuizType[];
+  setQuiz: React.Dispatch<React.SetStateAction<QuizType[]>>;
   selected: number;
 };
 
 const QuizInfo = ({ quiz, setQuiz, selected }: Props) => {
+  // 타입 가드
+  const isMultiples = (quiz: Multiples | ShortQuizzes): quiz is Multiples => {
+    return (quiz as Multiples)?.choices[0].isAnswer !== undefined;
+  };
   /**
    * 객관식, 주관식 버튼 클릭 시, quiz_type 변경함
    */
   const onClickType = useCallback(
     (type: string) => {
-      if (quiz[selected - 1].quiz_type === type) return;
+      // if (quiz[selected].quiz_type === type) return;
       setQuiz((prev) => {
         const newPrev = [...prev];
-        const copySelected = newPrev[selected - 1];
-        if (type === 'short') {
+        const copySelected = newPrev[selected];
+        if (isMultiples(copySelected)) {
           // changeType 함수를 통해 quiz_type을 short로 변경
-          newPrev[selected - 1] = changeType(
+          newPrev[selected] = changeType(
             type,
-            copySelected.quiz_id,
-            copySelected.quiz_image_file,
-            copySelected.quiz_preview_url || null,
+            copySelected.number,
+            copySelected.image,
+            copySelected.previewUrl || null,
           );
         } else {
-          newPrev[selected - 1] = changeType(
+          newPrev[selected] = changeType(
             type,
-            copySelected.quiz_id,
-            copySelected.quiz_image_file,
-            copySelected.quiz_preview_url || null,
+            copySelected.number,
+            copySelected.image,
+            copySelected.previewUrl || null,
           );
         }
         return [...newPrev];
@@ -44,55 +50,45 @@ const QuizInfo = ({ quiz, setQuiz, selected }: Props) => {
    * quiz_type을 안전하게 변경하기 위한 함수
    */
   const changeType = useCallback(
-    (type: string, id: number, image: File | null, preview_url: string | null) => {
+    (type: string, number: number, image: File | null, previewUrl: string | null) => {
       // 들어온 type이 choice일 경우, choice를 제외한 나머지를 복사
       if (type === 'choice') {
         return {
-          quiz_id: id,
-          quiz_title: '제목',
-          quiz_content: '내용',
-          quiz_type: 'choice',
-          quiz_answer: [
-            {
-              choice_num: 1,
-              choice_content: '',
-            },
-          ],
+          number,
+          question: '제목',
           choices: [
             {
-              choice_id: 1,
-              choice_content: '',
+              number: 1,
+              content: '',
+              isAnswer: 'ANSWER' as const,
             },
             {
-              choice_id: 2,
-              choice_content: '',
+              number: 2,
+              content: '',
+              isAnswer: 'NO_ANSWER' as const,
             },
             {
-              choice_id: 3,
-              choice_content: '',
+              number: 3,
+              content: '',
+              isAnswer: 'NO_ANSWER' as const,
             },
             {
-              choice_id: 4,
-              choice_content: '',
+              number: 4,
+              content: '',
+              isAnswer: 'NO_ANSWER' as const,
             },
           ],
-          quiz_image_file: image,
-          quiz_preview_url: preview_url || null,
-        };
+          image: image,
+          previewUrl: previewUrl || null,
+        } as Multiples;
       } else {
         return {
-          quiz_id: id,
-          quiz_title: '제목',
-          quiz_content: '내용',
-          quiz_type: 'short',
-          quiz_answer: [
-            {
-              choice_content: '',
-            },
-          ],
-          quiz_image_file: image,
-          quiz_preview_url: preview_url || null,
-        };
+          number,
+          question: '제목',
+          image: image,
+          previewUrl: previewUrl || null,
+          choices: [{ answer: '' }],
+        } as ShortQuizzes;
       }
     },
     [selected, quiz],
@@ -106,7 +102,8 @@ const QuizInfo = ({ quiz, setQuiz, selected }: Props) => {
           <button
             id="choice"
             style={
-              quiz[selected - 1]?.quiz_type === 'choice'
+              // quiz[selected]?.quiz_type === 'choice'
+              isMultiples(quiz[selected])
                 ? { background: '#C1C1C1', color: 'white' }
                 : { background: '#fff', color: 'black' }
             }
@@ -119,7 +116,8 @@ const QuizInfo = ({ quiz, setQuiz, selected }: Props) => {
           <button
             id="short"
             style={
-              quiz[selected - 1]?.quiz_type === 'short'
+              // quiz[selected]?.quiz_type === 'short'
+              !isMultiples(quiz[selected])
                 ? { background: '#C1C1C1', color: 'white' }
                 : { background: '#fff', color: 'black' }
             }
@@ -132,21 +130,21 @@ const QuizInfo = ({ quiz, setQuiz, selected }: Props) => {
         </DeskTopOption>
         <p>정답</p>
         <AnswerBox>
-          {quiz[selected - 1].quiz_type === 'choice' ? (
-            <div>
-              <img src="https://velog.velcdn.com/images/ea_st_ring/post/555ec60e-4c31-48e7-80d1-ec3cb60350d2/image.svg" />
-              {quiz[selected - 1].quiz_answer[0].choice_content}
-            </div>
-          ) : (
-            (quiz[selected - 1] as ShortProps).quiz_answer.map(
-              (answer: { choice_content: string }, index: number) => (
+          {
+            // quiz[selected]?.quiz_type === 'choice'
+            isMultiples(quiz[selected]) ? (
+              <div>
+                <img src="https://velog.velcdn.com/images/ea_st_ring/post/555ec60e-4c31-48e7-80d1-ec3cb60350d2/image.svg" />
+              </div>
+            ) : (
+              (quiz[selected] as ShortQuizzes).choices.map((choice, index) => (
                 <div key={index}>
                   <img src="https://velog.velcdn.com/images/ea_st_ring/post/555ec60e-4c31-48e7-80d1-ec3cb60350d2/image.svg" />
-                  {answer.choice_content}
+                  {choice.answer}
                 </div>
-              ),
+              ))
             )
-          )}
+          }
         </AnswerBox>
       </DesktopSection>
       <MobileSection>

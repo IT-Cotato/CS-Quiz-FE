@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
 import DndContainer from './DndContainer';
 import styled from 'styled-components';
-import { ChoiceProps, ShortProps } from '@/typing/db';
+import { Multiples, ShortQuizzes } from '@/typing/db';
 
-type QuizType = ChoiceProps | ShortProps;
+type QuizType = Multiples | ShortQuizzes;
 
 type Props = {
   quiz: QuizType[];
@@ -21,58 +21,58 @@ const Slides = ({ quiz, setQuiz, selected, setSelected }: Props) => {
     setQuiz((prev) => [
       ...prev,
       {
-        quiz_id: prev.length + 1,
-        quiz_title: '제목',
-        quiz_content: '내용',
-        quiz_type: 'choice',
-        quiz_answer: [
-          {
-            choice_num: 1,
-            choice_content: '',
-          },
-        ],
+        number: prev.length + 1,
+        question: '',
         choices: [
           {
-            choice_id: 1,
-            choice_content: '',
+            number: 1,
+            content: '',
+            isAnswer: 'NO_ANSWER',
           },
           {
-            choice_id: 2,
-            choice_content: '',
+            number: 2,
+            content: '',
+            isAnswer: 'NO_ANSWER',
           },
           {
-            choice_id: 3,
-            choice_content: '',
+            number: 3,
+            content: '',
+            isAnswer: 'NO_ANSWER',
           },
           {
-            choice_id: 4,
-            choice_content: '',
+            number: 4,
+            content: '',
+            isAnswer: 'NO_ANSWER',
           },
         ],
-        quiz_image_file: null,
-        quiz_preview_url: null,
+        image: null,
+        previewUrl: null,
       },
     ]);
-  }, [selected]);
+  }, [quiz, selected]);
 
   const deleteItem = useCallback(() => {
+    if (quiz.length === 1) {
+      window.alert('슬라이드가 1개 이상이어야 합니다.');
+      return;
+    }
     const result = window.confirm('정말 삭제하시겠습니까?');
     if (!result) return;
     // 이전 번호 선택
-    setSelected(selected - 1);
+    if (selected === 0) {
+      setSelected(0);
+    } else {
+      setSelected(selected - 1);
+    }
     setQuiz((prev) => {
       // selected인 quiz을 삭제 후, id를 재정렬
-      console.log(selected);
       const newPrev = [...prev];
-      newPrev.splice(selected - 1, 1);
-      // quiz_preview_url undefined일 경우에 대한 예외처리
-      if (newPrev[selected - 2]?.quiz_preview_url) {
-        URL.revokeObjectURL(newPrev[selected - 2].quiz_preview_url || '');
+      newPrev.splice(selected, 1);
+      // previewUrl undefined일 경우에 대한 예외처리
+      if (newPrev[selected - 2]?.previewUrl) {
+        URL.revokeObjectURL(newPrev[selected - 2].previewUrl || '');
       }
-      return newPrev.map((quiz, index) => ({ ...quiz, quiz_id: index + 1 }));
-      // return prev
-      //   .filter((quiz) => quiz.quiz_id !== selected)
-      //   .map((quiz, index) => ({ ...quiz, quiz_id: index + 1 }));
+      return newPrev.map((quiz, index) => ({ ...quiz, number: index + 1 }));
     });
   }, [selected]);
   return (
@@ -89,14 +89,6 @@ const Slides = ({ quiz, setQuiz, selected, setSelected }: Props) => {
       <button
         style={{ background: '#D2D2D2' }}
         onClick={() => {
-          if (selected === 0) {
-            window.alert('슬라이드를 선택해주세요.');
-            return;
-          }
-          if (quiz.length === 1) {
-            window.alert('슬라이드가 1개 이상이어야 합니다.');
-            return;
-          }
           deleteItem();
         }}
       >

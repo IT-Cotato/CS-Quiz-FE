@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { ChoiceProps, ShortProps } from '@/typing/db';
+import { Multiples, ShortQuizzes } from '@/typing/db';
 
 type Props = {
   quiz: QuizType[];
@@ -9,7 +9,7 @@ type Props = {
   setSelected: React.Dispatch<React.SetStateAction<number>>;
 };
 
-type QuizType = ChoiceProps | ShortProps;
+type QuizType = Multiples | ShortQuizzes;
 const MobileSlides = ({ quiz, setQuiz, selected, setSelected }: Props) => {
   const [isDown, setIsDown] = useState(false);
   const [isShow, setIsShow] = useState(false);
@@ -20,24 +20,27 @@ const MobileSlides = ({ quiz, setQuiz, selected, setSelected }: Props) => {
   const menuRightDistance = menuRef.current?.getBoundingClientRect().right;
   const deleteItem = useCallback(() => {
     if (quiz.length === 1) {
-      alert('슬라이드가 1개 이상이어야 합니다.');
+      window.alert('슬라이드가 1개 이상이어야 합니다.');
       return;
     }
     const result = window.confirm('정말 삭제하시겠습니까?');
     if (!result) return;
     // 이전 번호 선택
-    setSelected(selected - 1);
+    if (selected === 0) {
+      setSelected(0);
+    } else {
+      setSelected(selected - 1);
+    }
     setQuiz((prev) => {
       // selected인 quiz을 삭제 후, id를 재정렬
       const newPrev = [...prev];
-      newPrev.splice(selected - 1, 1);
-      // quiz_preview_url undefined일 경우에 대한 예외처리
-      if (newPrev[selected - 2]?.quiz_preview_url) {
-        URL.revokeObjectURL(newPrev[selected - 2].quiz_preview_url || '');
+      newPrev.splice(selected, 1);
+      // previewUrl undefined일 경우에 대한 예외처리
+      if (newPrev[selected - 2]?.previewUrl) {
+        URL.revokeObjectURL(newPrev[selected - 2].previewUrl || '');
       }
-      return newPrev.map((quiz, index) => ({ ...quiz, quiz_id: index + 1 }));
+      return newPrev.map((quiz, index) => ({ ...quiz, number: index + 1 }));
     });
-    setIsShow(false);
   }, [selected]);
 
   const onClickBack = useCallback(() => {
@@ -52,36 +55,32 @@ const MobileSlides = ({ quiz, setQuiz, selected, setSelected }: Props) => {
     setQuiz((prev) => [
       ...prev,
       {
-        quiz_id: prev.length + 1,
-        quiz_title: '제목',
-        quiz_content: '내용',
-        quiz_type: 'choice',
-        quiz_answer: [
-          {
-            choice_num: 1,
-            choice_content: '',
-          },
-        ],
+        number: prev.length + 1,
+        question: '제목',
         choices: [
           {
-            choice_id: 1,
-            choice_content: '',
+            number: 1,
+            content: '',
+            isAnswer: 'NO_ANSWER',
           },
           {
-            choice_id: 2,
-            choice_content: '',
+            number: 2,
+            content: '',
+            isAnswer: 'NO_ANSWER',
           },
           {
-            choice_id: 3,
-            choice_content: '',
+            number: 3,
+            content: '',
+            isAnswer: 'NO_ANSWER',
           },
           {
-            choice_id: 4,
-            choice_content: '',
+            number: 4,
+            content: '',
+            isAnswer: 'NO_ANSWER',
           },
         ],
-        quiz_image_file: null,
-        quiz_preview_url: null,
+        image: null,
+        previewUrl: null,
       },
     ]);
     setIsShow(false);
@@ -127,7 +126,7 @@ const MobileSlides = ({ quiz, setQuiz, selected, setSelected }: Props) => {
       )}
       <Dropdown>
         <SelectButton onClick={() => setIsDown(!isDown)} ref={selectedRef}>
-          <p>{selected}</p>
+          <p>{selected + 1}</p>
           <label>
             <img src="https://velog.velcdn.com/images/ea_st_ring/post/fa66daa9-ddeb-4ca5-894c-5fa5f38a0340/image.svg" />{' '}
           </label>
@@ -136,13 +135,13 @@ const MobileSlides = ({ quiz, setQuiz, selected, setSelected }: Props) => {
           {isDown &&
             quiz.map((item) => (
               <div
-                key={item.quiz_id}
+                key={item.number}
                 onClick={() => {
                   setIsDown(false);
-                  setSelected(item.quiz_id);
+                  setSelected(item.number - 1);
                 }}
               >
-                {item.quiz_id}
+                {item.number}
               </div>
             ))}
         </Opitons>
@@ -173,10 +172,12 @@ const Navbar = styled.div`
   width: 100%;
   padding: 20px 0px;
   div {
-    width: 20px;
-    padding: 0 20px;
+    width: 40px;
+    padding: 0px;
     height: 30px;
-    cursor: pointer;
+    img {
+      padding: 0px 20px;
+    }
   }
 `;
 
