@@ -22,11 +22,15 @@ import FindPWProcess from '@pages/Login/FindPWProcess';
 import CSMain from '@pages/CS/CSMain';
 import CSUpload from '@pages/CS/admin/CSUpload';
 import CSProblem from '@pages/CS/solving/CSProblem';
-import BgWaiting from '@pages/CS/solving/BgWaiting';
-import BgCorrect from '@pages/CS/solving/BgCorrect';
+import useSWR from 'swr';
+import fetcher from '@utils/fetcher';
+import MemberHeader from '@components/MemberHeader';
 
 function App() {
   const location = useLocation();
+
+  const { data, error } = useSWR('/v1/api/member/info', fetcher);
+  //location.pathname !== '/cs/solving'
 
   return (
     <div className="App">
@@ -34,7 +38,13 @@ function App() {
         <GlobalStyle />
         <div className="wrapper">
           <div className="contentWrapper">
-            {location.pathname !== '/cs/solving' && <Header />}
+            {data?.role === ('GENERAL' || 'MEMBER' || 'OLD_MEMBER' || 'ADMIN' || 'EDUCATION') ? (
+              location.pathname !== '/cs/solving' ? (
+                <MemberHeader />
+              ) : null
+            ) : (
+              <Header />
+            )}
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/projects" element={<Projects />} />
@@ -55,7 +65,7 @@ function App() {
               <Route path="/mypage" element={<MyPage />} />
             </Routes>
           </div>
-          <Footer />
+          {location.pathname !== '/cs/solving' && <Footer />}
         </div>
       </ThemeProvider>
     </div>

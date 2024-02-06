@@ -9,7 +9,7 @@ import axios from 'axios';
 import api from '@/api/api';
 
 const Login = () => {
-  const { data, error } = useSWR('/v1/api/member/info', fetcher);
+  const { data, error, mutate } = useSWR('/v1/api/member/info', fetcher);
 
   const nagivate = useNavigate();
 
@@ -38,6 +38,7 @@ const Login = () => {
           .then((res) => {
             console.log(res.headers.accesstoken);
             localStorage.setItem('token', res.headers.accesstoken);
+            mutate('/v1/api/member/info');
           });
       } catch (error) {
         console.log(error);
