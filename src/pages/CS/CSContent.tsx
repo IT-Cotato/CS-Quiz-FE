@@ -1,13 +1,14 @@
 import React, { useCallback, useState } from 'react';
-import { IEducation } from '@pages/CS/CSHome';
 import { styled, css } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { ReactComponent as ModifyIcon } from '@assets/modify_icon.svg';
+import background from '@assets/cs_content_background.svg';
+import { IGeneration, IEducation } from '@/typing/db';
 
 interface Props {
   education: IEducation;
   handleModifyButton: (education: IEducation) => void;
-  generation: number;
+  generation?: IGeneration;
 }
 
 const CSContent = ({ education, handleModifyButton, generation }: Props) => {
@@ -16,8 +17,8 @@ const CSContent = ({ education, handleModifyButton, generation }: Props) => {
   const navigate = useNavigate();
 
   const onclickContent = useCallback(() => {
-    navigate(`/cs/start/?generation=${generation}&week=${education.week}`);
-  }, [generation, education.week]);
+    navigate(`/cs/start/?generation=${generation}&week=${education.educationNumber}`);
+  }, [generation, education.educationNumber]);
 
   const onClickModifyButton = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
     e.stopPropagation();
@@ -30,7 +31,7 @@ const CSContent = ({ education, handleModifyButton, generation }: Props) => {
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
     >
-      <ContentWeek>{`${education.week}주차 문제`}</ContentWeek>
+      <ContentWeek>{`${education.educationNumber}주차 문제`}</ContentWeek>
       <ContentTitle>{education.subject}</ContentTitle>
       {isHover && (
         <HoverContent>
@@ -51,7 +52,11 @@ const Content = styled.div`
   width: 300px;
   height: 300px;
   border-radius: 10px;
-  background: #e4ecfd;
+  background: #fff;
+  background-image: url(${background});
+  background-size: cover;
+  filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.07))
+    drop-shadow(-4px -4px 4px rgba(0, 0, 0, 0.07));
   margin: 20px 4px;
   cursor: pointer;
 `;
@@ -65,11 +70,11 @@ const fontStyle = css`
 
 const ContentWeek = styled.p`
   position: absolute;
-  top: 0px;
+  top: 16px;
   left: 28px;
   ${fontStyle}
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 800;
 `;
 
 const ContentTitle = styled.p`
@@ -84,7 +89,7 @@ const HoverContent = styled.div`
   width: 300px;
   height: 300px;
   border-radius: 10px;
-  background: #e4ecfd;
+  background: transparent;
   opacity: 0.8;
 
   > svg {
