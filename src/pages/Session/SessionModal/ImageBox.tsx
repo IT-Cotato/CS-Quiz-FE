@@ -29,16 +29,6 @@ const ImageBox = ({ image, photoUrl, setImage, setIsPopUpOpen }: Props) => {
       URL.revokeObjectURL(imageUrl);
     }
 
-    /*
-    if upload
-    image : null -> blob
-    imageUrl : none -> url
-
-    if modify
-    image : null -> blob
-    imageUrl : url -> url
-    */
-
     setImage(null);
     setImageUrl(undefined);
   }, [image, imageUrl]);
