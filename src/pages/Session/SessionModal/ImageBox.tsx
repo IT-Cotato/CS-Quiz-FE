@@ -6,31 +6,42 @@ import { ReactComponent as CloseIcon } from '@assets/close_icon.svg';
 
 interface Props {
   image: Blob | null;
+  photoUrl?: string;
   setImage: React.Dispatch<React.SetStateAction<Blob | null>>;
   setIsPopUpOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ImageBox = ({ image, setImage, setIsPopUpOpen }: Props) => {
-  const [imageUrl, setImageUrl] = useState('none');
+const ImageBox = ({ image, photoUrl, setImage, setIsPopUpOpen }: Props) => {
+  const [imageUrl, setImageUrl] = useState<string | undefined>(photoUrl);
   const [dragOver, setDragOver] = useState(false);
   const [dragError, setDragError] = useState(false);
 
   useEffect(() => {
     return () => {
-      if (imageUrl !== 'none') {
+      if (image && imageUrl) {
         URL.revokeObjectURL(imageUrl);
       }
     };
-  }, [imageUrl]);
+  }, [image, imageUrl]);
 
   const onCloseImage = useCallback(() => {
-    if (imageUrl !== 'none') {
+    if (image && imageUrl) {
       URL.revokeObjectURL(imageUrl);
     }
 
+    /*
+    if upload
+    image : null -> blob
+    imageUrl : none -> url
+
+    if modify
+    image : null -> blob
+    imageUrl : url -> url
+    */
+
     setImage(null);
-    setImageUrl('none');
-  }, []);
+    setImageUrl(undefined);
+  }, [image, imageUrl]);
 
   const uploadImage = useCallback(
     (file: Blob | null) => {
@@ -38,14 +49,14 @@ const ImageBox = ({ image, setImage, setIsPopUpOpen }: Props) => {
         return;
       }
 
-      if (imageUrl !== 'none') {
+      if (image && imageUrl) {
         URL.revokeObjectURL(imageUrl);
       }
 
       setImage(file);
       setImageUrl(URL.createObjectURL(file));
     },
-    [imageUrl],
+    [image, imageUrl],
   );
 
   const onDrop = useCallback((e: DragEvent<HTMLElement>) => {
@@ -108,7 +119,6 @@ const ImageBox = ({ image, setImage, setIsPopUpOpen }: Props) => {
           type="file"
           id="upload-image"
           accept="image/jpg, image/png, image/jpeg"
-          style={{ display: 'none' }}
           onChange={onClickImageUpload}
         />
         <CloseIcon
@@ -118,7 +128,8 @@ const ImageBox = ({ image, setImage, setIsPopUpOpen }: Props) => {
           onClick={onCloseImage}
         />
       </ButtonWrapper>
-      {!image && (
+      {/* photoUrl null처리 필요 */}
+      {!imageUrl && (
         <UndefinedImage dragging={dragOver ? 'drag' : 'drop'}>
           <UndefinedImg fill={dragOver ? '#CECCCC' : '#a8a8a8a8'} />
           <p>이미지를 드래그해서 추가</p>
@@ -132,7 +143,7 @@ export default React.memo(ImageBox);
 
 interface ImageWrapperProps {
   dragging: string;
-  imageurl: string;
+  imageurl?: string;
 }
 
 const ImageWrapper = styled.div<ImageWrapperProps>`
@@ -161,6 +172,10 @@ const ButtonWrapper = styled.div`
 
   svg {
     cursor: pointer;
+  }
+
+  input {
+    display: none;
   }
 `;
 

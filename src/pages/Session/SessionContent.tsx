@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from 'react';
-import { ISession } from './SessionHome';
+import { ISession } from '@/typing/db';
 import styled from 'styled-components';
-import cotato_icon from '@assets/cotato_icon.png';
 import SessionEmoji from '@pages/Session/SessionEmoji';
 import { ReactComponent as ModifyIcon } from '@assets/modify_icon.svg';
 
@@ -27,21 +26,22 @@ const SessionContent = ({ session, handleModifyButton }: Props) => {
         onMouseEnter={onMouseEnterImage}
         onMouseLeave={onMouseLeaveImage}
         ishover={isHover.toString()}
+        photourl={session.photoUrl}
       />
       {isHover ? (
         <HoverContent onMouseEnter={onMouseEnterImage} onMouseLeave={onMouseLeaveImage}>
-          <p>{session.week === 0 ? 'OT' : `${session.week}주차 세션`}</p>
+          <p>{session.number === 0 ? 'OT' : `${session.number}주차 세션`}</p>
           <p>{session.description}</p>
           {/* 운영진만 보이게 */}
           <ModifyIcon onClick={() => handleModifyButton(session)} />
         </HoverContent>
       ) : (
         <Title>
-          <p>{session.week === 0 ? 'OT' : `${session.week}주차 세션`}</p>
+          <p>{session.number === 0 ? 'OT' : `${session.number}주차 세션`}</p>
           <EmojiWrapper>
-            <SessionEmoji activity="CS" />
-            <SessionEmoji activity="IT" />
-            <SessionEmoji activity="NW" />
+            {session.csEducation === 'CS_ON' && <SessionEmoji activity="CS" />}
+            {session.itIssue === 'IT_ON' && <SessionEmoji activity="IT" />}
+            {session.networking === 'NW_ON' && <SessionEmoji activity="NW" />}
           </EmojiWrapper>
         </Title>
       )}
@@ -62,10 +62,14 @@ const Content = styled.div`
   border-radius: 10px;
 `;
 
-const SessionImage = styled.div<{ ishover: string }>`
+interface SessionImageProps {
+  ishover: string;
+  photourl: string;
+}
+
+const SessionImage = styled.div<SessionImageProps>`
   z-index: 0;
-  background-image: url(${cotato_icon});
-  background-image: url('https://velog.velcdn.com/images/whdnjsdud551/post/840b06f3-2781-4d0f-af92-27f1b3c802ee/image.jpeg');
+  background-image: url(${(props) => props.photourl});
   background-size: 100% 332px;
   width: 100%;
   height: ${(props) => (props.ishover === 'true' ? '332px' : '280px')};

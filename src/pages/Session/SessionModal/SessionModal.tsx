@@ -6,19 +6,21 @@ import ToggleButton from '@components/ToggleButton';
 import ImageBox from '@pages/Session/SessionModal/ImageBox';
 import TextBox from '@components/TextBox';
 import PopUp from '@pages/Session/SessionModal/PopUp';
-import { ISession } from '../SessionHome';
+import { ISession } from '@/typing/db';
+import api from '@/api/api';
 
 interface Props {
   isOpen: boolean;
   onCloseModal: () => void;
-  session: undefined | ISession;
+  session?: ISession;
   lastWeek: number;
+  generationId?: number;
 }
 
-const SessionModal = ({ isOpen, onCloseModal, session, lastWeek }: Props) => {
+const SessionModal = ({ isOpen, onCloseModal, session, lastWeek, generationId }: Props) => {
   const [title, setTitle] = useState('');
   const [image, setImage] = useState<Blob | null>(null);
-  const [itNews, setItNews] = useState(true);
+  const [itIssue, setItIssue] = useState(true);
   const [csEdu, setCsEdu] = useState(true);
   const [networking, setNetworking] = useState(false);
   const [description, setDescription] = useState('');
@@ -34,8 +36,11 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek }: Props) => {
 
   useEffect(() => {
     if (session) {
-      setTitle(getTitle(session.week));
+      setTitle(getTitle(session.number));
       setDescription(session.description);
+      setItIssue(session.itIssue === 'IT_ON');
+      setNetworking(session.networking === 'NW_ON');
+      setCsEdu(session.csEducation === 'CS_ON');
     } else {
       setTitle(getTitle(lastWeek + 1));
     }
@@ -44,15 +49,15 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek }: Props) => {
   const cleanInputState = useCallback(() => {
     setTitle('');
     setImage(null);
-    setItNews(true);
+    setItIssue(true);
     setCsEdu(true);
     setNetworking(false);
     setDescription('');
   }, []);
 
   const onChangeItNews = useCallback(() => {
-    setItNews(!itNews);
-  }, [itNews]);
+    setItIssue(!itIssue);
+  }, [itIssue]);
 
   const onChangeCsEdu = useCallback(() => {
     setCsEdu(!csEdu);
@@ -72,12 +77,30 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek }: Props) => {
     // 삭제 이후 모달을 끄는 동작 필요
   }, []);
 
+  // 기훈이 있을떄 해봐야 할듯
   const onClickAddButton = useCallback(
     (e: MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
       if (!session) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const week = lastWeek + 1;
+
+        const formData = new FormData();
+        if (image) formData.append('sessionImage', image);
+        if (generationId) formData.append('generationId', generationId.toString());
+        formData.append('descriprion', description);
+        formData.append('ItIssue', itIssue ? 'IT_ON' : 'IT_OFF');
+        formData.append('Networking', networking ? 'NW_ON' : 'NW_OFF');
+        formData.append('CSEducation', csEdu ? 'CS_ON' : 'CS_OFF');
+
+        api
+          .post('/v1/api/session/add', formData, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          })
+          .then((res) => console.log(res))
+          .catch((err) => console.log(err));
 
         // 업로드 요청
         console.log('upload');
@@ -88,7 +111,7 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek }: Props) => {
 
       // 제출 이후 모달을 끄는 동작 필요
     },
-    [session, itNews, csEdu, networking, description],
+    [session, itIssue, csEdu, networking, description],
   );
 
   const closePopUp = useCallback(() => {
@@ -105,11 +128,16 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek }: Props) => {
           <h3>{!session ? '세션 추가' : '세션 수정'}</h3>
         </Header>
         <BoxContainer>
-          <ImageBox image={image} setImage={setImage} setIsPopUpOpen={setIsPopUpOpen} />
+          <ImageBox
+            image={image}
+            photoUrl={session?.photoUrl}
+            setImage={setImage}
+            setIsPopUpOpen={setIsPopUpOpen}
+          />
           <TextBox value={title} height="60px" readOnly={true} />
           <ToggleButtonBox>
             <p>it 뉴스</p>
-            <ToggleButton toggled={itNews} onClick={onChangeItNews} />
+            <ToggleButton toggled={itIssue} onClick={onChangeItNews} />
             <p>CS 교육</p>
             <ToggleButton toggled={csEdu} onClick={onChangeCsEdu} />
             <p>네트워킹</p>

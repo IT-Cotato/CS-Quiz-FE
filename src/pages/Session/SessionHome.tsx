@@ -5,41 +5,34 @@ import SessionModal from '@pages/Session/SessionModal/SessionModal';
 import { ReactComponent as AddIcon } from '@assets/add_icon.svg';
 import { ReactComponent as SettingIcon } from '@assets/setting_icon.svg';
 import GenerationSelect from '@components/GenerationSelect';
-
-// 임시 세션 타입
-export interface ISession {
-  id: number;
-  image: File | null;
-  description: string;
-  week: number;
-}
-const sessions: ISession[] = [
-  { id: 1, week: 0, image: null, description: '코테이토 8기 첫 만남 OT를 진행하였습니다' },
-  { id: 2, week: 1, image: null, description: '1주차 세션을 진행하였습니다.' },
-  { id: 3, week: 2, image: null, description: '2주차 세션을 진행하였습니다.' },
-  { id: 4, week: 3, image: null, description: '3주차 세션을 진행하였습니다.' },
-];
-// const sessions: ISession[] = [];
+import { IGeneration, ISession } from '@/typing/db';
+import api from '@/api/api';
 
 const SessionHome = () => {
+  const [sessions, setSessions] = useState<undefined | ISession[]>();
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
   const [modifySession, setModifySession] = useState<undefined | ISession>();
   const [lastWeek, setLastWeek] = useState(0);
-  const [selectedGeneration, setSelectedGeneration] = useState(0);
+  const [selectedGeneration, setSelectedGeneration] = useState<IGeneration | undefined>();
 
   useEffect(() => {
-    setSelectedGeneration(8);
-    if (sessions.length > 0) {
-      setLastWeek(sessions[sessions.length - 1].week);
+    if (sessions && sessions.length > 0) {
+      setLastWeek(sessions[sessions.length - 1].number);
     } else {
       setLastWeek(-1);
     }
   }, []);
 
   const onChangeGeneration = useCallback(
-    (generation: number) => {
+    (generation: IGeneration | undefined) => {
       setSelectedGeneration(generation);
-      // 그리고 여기서 api 요청을 보낼듯
+
+      if (generation) {
+        api
+          .get(`/v1/api/session?generationId=${generation?.generationId}`)
+          .then((res) => setSessions(res.data))
+          .catch((err) => console.error(err));
+      }
     },
     [selectedGeneration],
   );
@@ -73,13 +66,13 @@ const SessionHome = () => {
           </ButtonWrapper>
         </SessionSetting>
         <SessionContentsContainer>
-          {sessions.length === 0 ? (
+          {!sessions ? (
             <SessionReady>
               <SettingIcon />
               <p>세션 준비중입니다.</p>
             </SessionReady>
           ) : (
-            sessions.map((session) => (
+            sessions?.map((session) => (
               <SessionContent
                 key={session.id}
                 session={session}
@@ -94,6 +87,7 @@ const SessionHome = () => {
         onCloseModal={onCloseModal}
         session={modifySession}
         lastWeek={lastWeek}
+        generationId={selectedGeneration?.generationId}
       />
     </>
   );
