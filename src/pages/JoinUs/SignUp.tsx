@@ -111,6 +111,30 @@ const SignUp = () => {
     }
   }, []);
 
+  const emailData = {
+    email: id,
+  };
+  const handleEmailAuth = async () => {
+    await api
+      .post('/v1/api/auth/verification', emailData, {
+        params: {
+          type: 'sign-up',
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        alert('이메일 인증이 완료되었습니다.');
+      })
+      .catch((err) => {
+        console.log(err);
+        if (err.response.status === 409) {
+          alert('이미 가입된 이메일입니다.');
+        } else if (err.response.status === 400) {
+          alert('이메일 형식을 다시 확인해주세요.');
+        }
+      });
+  };
+
   const onSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -143,14 +167,19 @@ const SignUp = () => {
       <Form onSubmit={onSubmit}>
         <Label>
           <span>아이디</span>
-          <InputBox
-            type="text"
-            id="id"
-            name="id"
-            placeholder="이메일 형식으로 작성해주세요."
-            value={id}
-            onChange={onChangeId}
-          />
+          <InputWrapper>
+            <InputBox
+              type="text"
+              id="id"
+              name="id"
+              placeholder="이메일 형식으로 작성해주세요."
+              value={id}
+              onChange={onChangeId}
+            />
+            <AuthButton type="button" onClick={handleEmailAuth}>
+              인증하기
+            </AuthButton>
+          </InputWrapper>
           {!isId && <Error>{idMessage}</Error>}
         </Label>
         <Label>
@@ -237,6 +266,10 @@ const Label = styled.label`
   }
 `;
 
+const InputWrapper = styled.div`
+  position: relative;
+`;
+
 const InputBox = styled.input`
   width: 600px !important;
   height: 52px;
@@ -254,6 +287,21 @@ const InputBox = styled.input`
   &:focus {
     outline: none;
   }
+`;
+
+const AuthButton = styled.button`
+  width: 72px;
+  height: 36px;
+  font-family: NanumSquareRound;
+  font-size: 0.8rem;
+  font-weight: 300;
+  border-radius: 8px;
+  background: ${({ theme }) => theme.color.green};
+  color: #fff;
+  border: none;
+  position: absolute;
+  right: 12px;
+  top: 8px;
 `;
 
 const ButtonSection = styled.div`
