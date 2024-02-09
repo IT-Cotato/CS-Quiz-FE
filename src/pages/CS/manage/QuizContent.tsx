@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { IQuizContent } from '@pages/CS/CSManage/CSManage';
+import { IQuizContent } from '@pages/CS/manage/CSManage';
 import { css, styled } from 'styled-components';
 import ToggleButton from '@components/ToggleButton';
 import { ReactComponent as ArrowBack } from '@assets/arrow_back.svg';

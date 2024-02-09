@@ -1,0 +1,26 @@
+<svg width="188" height="188" viewBox="0 0 188 188" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_496_1928)">
+<circle cx="94.0089" cy="94.0089" r="89.0089" fill="#FFFCFC"/>
+<g clip-path="url(#clip1_496_1928)" filter="url(#filter0_d_496_1928)">
+<path d="M41.7014 41.5028C70.7911 12.5226 117.867 12.6112 146.847 41.7013C175.827 70.791 175.738 117.867 146.649 146.847C117.559 175.827 70.4831 175.738 41.5029 146.649C12.5225 117.559 12.6114 70.4832 41.7014 41.5028ZM67.9382 67.8388C65.9382 69.8313 65.7659 72.964 67.4251 75.153L67.9233 75.7248L86.2891 94.16L67.8539 112.526C65.6721 114.699 65.6655 118.23 67.839 120.412C69.8314 122.412 72.9642 122.584 75.1532 120.925L75.7249 120.427L94.1601 102.061L112.526 120.496C114.699 122.678 118.23 122.684 120.412 120.511C122.412 118.519 122.584 115.385 120.925 113.197L120.427 112.625L102.061 94.1898L120.496 75.824C122.678 73.6505 122.685 70.1197 120.511 67.9381C118.519 65.9381 115.386 65.7661 113.197 67.4248L112.625 67.9232L94.1899 86.289L75.8241 67.8537C73.6506 65.672 70.1199 65.6654 67.9382 67.8388Z" fill="#F55454"/>
+</g>
+</g>
+<defs>
+<filter id="filter0_d_496_1928" x="-36" y="-32" width="260.35" height="260.35" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="4"/>
+<feGaussianBlur stdDeviation="2"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_496_1928"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_496_1928" result="shape"/>
+</filter>
+<clipPath id="clip0_496_1928">
+<rect width="188" height="188" fill="white"/>
+</clipPath>
+<clipPath id="clip1_496_1928">
+<rect width="178.439" height="178.439" fill="white" transform="translate(-32 93.9367) rotate(-44.8919)"/>
+</clipPath>
+</defs>
+</svg>

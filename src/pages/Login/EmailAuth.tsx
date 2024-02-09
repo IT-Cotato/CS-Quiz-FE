@@ -28,7 +28,7 @@ const EmailAuth: React.FC<EmailAuthProps> = ({ goToNextStep }) => {
     setInputs(newInputs);
   };
 
-  const onClickButton = () => {
+  const onSubmit = () => {
     if (!inputs.some((el) => el === null)) {
       alert('인증이 완료되었습니다.');
       // setShowFindPW(true);
@@ -50,26 +50,28 @@ const EmailAuth: React.FC<EmailAuthProps> = ({ goToNextStep }) => {
         <br />
         이메일에서 코드 6자리를 아래 박스에 입력해주세요.
       </p>
-      <InputContainer>
-        {inputs.map((input, idx) => (
-          <InputBox
-            key={idx}
-            type="number"
-            value={input}
-            onChange={handleInputChange(idx)}
-            ref={(el) => (inputRef.current[idx] = el)}
-            filled={input !== null}
-          />
-        ))}
-      </InputContainer>
-      <p>
-        인증 메일은 발송 시점부터 30분 유효하며,
-        <br />
-        재발송 시 기존 인증코드는 만료됩니다.
-      </p>
-      <Button authorized={!inputs.some((el) => el === null)} onClick={onClickButton}>
-        인증 완료
-      </Button>
+      <Form onSubmit={onSubmit}>
+        <InputContainer>
+          {inputs.map((input, idx) => (
+            <InputBox
+              key={idx}
+              type="number"
+              value={input}
+              onChange={handleInputChange(idx)}
+              ref={(el) => (inputRef.current[idx] = el)}
+              filled={input !== null}
+            />
+          ))}
+        </InputContainer>
+        <p>
+          인증 메일은 발송 시점부터 30분 유효하며,
+          <br />
+          재발송 시 기존 인증코드는 만료됩니다.
+        </p>
+        <Button type="submit" authorized={!inputs.some((el) => el === null)}>
+          인증 완료
+        </Button>
+      </Form>
       <p>
         혹시 이메일을 못받으셨나요? <span>메일 다시 보내기</span>
       </p>
@@ -91,7 +93,7 @@ const Wrapper = styled.div`
   }
   p {
     font-size: 1rem;
-    margin-top: 0;
+    margin: 0;
     text-align: center;
     span {
       color: #477feb;
@@ -105,14 +107,22 @@ const Wrapper = styled.div`
   }
 `;
 
-const InputContainer = styled.div`
+const Form = styled.form`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 500px;
   margin-top: 40px;
-  margin-bottom: 56px;
+  margin-bottom: 60px;
+`;
+
+const InputContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 40px;
 `;
 
 const InputBox = styled.input<{ filled: boolean }>`
@@ -151,8 +161,7 @@ const Button = styled.button<{ authorized?: boolean }>`
   border-radius: 28px;
   border: none;
   font-family: NanumSquareRound;
-  margin-top: 20px;
-  margin-bottom: 88px;
+  margin-top: 32px;
   &:hover {
     cursor: pointer;
   }
