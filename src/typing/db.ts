@@ -50,3 +50,9 @@ export interface ISession {
     modifiedAt: string;
   };
 }
+
+export interface IEducation {
+  educationId: number;
+  subject: string;
+  educationNumber: number;
+}
