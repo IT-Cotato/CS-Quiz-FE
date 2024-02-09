@@ -13,7 +13,7 @@ const CSManageLayout = ({ header, children }: Props) => {
 
   return (
     <CSManageWrapper>
-      <BackButton width={40} height={40} onClick={() => navigate(-1)} />
+      <BackButton width={24} height={24} onClick={() => navigate(-1)} />
       <CSManageHeader>
         <h3>{header}</h3>
       </CSManageHeader>
@@ -41,12 +41,12 @@ const BackButton = styled(ArrowBack)`
 `;
 
 const CSManageHeader = styled.div`
-  margin: 144px 0 60px;
+  margin: 80px 0 40px;
 
   > h3 {
     color: #1d1d1d;
     font-family: Inter;
-    font-size: 36px;
+    font-size: 32px;
     font-weight: 600;
   }
 `;

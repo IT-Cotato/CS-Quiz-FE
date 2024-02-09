@@ -25,19 +25,18 @@ const CSManage = () => {
   const generation = search.split('&')[0].split('=')[1];
   const week = search.split('&')[1].split('=')[1];
 
-  console.log('generation', generation);
-  console.log('week', week);
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [quizStarted, setQuizStarted] = useState(false);
 
   const onClickQuizButton = useCallback(() => {
-    setQuizStarted(!quizStarted);
+    if (!quizStarted && confirm('퀴즈를 시작하시겠습니까?')) {
+      setQuizStarted(true);
+    } else if (quizStarted && confirm('퀴즈를 종료하시겠습니까?')) {
+      setQuizStarted(false);
+    }
   }, [quizStarted]);
 
   const onClickCheckAllScorer = useCallback(() => {
     navigate(`/cs/allscorer?generation=${generation}&week=${week}`);
-    console.log('all scorer click');
   }, []);
 
   return (
@@ -45,7 +44,7 @@ const CSManage = () => {
       <ManageWrapper>
         <ButtonWrapper>
           <Button color="#477FEB" onClick={onClickQuizButton}>
-            {quizStarted ? '몰루?' : '교육 시작하기'}
+            {quizStarted ? '교육 종료하기' : '교육 시작하기'}
           </Button>
           <Button color="#000" onClick={onClickCheckAllScorer}>
             전체 득점자 확인
@@ -76,6 +75,8 @@ const ButtonWrapper = styled.div`
 `;
 
 const Button = styled.button<{ color: string }>`
+  width: 160px;
+  height: 36px;
   background: #feffff;
   border: none;
   border-radius: 5px;

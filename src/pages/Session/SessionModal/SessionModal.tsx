@@ -4,54 +4,60 @@ import { css, styled } from 'styled-components';
 import { ReactComponent as CloseIcon } from '@assets/close_icon.svg';
 import ToggleButton from '@components/ToggleButton';
 import ImageBox from '@pages/Session/SessionModal/ImageBox';
-import TextBox from '@pages/Session/SessionModal/TextBox';
+import TextBox from '@components/TextBox';
 import PopUp from '@pages/Session/SessionModal/PopUp';
-
-/*
-논의 사항
-
-허용 파일 (png, jpeg, jpg)
-이미지 업로드에서 파일선택은 하나의 파일만 선택되도록 구현
-*/
+import { ISession } from '@/typing/db';
+import api from '@/api/api';
 
 interface Props {
   isOpen: boolean;
   onCloseModal: () => void;
-  mode: string;
+  session?: ISession;
+  lastWeek: number;
+  generationId?: number;
 }
 
-const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
-  const [image, setImage] = useState<File | null>(null);
+const SessionModal = ({ isOpen, onCloseModal, session, lastWeek, generationId }: Props) => {
   const [title, setTitle] = useState('');
-  const [itNews, setItNews] = useState(true);
+  const [image, setImage] = useState<Blob | null>(null);
+  const [itIssue, setItIssue] = useState(true);
   const [csEdu, setCsEdu] = useState(true);
   const [networking, setNetworking] = useState(false);
   const [description, setDescription] = useState('');
 
   const [isPopUpOpen, setIsPopUpOpen] = useState(false);
 
-  useEffect(() => {
-    if (mode === 'modify') {
-      // 기존에 있던 데이터 가져오기
+  const getTitle = useCallback((week: number) => {
+    if (week === 0) {
+      return 'OT';
     }
-  }, [mode]);
+    return `${week}주차 세션`;
+  }, []);
+
+  useEffect(() => {
+    if (session) {
+      setTitle(getTitle(session.number));
+      setDescription(session.description);
+      setItIssue(session.itIssue === 'IT_ON');
+      setNetworking(session.networking === 'NW_ON');
+      setCsEdu(session.csEducation === 'CS_ON');
+    } else {
+      setTitle(getTitle(lastWeek + 1));
+    }
+  }, [session, lastWeek]);
 
   const cleanInputState = useCallback(() => {
-    setImage(null);
     setTitle('');
-    setItNews(true);
+    setImage(null);
+    setItIssue(true);
     setCsEdu(true);
     setNetworking(false);
     setDescription('');
   }, []);
 
-  const onChangeTitle = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
-    setTitle(e.target.value);
-  }, []);
-
   const onChangeItNews = useCallback(() => {
-    setItNews(!itNews);
-  }, [itNews]);
+    setItIssue(!itIssue);
+  }, [itIssue]);
 
   const onChangeCsEdu = useCallback(() => {
     setCsEdu(!csEdu);
@@ -71,10 +77,31 @@ const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
     // 삭제 이후 모달을 끄는 동작 필요
   }, []);
 
+  // 기훈이 있을떄 해봐야 할듯
   const onClickAddButton = useCallback(
     (e: MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
-      if (mode === 'add') {
+      if (!session) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const week = lastWeek + 1;
+
+        const formData = new FormData();
+        if (image) formData.append('sessionImage', image);
+        if (generationId) formData.append('generationId', generationId.toString());
+        formData.append('descriprion', description);
+        formData.append('ItIssue', itIssue ? 'IT_ON' : 'IT_OFF');
+        formData.append('Networking', networking ? 'NW_ON' : 'NW_OFF');
+        formData.append('CSEducation', csEdu ? 'CS_ON' : 'CS_OFF');
+
+        api
+          .post('/v1/api/session/add', formData, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          })
+          .then((res) => console.log(res))
+          .catch((err) => console.log(err));
+
         // 업로드 요청
         console.log('upload');
       } else {
@@ -84,7 +111,7 @@ const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
 
       // 제출 이후 모달을 끄는 동작 필요
     },
-    [mode, title, itNews, csEdu, networking, description],
+    [session, itIssue, csEdu, networking, description],
   );
 
   const closePopUp = useCallback(() => {
@@ -92,49 +119,39 @@ const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
   }, []);
 
   return (
-    <ReactModal
-      isOpen={isOpen}
-      style={{
-        overlay: {
-          overflow: 'auto',
-        },
-        content: {
-          width: '740px',
-          height: '800px',
-          marginTop: '10%',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          borderRadius: '15px',
-          boxShadow: '0px 4px 15px 0px rgba(0, 0, 0, 0.15)',
-          display: 'flex',
-          justifyContent: 'center',
-        },
-      }}
-      onAfterClose={cleanInputState}
-    >
+    <ReactModal isOpen={isOpen} onAfterClose={cleanInputState} style={modalStyle}>
       <ModalWrapper>
         <ModalCloseButton>
           <CloseIcon width="57" height="56" fill="#686868" onClick={onCloseModal} />
         </ModalCloseButton>
         <Header>
-          <h3>{mode === 'add' ? '세션 추가' : '세션 수정'}</h3>
+          <h3>{!session ? '세션 추가' : '세션 수정'}</h3>
         </Header>
         <BoxContainer>
-          <ImageBox image={image} setImage={setImage} setIsPopUpOpen={setIsPopUpOpen} />
-          <TextBox value={title} onChange={onChangeTitle} textType="title" />
+          <ImageBox
+            image={image}
+            photoUrl={session?.photoUrl}
+            setImage={setImage}
+            setIsPopUpOpen={setIsPopUpOpen}
+          />
+          <TextBox value={title} height="60px" readOnly={true} />
           <ToggleButtonBox>
             <p>it 뉴스</p>
-            <ToggleButton toggled={itNews} onClick={onChangeItNews} />
+            <ToggleButton toggled={itIssue} onClick={onChangeItNews} />
             <p>CS 교육</p>
             <ToggleButton toggled={csEdu} onClick={onChangeCsEdu} />
             <p>네트워킹</p>
             <ToggleButton toggled={networking} onClick={onChangeNetworking} />
           </ToggleButtonBox>
-          <TextBox value={description} onChange={onChangeDescription} textType="description" />
+          <TextBox
+            value={description}
+            placeholder="내용을 입력해주세요."
+            onChange={onChangeDescription}
+            height="110px"
+          />
         </BoxContainer>
         <ButtonContainer>
-          {mode === 'modify' && (
+          {session && (
             <DeleteButton type="button" onClick={onClickDeleteButton}>
               세션 삭제
             </DeleteButton>
@@ -150,6 +167,24 @@ const SessionModal = ({ isOpen, onCloseModal, mode }: Props) => {
 };
 
 export default SessionModal;
+
+const modalStyle = {
+  overlay: {
+    overflow: 'auto',
+  },
+  content: {
+    width: '740px',
+    height: '800px',
+    marginTop: '10%',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    borderRadius: '15px',
+    boxShadow: '0px 4px 15px 0px rgba(0, 0, 0, 0.15)',
+    display: 'flex',
+    justifyContent: 'center',
+  },
+};
 
 const ModalWrapper = styled.div`
   position: relative;
@@ -201,7 +236,7 @@ const ToggleButtonBox = styled.div`
   height: 60px;
   border-radius: 10px;
   background: #f1f1f1;
-  margin-top: 8px;
+  margin: 4px;
   align-items: center;
 
   > p {
