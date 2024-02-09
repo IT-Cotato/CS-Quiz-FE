@@ -27,11 +27,11 @@ const QuizContent = ({ quiz, generation, week }: Props) => {
 
   const onClickApproach = useCallback(() => {
     setIsApproach(!isApproach);
-  }, []);
+  }, [isApproach]);
 
   const onClickQuizStart = useCallback(() => {
     setIsQuizStart(!isQuizStart);
-  }, []);
+  }, [isQuizStart]);
 
   return (
     <ContentBox>
@@ -64,7 +64,7 @@ const ContentBox = styled.div`
   height: 180px;
   background: #fff;
   border-radius: 8px;
-  margin: 32px 0;
+  margin: 16px 0 28px;
 `;
 
 const fontStyle = css`
