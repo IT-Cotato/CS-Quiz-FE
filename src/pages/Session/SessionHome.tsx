@@ -29,7 +29,14 @@ const SessionHome = () => {
 
       if (generation) {
         api
-          .get(`/v1/api/session?generationId=${generation?.generationId}`)
+          .get('/v1/api/session', {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+            params: {
+              generationId: generation.generationId,
+            },
+          })
           .then((res) => setSessions(res.data))
           .catch((err) => console.error(err));
       }
