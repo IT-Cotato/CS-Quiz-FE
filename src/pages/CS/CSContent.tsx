@@ -17,8 +17,8 @@ const CSContent = ({ education, handleModifyButton, generation }: Props) => {
   const navigate = useNavigate();
 
   const onclickContent = useCallback(() => {
-    navigate(`/cs/start/?generation=${generation}&week=${education.educationNumber}`);
-  }, [generation, education.educationNumber]);
+    navigate(`/cs/start/?generation=${generation?.generationId}&week=${education.educationNumber}`);
+  }, [generation?.generationId, education.educationNumber]);
 
   const onClickModifyButton = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
     e.stopPropagation();

@@ -1,40 +1,36 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { styled } from 'styled-components';
 import CSContent from '@pages/CS/CSContent';
 import { ReactComponent as SettingIcon } from '@assets/setting_icon.svg';
 import { ReactComponent as AddIcon } from '@assets/add_icon.svg';
 import GenerationSelect from '@components/GenerationSelect';
 import CSModal from '@pages/CS/CSModal';
-
-// 임시 CS 타입 (id만 가지는)
-export interface IEducation {
-  id: number;
-  week: number;
-  subject: string;
-}
-
-const educations: IEducation[] = [
-  { id: 1, week: 1, subject: 'AWS' },
-  { id: 2, week: 2, subject: '브라우저 렌더링' },
-  { id: 3, week: 3, subject: 'IP 주소' },
-  { id: 4, week: 4, subject: '파일시스템' },
-];
-// const educations: IEducation[] = [];
+import { IEducation, IGeneration } from '@/typing/db';
+import api from '@/api/api';
 
 const CSHome = () => {
+  const [educations, setEducations] = useState<undefined | IEducation[]>();
   const [isCSModalOpen, setIsCSModalOpen] = useState(false);
   const [modifyEducation, setModifyEducation] = useState<undefined | IEducation>();
-  const [selectedGeneration, setSelectedGeneration] = useState(0);
-
-  useEffect(() => {
-    // 기수의 최대값
-    setSelectedGeneration(8);
-  }, []);
+  const [selectedGeneration, setSelectedGeneration] = useState<undefined | IGeneration>();
 
   const onChangeGeneration = useCallback(
-    (generation: number) => {
+    (generation?: IGeneration) => {
       setSelectedGeneration(generation);
-      // 그리고 여기서 api 요청을 보낼듯
+
+      if (generation) {
+        api
+          .get('/v1/api/education', {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+            params: {
+              generationId: generation.generationId,
+            },
+          })
+          .then((res) => setEducations(res.data))
+          .catch((err) => console.error(err));
+      }
     },
     [selectedGeneration],
   );
@@ -62,13 +58,12 @@ const CSHome = () => {
             onChangeGeneration={onChangeGeneration}
             selectedGeneration={selectedGeneration}
           />
-          {/* 권한에 따라 add는 선택적으로 보여지게 */}
           <ButtonWrapper>
             <AddIcon onClick={onClickAddButton} />
           </ButtonWrapper>
         </CSSetting>
         <CSContentsContainer>
-          {educations.length === 0 ? (
+          {!educations ? (
             <CSReady>
               <SettingIcon />
               <p>CS 문제풀이 준비중입니다.</p>
@@ -76,7 +71,7 @@ const CSHome = () => {
           ) : (
             educations.map((education) => (
               <CSContent
-                key={education.week}
+                key={education.educationId}
                 education={education}
                 handleModifyButton={handleModifyButton}
                 generation={selectedGeneration}
