@@ -12,17 +12,14 @@ interface Props {
    * @param generation
    * @returns
    */
-  onChangeGeneration: (generation: IGeneration | undefined) => void;
+  onChangeGeneration: (generation?: IGeneration) => void;
   /**
    * 현재 선택된 기수
    */
-  selectedGeneration: IGeneration | undefined;
+  selectedGeneration?: IGeneration;
 }
 
-const GenerationSelect = ({
-  onChangeGeneration: onChangeGeneration,
-  selectedGeneration: selectedGeneration,
-}: Props) => {
+const GenerationSelect = ({ onChangeGeneration, selectedGeneration }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const { data: generationData } = useSWR<IGeneration[]>('/v1/api/generation', fetcher);
 
