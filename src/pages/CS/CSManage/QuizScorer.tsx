@@ -1,12 +1,8 @@
-import React, { useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import CSManageLayout from './CSManageLayout';
 import { css, styled } from 'styled-components';
-
-/*
-백에서 제출 값 처리 어떻게 하는지?
-객관식인지 주관식이지 구분 가능해야 객관식에서 {record}번 식의 스트링 처리가 가능
-*/
+import { ReactComponent as AddIcon } from '@assets/add_circle.svg';
 
 const submitList = [
   { id: 1, name: '조원영', phone: 1111, record: 1 },
@@ -20,17 +16,13 @@ const submitList = [
 const QuizScorer = () => {
   const [scorer, setScorer] = useState({ id: 1, name: '조원영', phone: 1111 });
   const [checkedScorer, setCheckedScorer] = useState(scorer);
+  const [addAnswer, setAddAnswer] = useState('');
 
   const { search, state } = useLocation();
   const generation = search.split('&')[0].split('=')[1];
   const week = search.split('&')[1].split('=')[1];
   const quiz = search.split('&')[2].split('=')[1];
   const question = state.question;
-
-  console.log('generation', generation);
-  console.log('week', week);
-  console.log('quiz', quiz);
-  console.log('question', question);
 
   const onChangeRadio = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const newScorer = submitList.find((element) => element.id === parseInt(e.target.value));
@@ -42,6 +34,15 @@ const QuizScorer = () => {
   }, [scorer, checkedScorer]);
 
   const onClickConfirmButton = useCallback(() => {}, []);
+
+  const onChangeAddAnswer = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setAddAnswer(e.target.value);
+    },
+    [addAnswer],
+  );
+
+  const onClickAddAnswerButton = useCallback(() => {}, []);
 
   return (
     <CSManageLayout header="CS 문제별 득점자 확인">
@@ -84,6 +85,26 @@ const QuizScorer = () => {
               <ChangeButton onClick={onClickChangeButton}>변경</ChangeButton>
               <ConfirmButton onClick={onClickConfirmButton}>확인</ConfirmButton>
             </ButtonWrapper>
+            <p>문제 정답</p>
+            <AnswerBox>
+              <p>뭘까영</p>
+            </AnswerBox>
+            <p>정답 추가</p>
+            <AddAnswerInputWrapper>
+              <AddAnswerInput
+                type="text"
+                placeholder="내용을 입력해주세요."
+                value={addAnswer}
+                onChange={onChangeAddAnswer}
+              />
+              <CleanAddAnswer onClick={() => setAddAnswer('')}>&times;</CleanAddAnswer>
+            </AddAnswerInputWrapper>
+            <AddAnswerButtonBox>
+              <AddAsnwerButton onClick={onClickAddAnswerButton}>
+                <AddIcon />
+                <p>답안추가</p>
+              </AddAsnwerButton>
+            </AddAnswerButtonBox>
           </HalfContainer>
         </ColumnDivision>
       </QuizScorerWrapper>
@@ -97,6 +118,7 @@ const QuizScorerWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 70%;
+  margin-bottom: 48px;
 `;
 
 const fontStyle = css`
@@ -104,6 +126,7 @@ const fontStyle = css`
   font-family: Inter;
   font-size: 20px;
   font-weight: 500;
+  margin: 16px 0;
 `;
 
 const TitleWrapper = styled.div`
@@ -177,7 +200,7 @@ const SubmitContent = styled.div`
     cursor: pointer;
 
     > p {
-      ${fontStyle}
+      ${fontStyle};
       margin-left: 12px;
     }
 
@@ -219,7 +242,7 @@ const ButtonWrapper = styled.div`
   display: flex;
   width: 100%;
   justify-content: flex-end;
-  margin: 24px 0;
+  margin: 24px 0 4px;
 `;
 
 const Button = styled.button`
@@ -240,11 +263,86 @@ const Button = styled.button`
 
 const ChangeButton = styled(Button)`
   border-radius: 5px;
-  background: #c1c1c1;
+  border: 1px solid #bebebe;
+  background: #feffff;
   color: #2e2e2e;
 `;
 
 const ConfirmButton = styled(Button)`
   background: #477feb;
   color: #fff;
+`;
+
+const AnswerBox = styled(Box)`
+  width: 100%;
+  margin-bottom: 24px;
+
+  > p {
+    ${fontStyle};
+    color: #85c88a;
+    margin: 8px;
+  }
+`;
+
+const AddAnswerInputWrapper = styled.div`
+  position: relative;
+  width: 100%;
+`;
+
+const AddAnswerInput = styled.input`
+  display: flex;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  background-color: #fff;
+  padding: 16px;
+  box-sizing: border-box;
+
+  ${fontStyle};
+  margin: 0;
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &::placeholder {
+    color: #a4a4a4;
+  }
+`;
+
+const CleanAddAnswer = styled.button`
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: #686868;
+  font-size: 24px;
+`;
+
+const AddAnswerButtonBox = styled(Box)`
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 54px;
+  margin-top: 12px;
+`;
+
+const AddAsnwerButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+
+  > p {
+    color: #757575;
+    font-family: Inter;
+    font-size: 16px;
+    font-weight: 400;
+  }
 `;
