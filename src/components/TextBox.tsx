@@ -43,7 +43,7 @@ const Box = styled.div<{ height: string }>`
     line-height: normal;
 
     &::placeholder {
-      color: #a1a1a1;
+      color: #cecccc;
     }
 
     &:focus {
