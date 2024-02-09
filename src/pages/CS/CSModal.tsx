@@ -1,14 +1,15 @@
 import React, { ChangeEvent, MouseEvent, useCallback, useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { IEducation } from '@pages/CS/CSHome';
 import ReactModal from 'react-modal';
 import { ReactComponent as CloseIcon } from '@assets/close_icon.svg';
 import TextBox from '@components/TextBox';
+import { IEducation } from '@/typing/db';
+import SessionSelect from '@components/SessionSelect';
 
 interface Props {
   isOpen: boolean;
   onCloseModal: () => void;
-  educatoin: undefined | IEducation;
+  educatoin?: IEducation;
 }
 
 const CSModal = ({ isOpen, onCloseModal, educatoin }: Props) => {
@@ -18,8 +19,8 @@ const CSModal = ({ isOpen, onCloseModal, educatoin }: Props) => {
 
   useEffect(() => {
     if (educatoin) {
-      setWeek(`${educatoin.week}주차 교육`);
-      setEducationNum(educatoin.week);
+      setWeek(`${educatoin.educationNumber}주차 교육`);
+      setEducationNum(educatoin.educationNumber);
       setSubject(educatoin.subject);
     }
   }, [educatoin]);
@@ -81,7 +82,7 @@ const CSModal = ({ isOpen, onCloseModal, educatoin }: Props) => {
           <h3>{!educatoin ? '교육 추가' : '교육 수정'}</h3>
         </Header>
         <BoxContainer>
-          <TextBox value="들롭박스가 될 아이" height="60px" />
+          <SessionSelect />
           <TextBox
             value={week}
             placeholder="교육 주차를 입력하세요"
@@ -98,7 +99,7 @@ const CSModal = ({ isOpen, onCloseModal, educatoin }: Props) => {
         <ButtonContainer>
           {educatoin && (
             <DeleteButton type="button" onClick={onClickDeleteButton}>
-              세션 삭제
+              교육 삭제
             </DeleteButton>
           )}
           <UploadButton type="button" onClick={onClickAddButton}>
@@ -158,7 +159,7 @@ const Header = styled.div`
   margin: 8px;
 
   > h3 {
-    ${fontStyle}
+    ${fontStyle};
     color: #000;
     font-size: 24px;
     margin-top: 0;
@@ -192,13 +193,13 @@ const ButtonContainer = styled.div`
 const DeleteButton = styled(Button)`
   background: #eb5353;
   border: none;
-  ${fontStyle}
+  ${fontStyle};
   color: #fff;
 `;
 
 const UploadButton = styled(Button)`
   background: #477feb;
   border: none;
-  ${fontStyle}
-  color: #FFF;
+  ${fontStyle};
+  color: #fff;
 `;
