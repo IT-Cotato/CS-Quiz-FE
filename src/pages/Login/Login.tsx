@@ -9,7 +9,11 @@ import axios from 'axios';
 import api from '@/api/api';
 
 const Login = () => {
-  const { data, error, mutate } = useSWR('/v1/api/member/info', fetcher);
+  const { data, error, mutate } = useSWR('/v1/api/member/info', fetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
 
   const nagivate = useNavigate();
 

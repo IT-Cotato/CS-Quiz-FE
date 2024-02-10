@@ -9,7 +9,11 @@ import fetcher from '@utils/fetcher';
 import api from '@/api/api';
 
 const SignUp = () => {
-  const { data, error } = useSWR('', fetcher);
+  const { data, error } = useSWR('', fetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
 
   const navigate = useNavigate();
 
