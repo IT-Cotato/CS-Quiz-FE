@@ -11,7 +11,7 @@ import smaller from '@assets/compress.svg';
 import BgCorrect from '@pages/CS/solving/BgCorrect';
 import BgIncorrect from '@pages/CS/solving/BgIncorrect';
 import BgWaiting from './BgWaiting';
-import { useLocation } from 'react-router-dom';
+import MemberHeader from '@components/MemberHeader';
 
 // 전체 문제 데이터(res) 받아와서 한 번만 까서 일단 문제 리스트에 다 넣기
 // problems.push(res.multiples)
@@ -39,11 +39,6 @@ type ShortAnswer = {
 };
 
 const CSProblem = () => {
-  const location = useLocation();
-  const search = location.search;
-  const generation = search.split('&')[0].split('=')[1];
-  const week = search.split('&')[1].split('=')[1];
-
   const [index, setIndex] = useState(0);
   const [chose, setChose] = useState(0);
   const [shortAns, setShortAns] = useState('');
@@ -59,6 +54,22 @@ const CSProblem = () => {
   const inputRef = useRef<any>();
 
   const [isHoverOnLight, setIsHoverOnLight] = useState(false);
+
+  const [showHeader, setShowHeader] = useState(false);
+
+  const propsForMemberHeader = {
+    showHeader,
+    setShowHeader,
+  };
+
+  window.addEventListener('mousemove', (e) => {
+    console.log(e.clientY);
+    if (e.clientY < 100) {
+      setShowHeader(true);
+    } else {
+      setShowHeader(false);
+    }
+  });
 
   const problems: Problem[] = [
     {
@@ -264,6 +275,7 @@ const CSProblem = () => {
 
   return (
     <Wrapper>
+      {showHeader ? <MemberHeader {...propsForMemberHeader} /> : null}
       <ProgressContainer>
         <ProgressBar progress={(index + 1) * 10} />
       </ProgressContainer>
