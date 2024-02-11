@@ -47,7 +47,7 @@ const GenerationSelect = ({ onChangeGeneration, selectedGeneration }: Props) => 
   return (
     <GenerationSelectWrapper ref={generationDropRef}>
       <SelectMenu isopen={isOpen ? 'open' : 'close'} onClick={() => setIsOpen(!isOpen)}>
-        <p>{selectedGeneration?.generationName}</p>
+        <p>{`${selectedGeneration?.generationNumber}기`}</p>
         {isOpen ? (
           <img src={arrow_up_thin} alt="arrow-up" />
         ) : (
@@ -58,7 +58,7 @@ const GenerationSelect = ({ onChangeGeneration, selectedGeneration }: Props) => 
             <ul>
               {generationData?.map((generation: IGeneration) => (
                 <li key={generation.generationId} onClick={() => onClickGeneration(generation)}>
-                  {generation.generationName}
+                  {`${generation.generationNumber}기`}
                 </li>
               ))}
             </ul>
