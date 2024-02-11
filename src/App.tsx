@@ -30,7 +30,6 @@ function App() {
   const location = useLocation();
 
   const { data, error } = useSWR('/v1/api/member/info', fetcher);
-  //location.pathname !== '/cs/solving'
 
   return (
     <div className="App">
@@ -38,7 +37,7 @@ function App() {
         <GlobalStyle />
         <div className="wrapper">
           <div className="contentWrapper">
-            {data?.role === ('GENERAL' || 'MEMBER' || 'OLD_MEMBER' || 'ADMIN' || 'EDUCATION') ? (
+            {['GENERAL', 'MEMBER', 'OLD_MEMBER', 'ADMIN', 'EDUCATION'].includes(data?.role) ? (
               location.pathname !== '/cs/solving' ? (
                 <MemberHeader />
               ) : null
