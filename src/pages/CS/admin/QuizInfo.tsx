@@ -1,6 +1,11 @@
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { Multiples, ShortQuizzes } from '@/typing/db';
+import axios from 'axios';
+import { trackPromise } from 'react-promise-tracker';
+import { LoadingIndicator } from './LoadingIndicator';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 type QuizType = Multiples | ShortQuizzes;
 
@@ -13,10 +18,11 @@ type Props = {
 const QuizInfo = ({ quiz, setQuiz, selected }: Props) => {
   // 타입 가드
   const isMultiples = (quiz: Multiples | ShortQuizzes): quiz is Multiples => {
-    return (quiz as Multiples)?.choices[0].isAnswer !== undefined;
+    return (quiz as Multiples)?.choices !== undefined;
   };
+
   /**
-   * 객관식, 주관식 버튼 클릭 시, quiz_type 변경함
+   * 객관식, 주관식 버튼 클릭 시, quiz_type 변경
    */
   const onClickType = useCallback(
     (type: string) => {
@@ -26,7 +32,6 @@ const QuizInfo = ({ quiz, setQuiz, selected }: Props) => {
         const newPrev = [...prev];
         const copySelected = newPrev[selected];
         if (isMultiples(copySelected)) {
-          // changeType 함수를 통해 quiz_type을 short로 변경
           newPrev[selected] = changeType(
             type,
             copySelected.number,
@@ -88,43 +93,169 @@ const QuizInfo = ({ quiz, setQuiz, selected }: Props) => {
           question: '제목',
           image: image,
           previewUrl: previewUrl || null,
-          choices: [{ answer: '' }],
+          shortAnswers: [{ answer: '' }],
         } as ShortQuizzes;
       }
     },
     [selected, quiz],
   );
 
-  const checkUpload = useCallback(() => {
-    console.log(quiz);
+  const convertImageUrlToFile = async (imageUrl: any) => {
+    try {
+      const response = await fetch(imageUrl, { cache: 'no-cache' });
+      const blob = await response.blob();
+      const fileName = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
+      const file = new File([blob], fileName, { type: blob.type });
+
+      return file;
+    } catch (error) {
+      console.error('Error converting image URL to File:', error);
+    }
+  };
+
+  const appendData = (formData: any, dataArray: any, arrayName: any) => {
+    // dataArray의 image 필드가 URL인 경우, 파일로 변환하여 다시 저장
+    dataArray.forEach((item: any, index: any) => {
+      Object.keys(item).forEach((key) => {
+        const fieldKey = `${arrayName}[${index}].${key}`;
+        const value = item[key];
+        if (Array.isArray(value)) {
+          // Recursively append nested arrays
+          appendData(formData, value, fieldKey);
+        } else {
+          formData.append(fieldKey, value);
+        }
+      });
+    });
+  };
+
+  const checkUpload = useCallback(async () => {
     // question이 있는지 검사
     // 객관식 choice에 ANSWER가 있는지, content가 전부 있는지 검사
     // 주관식 choice에 answer가 있는지 검사
     quiz.some((quiz) => {
       if (quiz.question === '') {
-        window.alert(`${quiz.number}번 문제를 입력해주세요.`);
+        toast.info(`${quiz.number}번 문제 제목을 입력해주세요.`);
         return true;
       }
       if (isMultiples(quiz)) {
-        quiz.choices.some((choice) => {
+        quiz?.choices?.some((choice) => {
           if (choice.content === '') {
-            window.alert(`${quiz.number}번 문제 ${choice.number}번 보기를 입력해주세요.`);
+            toast.info(`${quiz.number}번 문제 ${choice.number}번 보기를 입력해주세요.`);
             return true;
           }
         });
-        if (quiz.choices.filter((choice) => choice.isAnswer === 'ANSWER').length === 0) {
-          window.alert(`${quiz.number}번 문제 정답을 선택해주세요.`);
+        if (quiz?.choices?.filter((choice) => choice.isAnswer === 'ANSWER').length === 0) {
+          toast.info(`${quiz.number}번 문제 정답을 입력해주세요.`);
           return true;
         }
       } else {
-        quiz.choices.some((choice) => {
-          if (choice.answer === '') {
-            window.alert(`${quiz.number}번 문제 정답을 입력해주세요.`);
+        quiz.shortAnswers.some((short) => {
+          if (short?.answer === '') {
+            toast.info(`${quiz.number}번 문제 정답을 입력해주세요.`);
             return true;
           }
         });
       }
     });
+    const { multiples, shortQuizzes } = await classifyQuizzes();
+    const formData = new FormData();
+
+    appendData(formData, multiples, 'multiples');
+    appendData(formData, shortQuizzes, 'shortQuizzes');
+
+    const sendData = async () => {
+      await axios({
+        method: 'POST',
+        url: process.env.REACT_APP_BASE_URL + '/v1/api/quiz/adds',
+        data: formData,
+        params: {
+          educationId: 1,
+        },
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token'),
+          ContentType: 'multipart/form-data',
+        },
+      })
+        .then((res) => {
+          console.log(res);
+          toast.success('성공적으로 저장되었습니다!');
+        })
+        .catch((error) => {
+          toast.error(error.message);
+        });
+    };
+    trackPromise(sendData());
+  }, [quiz]);
+
+  /**
+   * 업로드 전 미리보기 이미지 제거 / 객관식, 주관식 분류
+   *
+   */
+  const classifyQuizzes = useCallback(async () => {
+    const newQuiz = quiz.map((quiz) => {
+      if (isMultiples(quiz)) {
+        return quiz.image
+          ? {
+              number: quiz.number,
+              question: quiz.question,
+              choices: quiz.choices.map((choice) => ({
+                number: choice.number,
+                content: choice.content,
+                isAnswer: choice.isAnswer,
+              })),
+              image: quiz.image,
+            }
+          : {
+              number: quiz.number,
+              question: quiz.question,
+              choices: quiz.choices.map((choice) => ({
+                number: choice.number,
+                content: choice.content,
+                isAnswer: choice.isAnswer,
+              })),
+            };
+      } else {
+        return quiz.image
+          ? {
+              number: quiz.number,
+              question: quiz.question,
+              shortAnswers: quiz.shortAnswers.map((short) => ({
+                answer: short.answer,
+              })),
+              image: quiz.image,
+            }
+          : {
+              number: quiz.number,
+              question: quiz.question,
+              shortAnswers: quiz.shortAnswers.map((short) => ({
+                answer: short.answer,
+              })),
+            };
+      }
+    });
+
+    // 객관식, 주관식 분류
+    const multiples = newQuiz.filter((quiz) => (quiz as Multiples).choices !== undefined);
+    const shortQuizzes = newQuiz.filter(
+      (quiz) => (quiz as ShortQuizzes).shortAnswers !== undefined,
+    );
+
+    // Use Promise.all to wait for all image conversions to complete
+    await Promise.all([
+      ...multiples.map(async (item: any) => {
+        if (item.image && typeof item.image === 'string') {
+          item.image = await convertImageUrlToFile(item.image);
+        }
+      }),
+      ...shortQuizzes.map(async (item: any) => {
+        if (item.image && typeof item.image === 'string') {
+          item.image = await convertImageUrlToFile(item.image);
+        }
+      }),
+    ]);
+
+    return { multiples, shortQuizzes };
   }, [quiz]);
 
   return (
@@ -162,18 +293,18 @@ const QuizInfo = ({ quiz, setQuiz, selected }: Props) => {
         <p>정답</p>
         <AnswerBox>
           {isMultiples(quiz[selected])
-            ? (quiz[selected] as Multiples).choices
-                .filter((choice) => choice.isAnswer === 'ANSWER')
+            ? (quiz[selected] as Multiples)?.choices
+                ?.filter((choice) => choice.isAnswer === 'ANSWER')
                 .map((choice, index) => (
                   <div key={index}>
                     <img src="https://velog.velcdn.com/images/ea_st_ring/post/555ec60e-4c31-48e7-80d1-ec3cb60350d2/image.svg" />
-                    {choice.number}번 : {choice.content}
+                    {choice?.number}번 : {choice?.content}
                   </div>
                 ))
-            : (quiz[selected] as ShortQuizzes).choices.map((choice, index) => (
+            : (quiz[selected] as ShortQuizzes).shortAnswers.map((short, index) => (
                 <div key={index}>
                   <img src="https://velog.velcdn.com/images/ea_st_ring/post/555ec60e-4c31-48e7-80d1-ec3cb60350d2/image.svg" />
-                  {choice.answer}
+                  {short?.answer}
                 </div>
               ))}
         </AnswerBox>
@@ -189,7 +320,20 @@ const QuizInfo = ({ quiz, setQuiz, selected }: Props) => {
           <SaveButton onClick={checkUpload}>저장</SaveButton>
           <ExitButton>나가기</ExitButton>
         </NavBox>
-      </MobileSection>
+      </MobileSection>{' '}
+      <LoadingIndicator />
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover={false}
+        theme="light"
+      />
     </Wrapper>
   );
 };
@@ -207,6 +351,33 @@ const Wrapper = styled.div`
     width: 100%;
     align-self: flex-start;
   }
+  /* div {
+    display: flex;
+    margin-bottom: 24px;
+    button {
+      width: 100px;
+      height: 40px;
+      flex-shrink: 0;
+      border-radius: 5px;
+      border: 2px solid #c1c1c1;
+      background: #fff;
+      cursor: pointer;
+    }
+    button + button {
+      margin-left: 12px;
+    }
+  } */
+  @media screen and (max-width: 768px) {
+    display: flex;
+    width: 100%;
+    background: #f4f4f4;
+    padding: 20px;
+  }
+`;
+
+const DesktopSection = styled.div`
+  display: flex;
+  flex-direction: column;
   div {
     display: flex;
     margin-bottom: 24px;
@@ -223,17 +394,6 @@ const Wrapper = styled.div`
       margin-left: 12px;
     }
   }
-  @media screen and (max-width: 768px) {
-    display: flex;
-    width: 100%;
-    background: #f4f4f4;
-    padding: 20px;
-  }
-`;
-
-const DesktopSection = styled.div`
-  display: flex;
-  flex-direction: column;
   @media screen and (max-width: 768px) {
     display: none !important;
   }
@@ -291,6 +451,22 @@ const MobileSection = styled.div`
   flex-direction: column;
   width: 100%;
   height: 100%;
+  div {
+    display: flex;
+    margin-bottom: 24px;
+    button {
+      width: 100px;
+      height: 40px;
+      flex-shrink: 0;
+      border-radius: 5px;
+      border: 2px solid #c1c1c1;
+      background: #fff;
+      cursor: pointer;
+    }
+    button + button {
+      margin-left: 12px;
+    }
+  }
 `;
 
 const MobileOption = styled.div`
