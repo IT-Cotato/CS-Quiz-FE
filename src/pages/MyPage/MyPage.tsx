@@ -79,7 +79,7 @@ const MyPage = () => {
             <ButtonIcon />
           </Link>
         </ButtonContainer>
-        {user.role === 'ADMIN' && (
+        {user?.role === 'ADMIN' && (
           <ButtonContainer>
             <p>신입 감자 가입요청 확인/승인 </p>
             <Link to="request">
@@ -87,7 +87,7 @@ const MyPage = () => {
             </Link>
           </ButtonContainer>
         )}{' '}
-        {user.role === 'ADMIN' && (
+        {user?.role === 'ADMIN' && (
           <ButtonContainer>
             <p>관리자 권한 설정 </p>
             <Link to="request">
