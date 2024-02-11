@@ -29,7 +29,7 @@ export interface ShortProps {
 
 export interface IGeneration {
   generationId: number;
-  generationName: string;
+  generationNumber: string;
 }
 
 export interface ISession {
@@ -56,3 +56,30 @@ export interface IEducation {
   subject: string;
   educationNumber: number;
 }
+
+export interface Multiples {
+  number: number;
+  question: string;
+  choices: {
+    number: number;
+    content: string;
+    isAnswer: 'ANSWER' | 'NO_ANSWER';
+  }[];
+  image: File | null;
+  previewUrl: string | null;
+}
+
+export interface ShortQuizzes {
+  number: number;
+  question: string;
+  shortAnswers: {
+    answer: string;
+  }[];
+  image: File | null;
+  previewUrl: string | null;
+}
+
+export type TQuiz = (Multiples | ShortQuizzes) & {
+  approaach: boolean;
+  start: boolean;
+};
