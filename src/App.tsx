@@ -25,6 +25,7 @@ import CSProblem from '@pages/CS/solving/CSProblem';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import MemberHeader from '@components/MemberHeader';
+import Setting from '@pages/MyPage/Setting';
 
 function App() {
   const location = useLocation();
@@ -63,6 +64,7 @@ function App() {
               <Route path="/findpw" element={<FindPWProcess />} />
               <Route path="/joinus" element={<SignUp />} />
               <Route path="/mypage" element={<MyPage />} />
+              <Route path="/mypage/setting" element={<Setting />} />
             </Routes>
           </div>
           {location.pathname !== '/cs/solving' && <Footer />}
