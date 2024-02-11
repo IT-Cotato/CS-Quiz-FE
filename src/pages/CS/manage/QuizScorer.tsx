@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import CSManageLayout from './CSManageLayout';
 import { css, styled } from 'styled-components';
 import { ReactComponent as AddIcon } from '@assets/add_circle.svg';
+import { TQuiz } from '@/typing/db';
 
 const submitList = [
   { id: 1, name: '조원영', phone: 1111, record: 1 },
@@ -18,11 +19,8 @@ const QuizScorer = () => {
   const [checkedScorer, setCheckedScorer] = useState(scorer);
   const [addAnswer, setAddAnswer] = useState('');
 
-  const { search, state } = useLocation();
-  const generation = search.split('&')[0].split('=')[1];
-  const week = search.split('&')[1].split('=')[1];
-  const quiz = search.split('&')[2].split('=')[1];
-  const question = state.question;
+  const { state } = useLocation();
+  const quiz: TQuiz = state.quiz;
 
   const onChangeRadio = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const newScorer = submitList.find((element) => element.id === parseInt(e.target.value));
@@ -48,8 +46,8 @@ const QuizScorer = () => {
     <CSManageLayout header="CS 문제별 득점자 확인">
       <QuizScorerWrapper>
         <TitleWrapper>
-          <p className="quiz-number">문제{quiz}</p>
-          <p className="question">{question}</p>
+          <p className="quiz-number">문제{quiz.number}</p>
+          <p className="question">{quiz.question}</p>
         </TitleWrapper>
         <ColumnDivision>
           <HalfContainer width="55%">

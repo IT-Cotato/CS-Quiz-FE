@@ -1,29 +1,27 @@
 import React, { useCallback, useState } from 'react';
-import { IQuizContent } from '@pages/CS/manage/CSManage';
 import { css, styled } from 'styled-components';
 import ToggleButton from '@components/ToggleButton';
 import { ReactComponent as ArrowBack } from '@assets/arrow_back.svg';
 import { useNavigate } from 'react-router-dom';
+import { TQuiz } from '@/typing/db';
 
 interface Props {
-  quiz: IQuizContent;
-  generation: string;
-  week: string;
+  quiz: TQuiz;
 }
 
-const QuizContent = ({ quiz, generation, week }: Props) => {
+const QuizContent = ({ quiz }: Props) => {
   const [isApproach, setIsApproach] = useState(false);
   const [isQuizStart, setIsQuizStart] = useState(false);
 
   const navigate = useNavigate();
 
   const onClickQuestionButton = useCallback(() => {
-    navigate(`/cs/quizscorer?generation=${generation}&week=${week}&quiz=${quiz.quizNumber}`, {
+    navigate(`/cs/quizscorer?quizNumber=${quiz.number}`, {
       state: {
-        question: quiz.question,
+        quiz: quiz,
       },
     });
-  }, [generation, week, quiz.quizNumber, quiz.question]);
+  }, [quiz]);
 
   const onClickApproach = useCallback(() => {
     setIsApproach(!isApproach);
@@ -36,7 +34,7 @@ const QuizContent = ({ quiz, generation, week }: Props) => {
   return (
     <ContentBox>
       <TitleWrapper>
-        <QuizNumber>문제 {quiz.quizNumber}</QuizNumber>
+        <QuizNumber>문제 {quiz.number}</QuizNumber>
         <QuestionWrapper>
           <p>{quiz.question}</p>
           <FrontButton width={20} height={20} onClick={onClickQuestionButton} />

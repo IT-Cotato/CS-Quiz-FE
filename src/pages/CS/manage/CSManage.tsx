@@ -1,31 +1,33 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { styled } from 'styled-components';
 import CSManageLayout from '@pages/CS/manage/CSManageLayout';
 import QuizContent from '@pages/CS/manage/QuizContent';
-import { useLocation, useNavigate } from 'react-router-dom';
-
-export interface IQuizContent {
-  quizNumber: number;
-  question: string;
-  approach: boolean;
-  quizStart: boolean;
-}
-
-const QuizContents: IQuizContent[] = [
-  { quizNumber: 1, question: '1번 문제', approach: false, quizStart: false },
-  { quizNumber: 2, question: '2번 문제', approach: false, quizStart: false },
-  { quizNumber: 3, question: '3번 문제', approach: false, quizStart: false },
-  { quizNumber: 4, question: '4번 문제', approach: false, quizStart: false },
-];
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import useSWR from 'swr';
+import fetcher from '@utils/fetcher';
+import { TQuiz } from '@/typing/db';
 
 const CSManage = () => {
+  const [searchParams] = useSearchParams();
+  const educationId = searchParams.get('educationId');
   const navigate = useNavigate();
-  const location = useLocation();
-  const search = location.search;
-  const generation = search.split('&')[0].split('=')[1];
-  const week = search.split('&')[1].split('=')[1];
 
+  const { data: quizData } = useSWR(`/v1/api/quiz/all?educationId=${educationId}`, fetcher);
+  const [quizzes, setQuizzes] = useState<TQuiz[]>();
   const [quizStarted, setQuizStarted] = useState(false);
+
+  useEffect(() => {
+    const quizArr: TQuiz[] = [];
+    quizData?.multiples.map((quiz: any) => {
+      quizArr.push(quiz);
+    });
+    quizData?.shortQuizzes.map((quiz: any) => {
+      quizArr.push(quiz);
+    });
+
+    quizArr.sort((left, right) => left.number - right.number);
+    setQuizzes(quizArr);
+  }, [quizData]);
 
   const onClickQuizButton = useCallback(() => {
     if (!quizStarted && confirm('퀴즈를 시작하시겠습니까?')) {
@@ -36,7 +38,7 @@ const CSManage = () => {
   }, [quizStarted]);
 
   const onClickCheckAllScorer = useCallback(() => {
-    navigate(`/cs/allscorer?generation=${generation}&week=${week}`);
+    navigate(`/cs/allscorer?educationId=${educationId}`);
   }, []);
 
   return (
@@ -51,9 +53,7 @@ const CSManage = () => {
           </Button>
         </ButtonWrapper>
         <QuizContentsWrapper>
-          {QuizContents.map((quiz) => (
-            <QuizContent key={quiz.quizNumber} quiz={quiz} generation={generation} week={week} />
-          ))}
+          {quizzes?.map((quiz) => <QuizContent key={quiz.number} quiz={quiz} />)}
         </QuizContentsWrapper>
       </ManageWrapper>
     </CSManageLayout>
