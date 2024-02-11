@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { ReactComponent as ArrowBack } from '@/assets/arrow_back.svg';
@@ -7,7 +7,7 @@ import Slides from './Slides';
 import EditQuiz from './EditQuiz';
 import QuizInfo from './QuizInfo';
 import MobileSlides from './MobileSlides';
-// TODO: 컴포넌트 분리
+import axios from 'axios';
 
 type Item = {
   isselected?: string;
@@ -20,6 +20,25 @@ const CSUpload = () => {
   const search = location.search;
   const generation = search.split('&')[0].split('=')[1];
   const week = search.split('&')[1].split('=')[1];
+
+  const fetchData = async () => {
+    const response = await axios.get(process.env.REACT_APP_BASE_URL + '/v1/api/quiz/all', {
+      params: {
+        educationId: 1,
+      },
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
+      },
+    });
+    const arr = [...response.data.multiples].concat(response.data.shortQuizzes);
+    return arr.sort((a, b) => a.number - b.number);
+  };
+  useEffect(() => {
+    fetchData().then((data) => {
+      if (data.length === 0) return;
+      setQuiz(data);
+    });
+  }, []);
 
   // 전체 슬라이드를 담기 위한 state
   const [quiz, setQuiz] = useState<QuizType[]>([
