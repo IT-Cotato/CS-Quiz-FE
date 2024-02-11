@@ -13,7 +13,7 @@ export interface Multiples {
 export interface ShortQuizzes {
   number: number;
   question: string;
-  choices: {
+  shortAnswers: {
     answer: string;
   }[];
   image: File | null;
