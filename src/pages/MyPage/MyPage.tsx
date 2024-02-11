@@ -113,14 +113,14 @@ const MyPage = () => {
 
 export default MyPage;
 
-const FlexBox = styled.div`
+export const FlexBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
 `;
 
-const MyPageWrapper = styled.div`
+export const MyPageWrapper = styled.div`
   max-width: 920px;
   width: 80%;
   min-height: 100vh;
@@ -135,7 +135,7 @@ const fontStyle = css`
   margin: 0;
 `;
 
-const MyPageHeader = styled.div`
+export const MyPageHeader = styled.div`
   margin: 120px 0 48px;
 
   > h1 {
@@ -245,7 +245,7 @@ const ProfileImage = styled.div`
   background-size: cover;
 `;
 
-const ButtonContainer = styled.div`
+export const ButtonContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
