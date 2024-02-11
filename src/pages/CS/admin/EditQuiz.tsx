@@ -17,7 +17,7 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
       const copySelected = newPrev[selected];
       if (!isMultiples(copySelected)) {
         // 주관식 quiz_answer를 하나 추가
-        copySelected.choices.push({
+        copySelected.shortAnswers.push({
           answer: '',
         });
       }
@@ -86,7 +86,7 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
 
   // 타입 가드
   const isMultiples = (quiz: Multiples | ShortQuizzes): quiz is Multiples => {
-    return (quiz as Multiples).choices[0].isAnswer !== undefined;
+    return (quiz as Multiples).choices !== undefined;
   };
 
   const onChangeTitle = useCallback(
@@ -129,7 +129,7 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
         const newPrev = [...prev];
         const copySelected = newPrev[selected];
         if (!isMultiples(copySelected)) {
-          copySelected.choices[Number(id) - 1].answer = e.target.value;
+          copySelected.shortAnswers[Number(id) - 1].answer = e.target.value;
         }
         return [...newPrev];
       });
@@ -142,7 +142,7 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
    */
   const deleteShortAnswer = useCallback(
     (id: number) => {
-      if (quiz[selected].choices.length === 1) {
+      if ((quiz[selected] as ShortQuizzes).shortAnswers.length === 1) {
         window.alert('주관식 답안은 최소 1개 이상이어야 합니다.');
         return;
       }
@@ -150,7 +150,7 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
         const newPrev = [...prev];
         const copySelected = newPrev[selected];
         if (!isMultiples(copySelected)) {
-          copySelected.choices.splice(id, 1);
+          copySelected.shortAnswers.splice(id, 1);
         }
         return [...newPrev];
       });
@@ -181,13 +181,13 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
         <UploadDiv
           onDrop={onDrop}
           onDragOver={onDragOver}
-          image={quiz[selected]?.previewUrl || null}
+          $image={quiz[selected]?.previewUrl || quiz[selected]?.image || null}
           onClick={() => {
             // 클릭 시에도 업로드되도록 처리하기
             // fileInputRef.current?.click();
           }}
         >
-          {quiz[selected].previewUrl ? null : (
+          {quiz[selected]?.previewUrl ? null : (
             <>
               <input
                 type="file"
@@ -211,7 +211,7 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
                   }}
                   value={
                     isMultiples(quiz[selected])
-                      ? (quiz[selected] as Multiples).choices[index]?.content
+                      ? (quiz[selected] as Multiples)?.choices[index]?.content
                       : ''
                   }
                   id={`${index + 1}`}
@@ -222,14 +222,14 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
                   onChange={(e) => {
                     checkOnlyOne(e);
                   }}
-                  checked={(quiz[selected] as Multiples).choices[index]?.isAnswer === 'ANSWER'}
+                  checked={(quiz[selected] as Multiples)?.choices[index]?.isAnswer === 'ANSWER'}
                 />
               </Choice>
             ))}
           </ChoiceDiv>
         ) : (
           <Short>
-            {(quiz[selected] as ShortQuizzes).choices.map((choice, index) => (
+            {(quiz[selected] as ShortQuizzes)?.shortAnswers?.map((choice, index) => (
               <div key={index}>
                 <input
                   type="text"
@@ -237,7 +237,7 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
                   onChange={(e) => {
                     onChangeShorts(e, `${index + 1}`);
                   }}
-                  value={choice.answer}
+                  value={choice.answer || ''}
                 />
                 <img
                   onClick={() => {
@@ -321,18 +321,20 @@ const UploadDiv = styled.div<any>`
   flex-direction: column;
   flex-shrink: 0;
   border-radius: 5px;
-  border: ${(props) => (props.image ? 'none' : '3px dashed #6f99f2')};
+  border: ${(props) => (props.$image ? 'none' : '3px dashed #6f99f2')};
   background-image: ${(props) =>
-    props.image ? `url(${props.image})` : `rgba(255, 255, 255, 0.2)`};
+    props.$image ? `url(${props.$image})` : `rgba(255, 255, 255, 0.2)`};
   background-size: 100%;
   background-position: center;
   margin-top: 12px;
   p {
+    display: ${(props) => (props.$image ? 'none' : 'block')};
     margin-top: 24px;
     color: #757575;
     font-family: Inter;
     font-size: 14px;
     font-weight: 400;
+    z-index: 1;
   }
   img {
     -webkit-user-drag: none;
@@ -340,6 +342,7 @@ const UploadDiv = styled.div<any>`
     -moz-user-drag: none;
     -o-user-drag: none;
     -user-drag: none;
+    z-index: 10;
   }
   @media screen and (max-width: 768px) {
     width: 100%;

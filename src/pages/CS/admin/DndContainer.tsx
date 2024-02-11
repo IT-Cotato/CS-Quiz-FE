@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Multiples, ShortQuizzes } from '@/typing/db';
 
 type Item = {
-  isselected?: string;
+  $isselected?: string;
 };
 
 type QuizType = Multiples | ShortQuizzes;
@@ -61,7 +61,7 @@ const DndContainer = (
                   >
                     <Item
                       key={item.number}
-                      isselected={selected + 1 === item.number ? 'true' : 'false'}
+                      $isselected={selected + 1 === item.number ? 'true' : 'false'}
                       onClick={() => {
                         setSelected(item.number - 1);
                       }}
@@ -94,7 +94,7 @@ const Item = styled.div<Item>`
   align-items: center;
   cursor: pointer;
   border: none;
-  background: ${(props: any) => (props.isselected === 'true' ? '#C4D7FF' : '#E4ECFD')};
+  background: ${(props: any) => (props.$isselected === 'true' ? '#C4D7FF' : '#E4ECFD')};
   box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.15);
   margin: 16px 0;
   transition: 0.2s;

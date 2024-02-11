@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Multiples, ShortQuizzes } from '@/typing/db';
 
@@ -86,6 +86,17 @@ const MobileSlides = ({ quiz, setQuiz, selected, setSelected }: Props) => {
     setIsShow(false);
   }, [selected]);
 
+  const onChangeTitle = useCallback(
+    (e: ChangeEvent<HTMLTextAreaElement>) => {
+      setQuiz((prev) => {
+        const newPrev = [...prev];
+        newPrev[selected].question = e.target.value;
+        return [...newPrev];
+      });
+    },
+    [selected],
+  );
+
   const onClickOutside = useCallback(
     (e: React.MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -113,7 +124,7 @@ const MobileSlides = ({ quiz, setQuiz, selected, setSelected }: Props) => {
         </div>
       </Navbar>
       {isShow && (
-        <Modal top={menuBottomDistance} right={menuRightDistance}>
+        <Modal $top={menuBottomDistance} $right={menuRightDistance}>
           <div onClick={deleteItem}>
             <img src="https://velog.velcdn.com/images/ea_st_ring/post/9dda46cf-266e-4c49-b257-928527f652bc/image.svg" />
             <p>삭제</p>
@@ -131,7 +142,7 @@ const MobileSlides = ({ quiz, setQuiz, selected, setSelected }: Props) => {
             <img src="https://velog.velcdn.com/images/ea_st_ring/post/fa66daa9-ddeb-4ca5-894c-5fa5f38a0340/image.svg" />{' '}
           </label>
         </SelectButton>
-        <Opitons top={slideBottomDistance}>
+        <Opitons $top={slideBottomDistance}>
           {isDown &&
             quiz.map((item) => (
               <div
@@ -146,7 +157,11 @@ const MobileSlides = ({ quiz, setQuiz, selected, setSelected }: Props) => {
             ))}
         </Opitons>
       </Dropdown>
-      <Title placeholder="질문을 입력하세요" />
+      <Title
+        onChange={onChangeTitle}
+        value={quiz[selected]?.question || ''}
+        placeholder="문제 제목을 입력해주세요."
+      />
     </Wrapper>
   );
 };
@@ -181,7 +196,7 @@ const Navbar = styled.div`
   }
 `;
 
-const Title = styled.input`
+const Title = styled.textarea`
   width: 100%;
   height: 55px;
   padding: 0 20px;
@@ -189,6 +204,17 @@ const Title = styled.input`
   box-shadow: 0px 10px 10px -9px rgba(0, 0, 0, 0.47);
   -webkit-box-shadow: 0px 10px 10px -9px rgba(0, 0, 0, 0.47);
   -moz-box-shadow: 0px 10px 10px -9px rgba(0, 0, 0, 0.47);
+  resize: none;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Pretendard';
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  &::placeholder {
+    text-align: center;
+  }
   &:focus {
     outline: none;
   }
@@ -217,7 +243,7 @@ const Opitons = styled.div<any>`
   position: absolute;
   width: 200px;
   height: fit-content;
-  top: ${(props) => props.top}px;
+  top: ${(props) => props.$top}px;
   display: flex;
   flex-direction: column;
   text-align: center;
@@ -262,8 +288,8 @@ const Modal = styled.div<any>`
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  top: ${(props) => props.top + 10}px;
-  left: ${(props) => props.right - 180}px;
+  top: ${(props) => props.$top + 10}px;
+  left: ${(props) => props.$right - 180}px;
   div {
     width: 180px;
     height: 50px;

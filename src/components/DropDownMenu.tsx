@@ -17,8 +17,8 @@ const DropDownMenu = ({ isTop }: Props) => {
 
   return (
     <Container>
-      <Menu isopen={isOpen.toString()} menu_len={MemberMenus.length}>
-        <Button is_top={isTop}>
+      <Menu $isopen={isOpen.toString()} $menu_len={MemberMenus.length}>
+        <Button $is_top={isTop}>
           <p
             onClick={() => {
               setIsOpen(!isOpen);
@@ -61,19 +61,20 @@ const Container = styled.div`
   height: fit-content;
 `;
 
-const Menu = styled.div<{ isopen: string; menu_len: number }>`
+const Menu = styled.div<{ $isopen: string; $menu_len: number }>`
   background-color: #fff;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: start;
   margin-top: ${(props) =>
-    props.isopen === 'true' ? `${102 + (props.menu_len - 3) * 36}px` : '0px'};
+    props.$isopen === 'true' ? `${102 + (props.$menu_len - 3) * 36}px` : '0px'};
   color: #93c6fe;
   font-size: 1.2rem;
   font-weight: 500;
   width: 212px;
-  height: ${(props) => (props.isopen === 'true' ? `${150 + (props.menu_len - 3) * 36}px` : '50px')};
+  height: ${(props) =>
+    props.$isopen === 'true' ? `${150 + (props.$menu_len - 3) * 36}px` : '50px'};
   border: 3px solid #93c6fe;
   border-radius: 40px;
   transition: all 0.3s ease-in-out;
@@ -88,14 +89,14 @@ const Menu = styled.div<{ isopen: string; menu_len: number }>`
   }
 `;
 
-const Button = styled.div<{ is_top: string }>`
+const Button = styled.div<{ $is_top: string }>`
   display: flex;
   justify-content: center;
   align-items: center;
   height: 60px;
   position: absolute;
   transition: all 0.2s ease-in-out; // header의 움직임과 동일하게
-  top: ${(props) => (props.is_top === 'true' ? '10px' : '6px')};
+  top: ${(props) => (props.$is_top === 'true' ? '10px' : '6px')};
   cursor: pointer;
 `;
 
