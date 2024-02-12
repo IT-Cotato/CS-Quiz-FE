@@ -25,7 +25,7 @@ import CSProblem from '@pages/CS/solving/CSProblem';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import MemberHeader from '@components/MemberHeader';
-import Setting from '@pages/MyPage/Setting';
+import Setting from '@pages/MyPage/setting/Setting';
 
 function App() {
   const location = useLocation();
