@@ -1,15 +1,15 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import fetcher from '@utils/fetcher';
 import { styled } from 'styled-components';
 import useSWR from 'swr';
 import { FlexBox, MyPageHeader, MyPageWrapper } from '@pages/MyPage/MyPage';
 import { ReactComponent as LightTheme } from '@assets/light_theme.svg';
 import { ReactComponent as DarkTheme } from '@assets/dark_theme.svg';
+import GenerationModal from '@pages/MyPage/setting/GenerationModal';
 
 const Setting = () => {
   const { data: user } = useSWR('/v1/api/member/info', fetcher);
-
-  const onClickGenerationAddButton = useCallback(() => {}, []);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const onClickQuitButton = useCallback(() => {
     alert('탈퇴하지 마세요ㅠㅠㅠ');
@@ -28,7 +28,7 @@ const Setting = () => {
         {user?.role === 'ADMIN' && (
           <ButtonContainer>
             <p>기수를 추가하기</p>
-            <Button background="#477FEB" onClick={onClickGenerationAddButton}>
+            <Button background="#477FEB" onClick={() => setModalOpen(true)}>
               <p>추가하기</p>
             </Button>
           </ButtonContainer>
@@ -63,6 +63,7 @@ const Setting = () => {
           </ThemeButtonWrapper>
         </ButtonContainer>
       </MyPageWrapper>
+      <GenerationModal isOpen={modalOpen} onCloseModal={setModalOpen} />
     </FlexBox>
   );
 };
