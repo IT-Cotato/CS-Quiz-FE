@@ -245,7 +245,7 @@ const ProfileImage = styled.div`
   background-size: cover;
 `;
 
-export const ButtonContainer = styled.div`
+const ButtonContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
