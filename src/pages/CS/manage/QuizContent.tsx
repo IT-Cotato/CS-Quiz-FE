@@ -3,10 +3,10 @@ import { css, styled } from 'styled-components';
 import ToggleButton from '@components/ToggleButton';
 import { ReactComponent as ArrowBack } from '@assets/arrow_back.svg';
 import { useNavigate } from 'react-router-dom';
-import { TQuiz } from '@/typing/db';
+import { IQuizAdmin } from '@/typing/db';
 
 interface Props {
-  quiz: TQuiz;
+  quiz: IQuizAdmin;
 }
 
 const QuizContent = ({ quiz }: Props) => {
@@ -16,11 +16,7 @@ const QuizContent = ({ quiz }: Props) => {
   const navigate = useNavigate();
 
   const onClickQuestionButton = useCallback(() => {
-    navigate(`/cs/quizscorer?quizNumber=${quiz.number}`, {
-      state: {
-        quiz: quiz,
-      },
-    });
+    navigate(`quizscorer?quizId=${quiz.quizId}`);
   }, [quiz]);
 
   const onClickApproach = useCallback(() => {
@@ -34,7 +30,7 @@ const QuizContent = ({ quiz }: Props) => {
   return (
     <ContentBox>
       <TitleWrapper>
-        <QuizNumber>문제 {quiz.number}</QuizNumber>
+        <QuizNumber>문제 {quiz.quizNumber}</QuizNumber>
         <QuestionWrapper>
           <p>{quiz.question}</p>
           <FrontButton width={20} height={20} onClick={onClickQuestionButton} />

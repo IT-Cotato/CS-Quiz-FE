@@ -1,9 +1,11 @@
-import React, { ChangeEvent, useCallback, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import CSManageLayout from './CSManageLayout';
+import React, { useCallback, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import CSManageLayout from '@pages/CS/manage/CSManageLayout';
 import { css, styled } from 'styled-components';
-import { ReactComponent as AddIcon } from '@assets/add_circle.svg';
-import { TQuiz } from '@/typing/db';
+import { IQuizAdminScorer } from '@/typing/db';
+import useSWR from 'swr';
+import fetcher from '@utils/fetcher';
+import AddAnswer from '@pages/CS/manage/scorer/AddAnswer';
 
 const submitList = [
   { id: 1, name: '조원영', phone: 1111, record: 1 },
@@ -15,12 +17,15 @@ const submitList = [
 ];
 
 const QuizScorer = () => {
+  const [searchParams] = useSearchParams();
+  const quizId = searchParams.get('quizId');
+
+  const { data: quiz, mutate } = useSWR<IQuizAdminScorer>(
+    `/v1/api/quiz/cs-admin?quizId=${quizId}`,
+    fetcher,
+  );
   const [scorer, setScorer] = useState({ id: 1, name: '조원영', phone: 1111 });
   const [checkedScorer, setCheckedScorer] = useState(scorer);
-  const [addAnswer, setAddAnswer] = useState('');
-
-  const { state } = useLocation();
-  const quiz: TQuiz = state.quiz;
 
   const onChangeRadio = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const newScorer = submitList.find((element) => element.id === parseInt(e.target.value));
@@ -33,27 +38,23 @@ const QuizScorer = () => {
 
   const onClickConfirmButton = useCallback(() => {}, []);
 
-  const onChangeAddAnswer = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setAddAnswer(e.target.value);
-    },
-    [addAnswer],
-  );
-
-  const onClickAddAnswerButton = useCallback(() => {}, []);
+  const mutateAddAnswer = useCallback((addAnswer: string) => {
+    quiz?.answer.push(addAnswer);
+    mutate(quiz);
+  }, []);
 
   return (
     <CSManageLayout header="CS 문제별 득점자 확인">
       <QuizScorerWrapper>
         <TitleWrapper>
-          <p className="quiz-number">문제{quiz.number}</p>
-          <p className="question">{quiz.question}</p>
+          <p className="quiz-number">문제{quiz?.quizNumber}</p>
+          <p className="question">{quiz?.question}</p>
         </TitleWrapper>
         <ColumnDivision>
+          {/* 분리 필요? */}
           <HalfContainer width="55%">
             <p>제출 순 나열</p>
             <SubmitBox>
-              {/* 컴포넌트 분리 고민 */}
               {submitList.map((submit) => (
                 <SubmitContent key={submit.id}>
                   <label>
@@ -85,24 +86,14 @@ const QuizScorer = () => {
             </ButtonWrapper>
             <p>문제 정답</p>
             <AnswerBox>
-              <p>뭘까영</p>
+              {quiz?.answer.map((ans, idx) => (
+                <p key={idx}>
+                  {ans}
+                  {quiz.quizType === 'MULTIPLE_QUIZ' && '번'}
+                </p>
+              ))}
             </AnswerBox>
-            <p>정답 추가</p>
-            <AddAnswerInputWrapper>
-              <AddAnswerInput
-                type="text"
-                placeholder="내용을 입력해주세요."
-                value={addAnswer}
-                onChange={onChangeAddAnswer}
-              />
-              <CleanAddAnswer onClick={() => setAddAnswer('')}>&times;</CleanAddAnswer>
-            </AddAnswerInputWrapper>
-            <AddAnswerButtonBox>
-              <AddAsnwerButton onClick={onClickAddAnswerButton}>
-                <AddIcon />
-                <p>답안추가</p>
-              </AddAsnwerButton>
-            </AddAnswerButtonBox>
+            <AddAnswer quizId={quizId} mutateAddAnswer={mutateAddAnswer} />
           </HalfContainer>
         </ColumnDivision>
       </QuizScorerWrapper>
@@ -272,6 +263,7 @@ const ConfirmButton = styled(Button)`
 `;
 
 const AnswerBox = styled(Box)`
+  display: block;
   width: 100%;
   margin-bottom: 24px;
 
@@ -279,68 +271,5 @@ const AnswerBox = styled(Box)`
     ${fontStyle};
     color: #85c88a;
     margin: 8px;
-  }
-`;
-
-const AddAnswerInputWrapper = styled.div`
-  position: relative;
-  width: 100%;
-`;
-
-const AddAnswerInput = styled.input`
-  display: flex;
-  width: 100%;
-  border: none;
-  border-radius: 8px;
-  background-color: #fff;
-  padding: 16px;
-  box-sizing: border-box;
-
-  ${fontStyle};
-  margin: 0;
-
-  &:focus-visible {
-    outline: none;
-  }
-
-  &::placeholder {
-    color: #a4a4a4;
-  }
-`;
-
-const CleanAddAnswer = styled.button`
-  position: absolute;
-  top: 50%;
-  right: 20px;
-  transform: translateY(-50%);
-  cursor: pointer;
-  border: none;
-  background: transparent;
-  color: #686868;
-  font-size: 24px;
-`;
-
-const AddAnswerButtonBox = styled(Box)`
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 54px;
-  margin-top: 12px;
-`;
-
-const AddAsnwerButton = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 32px;
-  cursor: pointer;
-  border: none;
-  background: transparent;
-
-  > p {
-    color: #757575;
-    font-family: Inter;
-    font-size: 16px;
-    font-weight: 400;
   }
 `;
