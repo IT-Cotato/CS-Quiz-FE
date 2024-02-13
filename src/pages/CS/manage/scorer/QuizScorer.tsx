@@ -1,20 +1,11 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import CSManageLayout from '@pages/CS/manage/CSManageLayout';
 import { css, styled } from 'styled-components';
-import { IQuizAdminScorer } from '@/typing/db';
+import { IQuizAdminScorer, IQuizAdminSubmit } from '@/typing/db';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import AddAnswer from '@pages/CS/manage/scorer/AddAnswer';
-
-const submitList = [
-  { id: 1, name: '조원영', phone: 1111, record: 1 },
-  { id: 2, name: '조원영', phone: 2222, record: 2 },
-  { id: 3, name: '조원영', phone: 3333, record: 3 },
-  { id: 4, name: '조원영', phone: 4444, record: 4 },
-  { id: 5, name: '조원영', phone: 5555, record: 1 },
-  { id: 6, name: '조원영', phone: 6666, record: 2 },
-];
 
 const QuizScorer = () => {
   const [searchParams] = useSearchParams();
@@ -24,17 +15,24 @@ const QuizScorer = () => {
     `/v1/api/quiz/cs-admin?quizId=${quizId}`,
     fetcher,
   );
-  const [scorer, setScorer] = useState({ id: 1, name: '조원영', phone: 1111 });
-  const [checkedScorer, setCheckedScorer] = useState(scorer);
+  const { data: record } = useSWR(`/v1/api/record/all?quizId=${quizId}`, fetcher);
+  const [submits, setSubmits] = useState<IQuizAdminSubmit[]>();
+  const [scorer, setScorer] = useState<IQuizAdminScorer>();
+  // const [checkedScorer, setCheckedScorer] = useState(scorer);
 
-  const onChangeRadio = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const newScorer = submitList.find((element) => element.id === parseInt(e.target.value));
-    if (newScorer) setCheckedScorer(newScorer);
-  }, []);
+  useEffect(() => {
+    setSubmits(record?.records);
+    setScorer(record?.scorer);
+  }, [record]);
 
-  const onClickChangeButton = useCallback(() => {
-    setScorer(checkedScorer);
-  }, [scorer, checkedScorer]);
+  // const onChangeRadio = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const newScorer = submitList.find((element) => element.id === parseInt(e.target.value));
+  //   if (newScorer) setCheckedScorer(newScorer);
+  // }, []);
+
+  // const onClickChangeButton = useCallback(() => {
+  //   setScorer(checkedScorer);
+  // }, [scorer, checkedScorer]);
 
   const onClickConfirmButton = useCallback(() => {}, []);
 
@@ -55,20 +53,23 @@ const QuizScorer = () => {
           <HalfContainer width="55%">
             <p>제출 순 나열</p>
             <SubmitBox>
-              {submitList.map((submit) => (
-                <SubmitContent key={submit.id}>
+              {submits?.map((submit) => (
+                <SubmitContent key={submit.memberId}>
                   <label>
-                    <input
+                    {/* <input
                       type="radio"
                       value={submit.id}
                       checked={submit.id === checkedScorer.id}
                       onChange={onChangeRadio}
-                    />
+                    /> */}
                     <p>
-                      {submit.name}({submit.phone})
+                      {submit.memberName}({submit.backFourNumber})
                     </p>
                   </label>
-                  <SubmitResult>{submit.record}번</SubmitResult>
+                  <SubmitResult>
+                    {submit.reply}
+                    {quiz?.quizType === 'MULTIPLE_QUIZ' && '번'}
+                  </SubmitResult>
                 </SubmitContent>
               ))}
             </SubmitBox>
@@ -77,13 +78,13 @@ const QuizScorer = () => {
             <p>득점자</p>
             <ScorerBox>
               <p>
-                {scorer.name}({scorer.phone})
+                {scorer?.memberName}({scorer?.backFourNumber})
               </p>
             </ScorerBox>
-            <ButtonWrapper>
+            {/* <ButtonWrapper>
               <ChangeButton onClick={onClickChangeButton}>변경</ChangeButton>
               <ConfirmButton onClick={onClickConfirmButton}>확인</ConfirmButton>
-            </ButtonWrapper>
+            </ButtonWrapper> */}
             <p>문제 정답</p>
             <AnswerBox>
               {quiz?.answer.map((ans, idx) => (
