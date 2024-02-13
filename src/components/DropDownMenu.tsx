@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import arrowDown from '@assets/arrow_down.svg';
+import { ToastContainer, toast } from 'react-toastify';
 
 type Props = {
   isTop: string;
@@ -12,7 +13,7 @@ const DropDownMenu = ({ isTop }: Props) => {
   const MemberMenus = ['세션 기록', 'CS 문제풀이', '마이페이지'];
 
   const onClickMenu = useCallback(() => {
-    window.alert('코테이토의 멤버만 이용할 수 있는 서비스입니다.');
+    toast.info('코테이토 멤버 전용 서비스입니다!');
   }, []);
 
   return (
@@ -46,6 +47,7 @@ const DropDownMenu = ({ isTop }: Props) => {
           </Links>
         )}
       </Menu>
+      <ToastContainer position="top-center" autoClose={2000} />
     </Container>
   );
 };
