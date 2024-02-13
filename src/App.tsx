@@ -63,8 +63,7 @@ function App() {
               <Route path="/findid" element={<FindID />} />
               <Route path="/findpw" element={<FindPWProcess />} />
               <Route path="/joinus" element={<SignUp />} />
-              <Route path="/mypage" element={<MyPage />} />
-              <Route path="/mypage/setting" element={<Setting />} />
+              <Route path="/mypage/*" element={<MyPage />} />
             </Routes>
           </div>
           {location.pathname !== '/cs/solving' && <Footer />}
