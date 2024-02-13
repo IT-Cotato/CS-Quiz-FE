@@ -4,8 +4,10 @@ import CSManageLayout from '@pages/CS/manage/CSManageLayout';
 import QuizContent from '@pages/CS/manage/QuizContent';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import useSWR from 'swr';
+import useSWRImmutable from 'swr/immutable';
 import fetcher from '@utils/fetcher';
 import { IQuizAdmin } from '@/typing/db';
+import api from '@/api/api';
 
 const CSManageHome = () => {
   const [searchParams] = useSearchParams();
@@ -16,8 +18,11 @@ const CSManageHome = () => {
     `/v1/api/quiz/cs-admin/all?educationId=${educationId}`,
     fetcher,
   );
+  const { data: quizStatus, mutate } = useSWRImmutable(
+    `/v1/api/education/status?educationId=${educationId}`,
+    fetcher,
+  );
   const [quizzes, setQuizzes] = useState<IQuizAdmin[]>();
-  const [quizStarted, setQuizStarted] = useState(false);
 
   useEffect(() => {
     if (quizData) {
@@ -28,12 +33,32 @@ const CSManageHome = () => {
   }, [quizData]);
 
   const onClickQuizButton = useCallback(() => {
-    if (!quizStarted && confirm('퀴즈를 시작하시겠습니까?')) {
-      setQuizStarted(true);
-    } else if (quizStarted && confirm('퀴즈를 종료하시겠습니까?')) {
-      setQuizStarted(false);
+    let confirmText = '';
+    const nextStatus = quizStatus.status === 'ONGOING' ? 'CLOSED' : 'ONGOING';
+    if (quizStatus.status === 'CLOSED') {
+      confirmText = '교육을 시작하시겠습니까?';
+    } else if (quizStatus.status === 'ONGOING') {
+      confirmText = '교육을 종료하시겠습니까?';
     }
-  }, [quizStarted]);
+
+    if (confirm(confirmText)) {
+      api
+        .patch(
+          '/v1/api/education/status',
+          {
+            educationId: educationId,
+            status: nextStatus,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          },
+        )
+        .then(() => mutate({ status: nextStatus }, false))
+        .catch((err) => console.error(err));
+    }
+  }, [quizStatus]);
 
   const onClickCheckAllScorer = useCallback(() => {
     navigate(`/cs/allscorer?educationId=${educationId}`);
@@ -44,7 +69,7 @@ const CSManageHome = () => {
       <ManageWrapper>
         <ButtonWrapper>
           <Button color="#477FEB" onClick={onClickQuizButton}>
-            {quizStarted ? '교육 종료하기' : '교육 시작하기'}
+            {quizStatus?.status === 'ONGOING' ? '교육 종료하기' : '교육 시작하기'}
           </Button>
           <Button color="#000" onClick={onClickCheckAllScorer}>
             전체 득점자 확인

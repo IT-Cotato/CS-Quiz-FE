@@ -10,8 +10,8 @@ interface Props {
 }
 
 const QuizContent = ({ quiz }: Props) => {
-  const [isApproach, setIsApproach] = useState(false);
-  const [isQuizStart, setIsQuizStart] = useState(false);
+  const [isApproach, setIsApproach] = useState(quiz.status === 'QUIZ_ON');
+  const [isQuizStart, setIsQuizStart] = useState(quiz.start === 'QUIZ_ON');
 
   const navigate = useNavigate();
 
