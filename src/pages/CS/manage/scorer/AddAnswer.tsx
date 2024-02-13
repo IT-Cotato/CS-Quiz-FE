@@ -46,7 +46,7 @@ const AddAnswer = ({ quizId, mutateAddAnswer }: Props) => {
   );
 
   return (
-    <form onSubmit={onSubmitAddAnswer}>
+    <Form onSubmit={onSubmitAddAnswer}>
       <p>정답 추가</p>
       <AddAnswerInputWrapper>
         <AddAnswerInput
@@ -63,11 +63,19 @@ const AddAnswer = ({ quizId, mutateAddAnswer }: Props) => {
           <p>답안추가</p>
         </AddAsnwerButton>
       </AddAnswerButtonBox>
-    </form>
+    </Form>
   );
 };
 
 export default React.memo(AddAnswer);
+
+const Form = styled.form`
+  color: #000;
+  font-family: Inter;
+  font-size: 20px;
+  font-weight: 500;
+  margin: 8px 0;
+`;
 
 const AddAnswerInputWrapper = styled.div`
   position: relative;
