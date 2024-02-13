@@ -14,8 +14,6 @@ import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from '@theme/GlobalStyle';
 import { theme } from '@theme/Theme';
 import CSManage from '@pages/CS/manage/CSManage';
-import QuizScorer from '@pages/CS/manage/QuizScorer';
-import AllScorer from '@pages/CS/manage/AllScorer';
 import Footer from '@components/Footer';
 import FindID from '@pages/Login/FindID';
 import FindPWProcess from '@pages/Login/FindPWProcess';
@@ -54,9 +52,7 @@ function App() {
               <Route path="/cs" element={<CSHome />} />
               <Route path="/cs/start" element={<CSMain />} />
               <Route path="/cs/upload" element={<CSUpload />} />
-              <Route path="/cs/manage" element={<CSManage />} />
-              <Route path="/cs/quizscorer" element={<QuizScorer />} />
-              <Route path="/cs/allscorer" element={<AllScorer />} />
+              <Route path="/cs/manage/*" element={<CSManage />} />
               <Route path="/cs/solving" element={<CSProblem />} />
               <Route path="/session" element={<SessionHome />} />
               <Route path="/login" element={<Login />} />
