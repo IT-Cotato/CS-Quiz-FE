@@ -2,6 +2,9 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { css, styled } from 'styled-components';
 import arrow_down_thin from '@assets/arrow_dwon_thin.svg';
 import arrow_up_thin from '@assets/arrow_up_thin.svg';
+import fetcher from '@utils/fetcher';
+import useSWR from 'swr';
+import { IGeneration } from '@/typing/db';
 
 interface Props {
   /**
@@ -9,19 +12,16 @@ interface Props {
    * @param generation
    * @returns
    */
-  onChangeGeneration: (generation: number) => void;
+  onChangeGeneration: (generation?: IGeneration) => void;
   /**
    * 현재 선택된 기수
    */
-  selectedGeneration: number;
+  selectedGeneration?: IGeneration;
 }
 
-const GenerationSelect = ({
-  onChangeGeneration: onChangeGeneration,
-  selectedGeneration: selectedGeneration,
-}: Props) => {
+const GenerationSelect = ({ onChangeGeneration, selectedGeneration }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [generationLength, setGenerationLength] = useState(selectedGeneration);
+  const { data: generationData } = useSWR<IGeneration[]>('/v1/api/generation', fetcher);
 
   const generationDropRef = useRef<HTMLDivElement>(null);
 
@@ -36,11 +36,10 @@ const GenerationSelect = ({
   }, [generationDropRef]);
 
   useEffect(() => {
-    // 기수의 최대값
-    setGenerationLength(8);
-  });
+    onChangeGeneration(generationData?.at(-1));
+  }, [generationData]);
 
-  const onClickGeneration = useCallback((generation: number) => {
+  const onClickGeneration = useCallback((generation: IGeneration) => {
     onChangeGeneration(generation);
     setIsOpen(false);
   }, []);
@@ -48,23 +47,20 @@ const GenerationSelect = ({
   return (
     <GenerationSelectWrapper ref={generationDropRef}>
       <SelectMenu isopen={isOpen ? 'open' : 'close'} onClick={() => setIsOpen(!isOpen)}>
-        <p>{`${selectedGeneration}기`}</p>
+        <p>{selectedGeneration?.generationName}</p>
         {isOpen ? (
-          <img src={arrow_up_thin} alt="arrow-up" /> // onClick={() => setIsOpen(!isOpen)} />
+          <img src={arrow_up_thin} alt="arrow-up" />
         ) : (
-          <img src={arrow_down_thin} alt="arrow-down" /> // onClick={() => setIsOpen(!isOpen)} />
+          <img src={arrow_down_thin} alt="arrow-down" />
         )}
         {isOpen && (
           <GenerationList>
             <ul>
-              {Array.from({ length: generationLength }, (v, i) => i + 1)
-                .reverse()
-                .map((generation) => (
-                  <li
-                    key={generation}
-                    onClick={() => onClickGeneration(generation)}
-                  >{`${generation}기`}</li>
-                ))}
+              {generationData?.map((generation: IGeneration) => (
+                <li key={generation.generationId} onClick={() => onClickGeneration(generation)}>
+                  {generation.generationName}
+                </li>
+              ))}
             </ul>
           </GenerationList>
         )}
@@ -118,11 +114,11 @@ const SelectMenu = styled.div<{ isopen: string }>`
 const GenerationList = styled.div`
   z-index: 1;
   position: absolute;
-  top: 44px;
+  top: 40px;
+  left: 0;
   width: 100%;
   flex-shrink: 0;
   border-radius: 5px;
-  background: #fff;
   background: #f3f7ff;
 
   ul {

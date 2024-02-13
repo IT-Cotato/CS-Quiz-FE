@@ -1,64 +1,62 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { styled } from 'styled-components';
 import SessionContent from '@pages/Session/SessionContent';
-import add_icon from '@assets/add_icon.svg';
 import SessionModal from '@pages/Session/SessionModal/SessionModal';
-import setting_icon from '@assets/setting_icon.svg';
-import modify_icon from '@assets/modify_icon.svg';
+import { ReactComponent as AddIcon } from '@assets/add_icon.svg';
+import { ReactComponent as SettingIcon } from '@assets/setting_icon.svg';
 import GenerationSelect from '@components/GenerationSelect';
-
-/*
-논의 사항
-수정 시나리오
-버튼을 누르는데 몇번째 세션인지 어떻게 찾아야 할지
-*/
-
-// 임시 세션 타입
-export interface ISession {
-  id: number;
-  title: string;
-  image: File | null;
-  description: string;
-}
-const sessionData: ISession[] = [
-  { id: 1, title: 'OT', image: null, description: '코테이토 8기 첫 만남 OT를 진행하였습니다' },
-  { id: 2, title: '1주차 세션', image: null, description: '1주차 세션을 진행하였습니다.' },
-  { id: 3, title: '2주차 세션', image: null, description: '2주차 세션을 진행하였습니다.' },
-  { id: 4, title: '3주차 세션', image: null, description: '3주차 세션을 진행하였습니다.' },
-];
-// const sessionData: ISession[] = [];
+import { IGeneration, ISession } from '@/typing/db';
+import api from '@/api/api';
 
 const SessionHome = () => {
+  const [sessions, setSessions] = useState<undefined | ISession[]>();
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
-  const [sessionModalMode, setSessionModalMode] = useState('');
-  const [selectedGeneration, setSelectedGeneration] = useState(0);
+  const [modifySession, setModifySession] = useState<undefined | ISession>();
+  const [lastWeek, setLastWeek] = useState(0);
+  const [selectedGeneration, setSelectedGeneration] = useState<IGeneration | undefined>();
 
   useEffect(() => {
-    // 기수의 최대값
-    setSelectedGeneration(8);
+    if (sessions && sessions.length > 0) {
+      setLastWeek(sessions[sessions.length - 1].number);
+    } else {
+      setLastWeek(-1);
+    }
   }, []);
 
   const onChangeGeneration = useCallback(
-    (generation: number) => {
+    (generation: IGeneration | undefined) => {
       setSelectedGeneration(generation);
-      // 그리고 여기서 api 요청을 보낼듯
+
+      if (generation) {
+        api
+          .get('/v1/api/session', {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+            params: {
+              generationId: generation.generationId,
+            },
+          })
+          .then((res) => setSessions(res.data))
+          .catch((err) => console.error(err));
+      }
     },
     [selectedGeneration],
   );
 
   const onClickAddButton = useCallback(() => {
+    setModifySession(undefined);
     setIsSessionModalOpen(true);
-    setSessionModalMode('add');
   }, []);
 
-  const onClickModifyButton = useCallback(() => {
+  const handleModifyButton = useCallback((session: ISession) => {
+    setModifySession(session);
     setIsSessionModalOpen(true);
-    setSessionModalMode('modify');
   }, []);
 
   const onCloseModal = useCallback(() => {
     setIsSessionModalOpen(false);
-  }, [isSessionModalOpen]);
+  }, []);
 
   return (
     <>
@@ -71,31 +69,47 @@ const SessionHome = () => {
           />
           {/* 권한에 따라 add는 선택적으로 보여지게 */}
           <ButtonWrapper>
-            <img src={modify_icon} alt="modify-icon" onClick={onClickModifyButton} />
-            <img src={add_icon} alt="add-icon" onClick={onClickAddButton} />
+            <AddIcon onClick={onClickAddButton} />
           </ButtonWrapper>
         </SessionSetting>
         <SessionContentsContainer>
-          {sessionData.length === 0 ? (
-            <SessionReady className="session-ready">
-              <img src={setting_icon} alt="setting-icon" />
+          {!sessions ? (
+            <SessionReady>
+              <SettingIcon />
               <p>세션 준비중입니다.</p>
             </SessionReady>
           ) : (
-            sessionData.map((session) => <SessionContent key={session.id} session={session} />)
+            sessions?.map((session) => (
+              <SessionContent
+                key={session.id}
+                session={session}
+                handleModifyButton={handleModifyButton}
+              />
+            ))
           )}
         </SessionContentsContainer>
       </SessionWrapper>
       <SessionModal
         isOpen={isSessionModalOpen}
         onCloseModal={onCloseModal}
-        mode={sessionModalMode}
+        session={modifySession}
+        lastWeek={lastWeek}
+        generationId={selectedGeneration?.generationId}
       />
     </>
   );
 };
 
 export default SessionHome;
+
+const SessionWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+`;
 
 const SessionHeader = styled.h1`
   margin: 144px 0 100px;
@@ -108,14 +122,6 @@ const SessionHeader = styled.h1`
   line-height: normal;
 `;
 
-const SessionWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-`;
-
 const SessionSetting = styled.div`
   display: flex;
   align-items: center;
@@ -125,7 +131,7 @@ const SessionSetting = styled.div`
 `;
 
 const ButtonWrapper = styled.div`
-  > img {
+  > svg {
     margin-left: 8px;
     width: 32px;
     height: 32px;
@@ -140,20 +146,21 @@ const SessionContentsContainer = styled.div`
   flex-direction: row;
   align-content: start;
   width: 70%;
-  height: 1000px;
-  margin-top: 28px;
+  margin: 28px 0 120px;
 
   @media only screen and (max-width: 957px) {
     justify-content: center;
   }
-
-  .session-ready {
-    margin: auto;
-    margin-top: 200px;
-  }
 `;
 
 const SessionReady = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 160px;
+
   p {
     color: #9a9a9a;
     font-family: NanumSquareRound;

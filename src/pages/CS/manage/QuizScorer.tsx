@@ -1,42 +1,28 @@
-import React, { useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import CSManageLayout from './CSManageLayout';
 import { css, styled } from 'styled-components';
-
-/*
-제출 수 나열에서 오답도 같이 제출되면 phone이 유일한 값이 되지 못함
-오답 이후에 또 오답이나 정답을 제출 가능
-이거를 보여주는 취지는 운영진의 권한으로 시스템상 오답으로 처리 되었지만 정답으로 고치게 해주는거 아니였나?
-api로 왔다갔다 할거는 뭐뭐인지
-
-득적자랑 제출 순 나열이랑 어떻게 매칭시킬지
-
-변경버튼을 누르면 체크된 제출자로 득점자가 바뀌고, 확인버튼 누르면 뭐하지?
-*/
+import { ReactComponent as AddIcon } from '@assets/add_circle.svg';
 
 const submitList = [
-  { id: 1, name: '조원영', phone: 1111 },
-  { id: 2, name: '조원영', phone: 2222 },
-  { id: 3, name: '조원영', phone: 3333 },
-  { id: 4, name: '조원영', phone: 4444 },
-  { id: 5, name: '조원영', phone: 5555 },
-  { id: 6, name: '조원영', phone: 6666 },
+  { id: 1, name: '조원영', phone: 1111, record: 1 },
+  { id: 2, name: '조원영', phone: 2222, record: 2 },
+  { id: 3, name: '조원영', phone: 3333, record: 3 },
+  { id: 4, name: '조원영', phone: 4444, record: 4 },
+  { id: 5, name: '조원영', phone: 5555, record: 1 },
+  { id: 6, name: '조원영', phone: 6666, record: 2 },
 ];
 
 const QuizScorer = () => {
   const [scorer, setScorer] = useState({ id: 1, name: '조원영', phone: 1111 });
   const [checkedScorer, setCheckedScorer] = useState(scorer);
+  const [addAnswer, setAddAnswer] = useState('');
 
   const { search, state } = useLocation();
   const generation = search.split('&')[0].split('=')[1];
   const week = search.split('&')[1].split('=')[1];
   const quiz = search.split('&')[2].split('=')[1];
   const question = state.question;
-
-  console.log('generation', generation);
-  console.log('week', week);
-  console.log('quiz', quiz);
-  console.log('question', question);
 
   const onChangeRadio = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const newScorer = submitList.find((element) => element.id === parseInt(e.target.value));
@@ -49,6 +35,15 @@ const QuizScorer = () => {
 
   const onClickConfirmButton = useCallback(() => {}, []);
 
+  const onChangeAddAnswer = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setAddAnswer(e.target.value);
+    },
+    [addAnswer],
+  );
+
+  const onClickAddAnswerButton = useCallback(() => {}, []);
+
   return (
     <CSManageLayout header="CS 문제별 득점자 확인">
       <QuizScorerWrapper>
@@ -60,21 +55,21 @@ const QuizScorer = () => {
           <HalfContainer width="55%">
             <p>제출 순 나열</p>
             <SubmitBox>
-              {/* 여기서 쓰는값들이 index랑 phone이랑 섞여있이서 쫌 맛탱이가 가버림 */}
               {/* 컴포넌트 분리 고민 */}
               {submitList.map((submit) => (
                 <SubmitContent key={submit.id}>
                   <label>
-                    <p>
-                      {submit.name}({submit.phone})
-                    </p>
                     <input
                       type="radio"
                       value={submit.id}
                       checked={submit.id === checkedScorer.id}
                       onChange={onChangeRadio}
                     />
+                    <p>
+                      {submit.name}({submit.phone})
+                    </p>
                   </label>
+                  <SubmitResult>{submit.record}번</SubmitResult>
                 </SubmitContent>
               ))}
             </SubmitBox>
@@ -90,6 +85,26 @@ const QuizScorer = () => {
               <ChangeButton onClick={onClickChangeButton}>변경</ChangeButton>
               <ConfirmButton onClick={onClickConfirmButton}>확인</ConfirmButton>
             </ButtonWrapper>
+            <p>문제 정답</p>
+            <AnswerBox>
+              <p>뭘까영</p>
+            </AnswerBox>
+            <p>정답 추가</p>
+            <AddAnswerInputWrapper>
+              <AddAnswerInput
+                type="text"
+                placeholder="내용을 입력해주세요."
+                value={addAnswer}
+                onChange={onChangeAddAnswer}
+              />
+              <CleanAddAnswer onClick={() => setAddAnswer('')}>&times;</CleanAddAnswer>
+            </AddAnswerInputWrapper>
+            <AddAnswerButtonBox>
+              <AddAsnwerButton onClick={onClickAddAnswerButton}>
+                <AddIcon />
+                <p>답안추가</p>
+              </AddAsnwerButton>
+            </AddAnswerButtonBox>
           </HalfContainer>
         </ColumnDivision>
       </QuizScorerWrapper>
@@ -103,6 +118,7 @@ const QuizScorerWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 70%;
+  margin-bottom: 48px;
 `;
 
 const fontStyle = css`
@@ -110,6 +126,7 @@ const fontStyle = css`
   font-family: Inter;
   font-size: 20px;
   font-weight: 500;
+  margin: 16px 0;
 `;
 
 const TitleWrapper = styled.div`
@@ -126,6 +143,7 @@ const TitleWrapper = styled.div`
 
   .quiz-number {
     ${fontStyle}
+    text-align: center;
     color: #477feb;
     width: 100px;
   }
@@ -173,18 +191,17 @@ const SubmitContent = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 95%;
+  padding: 0 12px;
   border-bottom: 1px solid rgba(28, 28, 28, 0.3);
 
   > label {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    width: 100%;
     cursor: pointer;
 
     > p {
-      ${fontStyle}
-      margin: 16px 8px;
+      ${fontStyle};
+      margin-left: 12px;
     }
 
     > input {
@@ -216,11 +233,16 @@ const ScorerBox = styled(Box)`
   }
 `;
 
+const SubmitResult = styled.p`
+  ${fontStyle};
+  color: #85c88a;
+`;
+
 const ButtonWrapper = styled.div`
   display: flex;
   width: 100%;
   justify-content: flex-end;
-  margin: 24px 0;
+  margin: 24px 0 4px;
 `;
 
 const Button = styled.button`
@@ -241,11 +263,86 @@ const Button = styled.button`
 
 const ChangeButton = styled(Button)`
   border-radius: 5px;
-  background: #c1c1c1;
+  border: 1px solid #bebebe;
+  background: #feffff;
   color: #2e2e2e;
 `;
 
 const ConfirmButton = styled(Button)`
   background: #477feb;
   color: #fff;
+`;
+
+const AnswerBox = styled(Box)`
+  width: 100%;
+  margin-bottom: 24px;
+
+  > p {
+    ${fontStyle};
+    color: #85c88a;
+    margin: 8px;
+  }
+`;
+
+const AddAnswerInputWrapper = styled.div`
+  position: relative;
+  width: 100%;
+`;
+
+const AddAnswerInput = styled.input`
+  display: flex;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  background-color: #fff;
+  padding: 16px;
+  box-sizing: border-box;
+
+  ${fontStyle};
+  margin: 0;
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &::placeholder {
+    color: #a4a4a4;
+  }
+`;
+
+const CleanAddAnswer = styled.button`
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: #686868;
+  font-size: 24px;
+`;
+
+const AddAnswerButtonBox = styled(Box)`
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 54px;
+  margin-top: 12px;
+`;
+
+const AddAsnwerButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+
+  > p {
+    color: #757575;
+    font-family: Inter;
+    font-size: 16px;
+    font-weight: 400;
+  }
 `;

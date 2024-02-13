@@ -1,30 +1,49 @@
-import React, { useState } from 'react';
-import { ISession } from './SessionHome';
+import React, { useCallback, useState } from 'react';
+import { ISession } from '@/typing/db';
 import styled from 'styled-components';
-import cotato_icon from '@assets/cotato_icon.png';
-
-/*
- 이모지 확정됨? 
- */
+import SessionEmoji from '@pages/Session/SessionEmoji';
+import { ReactComponent as ModifyIcon } from '@assets/modify_icon.svg';
 
 interface Props {
   session: ISession;
+  handleModifyButton: (session: ISession) => void;
 }
 
-const SessionContent = ({ session }: Props) => {
+const SessionContent = ({ session, handleModifyButton }: Props) => {
   const [isHover, setIsHover] = useState(false);
 
+  const onMouseEnterImage = useCallback(() => {
+    setIsHover(true);
+  }, []);
+
+  const onMouseLeaveImage = useCallback(() => {
+    setIsHover(false);
+  }, []);
+
   return (
-    <Content onMouseEnter={() => setIsHover(true)} onMouseLeave={() => setIsHover(false)}>
-      <div className="session-img" />
-      <div className="title">
-        <p>{session.title}</p>
-      </div>
-      {isHover && (
-        <HoverContent>
-          <p>{session.title}</p>
+    <Content>
+      <SessionImage
+        onMouseEnter={onMouseEnterImage}
+        onMouseLeave={onMouseLeaveImage}
+        ishover={isHover.toString()}
+        photourl={session.photoUrl}
+      />
+      {isHover ? (
+        <HoverContent onMouseEnter={onMouseEnterImage} onMouseLeave={onMouseLeaveImage}>
+          <p>{session.number === 0 ? 'OT' : `${session.number}주차 세션`}</p>
           <p>{session.description}</p>
+          {/* 운영진만 보이게 */}
+          <ModifyIcon onClick={() => handleModifyButton(session)} />
         </HoverContent>
+      ) : (
+        <Title>
+          <p>{session.number === 0 ? 'OT' : `${session.number}주차 세션`}</p>
+          <EmojiWrapper>
+            {session.csEducation === 'CS_ON' && <SessionEmoji activity="CS" />}
+            {session.itIssue === 'IT_ON' && <SessionEmoji activity="IT" />}
+            {session.networking === 'NW_ON' && <SessionEmoji activity="NW" />}
+          </EmojiWrapper>
+        </Title>
       )}
     </Content>
   );
@@ -33,44 +52,60 @@ const SessionContent = ({ session }: Props) => {
 export default SessionContent;
 
 const Content = styled.div`
+  z-index: 0;
   position: relative;
   display: flex;
   flex-direction: column;
   width: 300px;
+  height: 332px;
   margin: 24px 4px;
+  border-radius: 10px;
+`;
 
-  > .session-img {
-    background-image: url(${cotato_icon});
-    background-size: 100% 100%;
-    height: 280px;
-    border-radius: 10px;
+interface SessionImageProps {
+  ishover: string;
+  photourl: string;
+}
+
+const SessionImage = styled.div<SessionImageProps>`
+  z-index: 0;
+  background-image: url(${(props) => props.photourl});
+  background-size: 100% 332px;
+  width: 100%;
+  height: ${(props) => (props.ishover === 'true' ? '332px' : '280px')};
+  border-radius: 10px;
+`;
+
+const Title = styled.div`
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background: #f3f7ff;
+  border-radius: 10px;
+  margin-top: -8px;
+  padding-top: 8px;
+
+  > p {
+    margin-left: 20px;
+    color: #1f1f1f;
+    font-family: NanumSquareRound;
+    font-size: 16px;
+    font-weight: 700;
   }
+`;
 
-  > .title {
-    display: flex;
-    align-items: center;
-    background: #f3f7ff;
-    border-radius: 10px;
-    height: 52px;
-
-    > p {
-      margin-left: 20px;
-      color: #1f1f1f;
-      font-family: NanumSquareRound;
-      font-size: 16px;
-      font-style: normal;
-      font-weight: 700;
-      line-height: normal;
-    }
-  }
+const EmojiWrapper = styled.div`
+  display: flex;
+  margin-right: 8px;
 `;
 
 const HoverContent = styled.div`
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
-  height: 100%;
+  height: 332px;
   border-radius: 10px;
   background-color: #000;
   opacity: 0.8;
@@ -82,9 +117,15 @@ const HoverContent = styled.div`
     color: #fff;
     font-family: NanumSquareRound;
     font-size: 16px;
-    font-style: normal;
     font-weight: 700;
-    line-height: normal;
     text-align: left;
+  }
+
+  > svg {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    cursor: pointer;
+    fill: #f3f7ff;
   }
 `;

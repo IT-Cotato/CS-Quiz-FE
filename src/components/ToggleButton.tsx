@@ -1,13 +1,6 @@
 import React from 'react';
 import { styled } from 'styled-components';
 
-/*
-해결해야 하는데 어떻게 해야하는거지
-
-토글 이벤트 발생시 크롬에서는 잘 되는데 사파리에서 모달 overlay 배경이 잠깐 변경됨
-해결해 볼려 했는데 안됨
-*/
-
 interface Props {
   /**
    * 토글 활성화 여부
@@ -23,13 +16,14 @@ interface Props {
 const ToggleButton = ({ toggled, onClick }: Props) => {
   return (
     <Label>
-      <Input type="checkbox" defaultChecked={toggled} onClick={onClick} />
+      <Input type="checkbox" checked={toggled} onChange={onClick} />
       <Toggle />
     </Label>
   );
 };
 
 export default React.memo(ToggleButton);
+// export default ToggleButton;
 
 const Label = styled.label`
   position: relative;
