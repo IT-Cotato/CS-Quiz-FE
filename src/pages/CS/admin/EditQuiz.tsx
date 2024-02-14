@@ -10,6 +10,7 @@ type Props = {
 
 const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+
   const choices = 4;
   const addShortAnswer = useCallback(() => {
     setQuiz((prev) => {
@@ -176,6 +177,7 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
             onChange={onChangeTitle}
             value={quiz[selected]?.question || ''}
             placeholder="문제 제목을 입력해주세요."
+            tabIndex={0}
           />
         </MakeQuestionDiv>
         <UploadDiv
@@ -219,6 +221,7 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
                 <input
                   type="checkbox"
                   id={`${index + 1}`}
+                  tabIndex={index + 1}
                   onChange={(e) => {
                     checkOnlyOne(e);
                   }}
