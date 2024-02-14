@@ -110,7 +110,7 @@ const Links = styled.div`
   width: 100%;
   height: fit-content;
   margin-top: 40px;
-  animation: fadeIn 0.6s ease-in-out;
+  animation: dimIn 0.6s ease-in-out;
   p {
     margin: 0;
     color: #93c6fe;
@@ -131,7 +131,7 @@ const Links = styled.div`
     margin-top: 4px;
   }
 
-  @keyframes fadeIn {
+  @keyframes dimIn {
     from {
       opacity: 0;
     }
