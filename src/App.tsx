@@ -31,7 +31,12 @@ import NotFound from '@components/NotFound';
 function App() {
   const location = useLocation();
 
-  const { data, error } = useSWR('/v1/api/member/info', fetcher);
+  const { data, error } = useSWR('/v1/api/member/info', fetcher, {
+    onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
+      if (error.status === 400) return;
+      if (retryCount >= 10) return;
+    },
+  });
   //location.pathname !== '/cs/solving'
 
   return (
