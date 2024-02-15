@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { ReactComponent as ArrowBack } from '@/assets/arrow_back.svg';
-import { ChoiceProps, ShortProps } from '@/typing/db';
+import { Multiples, ShortQuizzes } from '@/typing/db';
 import Slides from './Slides';
 import EditQuiz from './EditQuiz';
 import QuizInfo from './QuizInfo';
 import MobileSlides from './MobileSlides';
-// TODO: 컴포넌트 분리
+import axios from 'axios';
 
 type Item = {
   isselected?: string;
 };
 
-type QuizType = ChoiceProps | ShortProps;
+type QuizType = Multiples | ShortQuizzes;
 
 const CSUpload = () => {
   const location = useLocation();
@@ -21,44 +21,59 @@ const CSUpload = () => {
   const generation = search.split('&')[0].split('=')[1];
   const week = search.split('&')[1].split('=')[1];
 
+  const fetchData = async () => {
+    const response = await axios.get(process.env.REACT_APP_BASE_URL + '/v1/api/quiz/all', {
+      params: {
+        educationId: 1,
+      },
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
+      },
+    });
+    const arr = [...response.data.multiples].concat(response.data.shortQuizzes);
+    return arr.sort((a, b) => a.number - b.number);
+  };
+  useEffect(() => {
+    fetchData().then((data) => {
+      if (data.length === 0) return;
+      setQuiz(data);
+    });
+  }, []);
+
   // 전체 슬라이드를 담기 위한 state
   const [quiz, setQuiz] = useState<QuizType[]>([
     {
-      quiz_id: 1,
-      quiz_title: '제목',
-      quiz_content: '내용',
-      quiz_type: 'choice',
-      quiz_answer: [
-        {
-          choice_num: 1,
-          choice_content: '',
-        },
-      ],
+      number: 1,
+      question: '',
       choices: [
         {
-          choice_id: 1,
-          choice_content: '',
+          number: 1,
+          content: '',
+          isAnswer: 'NO_ANSWER',
         },
         {
-          choice_id: 2,
-          choice_content: '',
+          number: 2,
+          content: '',
+          isAnswer: 'NO_ANSWER',
         },
         {
-          choice_id: 3,
-          choice_content: '',
+          number: 3,
+          content: '',
+          isAnswer: 'NO_ANSWER',
         },
         {
-          choice_id: 4,
-          choice_content: '',
+          number: 4,
+          content: '',
+          isAnswer: 'NO_ANSWER',
         },
       ],
-      quiz_image_file: null,
-      quiz_preview_url: null,
+      image: null,
+      previewUrl: null,
     },
   ]);
 
   // 현재 선택된 슬라이드를 나타내기 위한 state
-  const [selected, setSelected] = useState(1); // selected가 0인 경우에는 주제, 1 이상인 경우에는 슬라이드의 문제 번호를 나타냄
+  const [selected, setSelected] = useState(0);
 
   return (
     <>
@@ -131,7 +146,7 @@ const Section = styled.div`
   min-width: 100%;
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 1fr 3fr 1fr;
+  grid-template-columns: auto;
   grid-template-areas: 'leftbox centerbox rightbox';
   grid-gap: 0;
   flex-direction: row;
@@ -139,13 +154,13 @@ const Section = styled.div`
     -2px 1px 10px 1px rgba(0, 0, 0, 0.15),
     2px 4px 10px 0px rgba(0, 0, 0, 0.15);
   @media screen and (max-width: 768px) {
-    padding: 20px 0px;
+    padding: 0;
     grid-template-columns: 1fr 1fr 1fr;
-    /* grid-template-rows: 1fr 1fr 1fr; */
     grid-template-areas:
       'leftbox leftbox leftbox'
       'centerbox centerbox centerbox'
       'rightbox rightbox rightbox';
+    -ms-grid-column-align: center;
     height: fit-content;
     flex-direction: column;
   }

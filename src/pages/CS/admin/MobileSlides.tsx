@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { ChoiceProps, ShortProps } from '@/typing/db';
+import { Multiples, ShortQuizzes } from '@/typing/db';
 
 type Props = {
   quiz: QuizType[];
@@ -9,7 +9,7 @@ type Props = {
   setSelected: React.Dispatch<React.SetStateAction<number>>;
 };
 
-type QuizType = ChoiceProps | ShortProps;
+type QuizType = Multiples | ShortQuizzes;
 const MobileSlides = ({ quiz, setQuiz, selected, setSelected }: Props) => {
   const [isDown, setIsDown] = useState(false);
   const [isShow, setIsShow] = useState(false);
@@ -20,36 +20,102 @@ const MobileSlides = ({ quiz, setQuiz, selected, setSelected }: Props) => {
   const menuRightDistance = menuRef.current?.getBoundingClientRect().right;
   const deleteItem = useCallback(() => {
     if (quiz.length === 1) {
-      alert('슬라이드가 1개 이상이어야 합니다.');
+      window.alert('슬라이드가 1개 이상이어야 합니다.');
       return;
     }
     const result = window.confirm('정말 삭제하시겠습니까?');
     if (!result) return;
     // 이전 번호 선택
-    setSelected(selected - 1);
+    if (selected === 0) {
+      setSelected(0);
+    } else {
+      setSelected(selected - 1);
+    }
     setQuiz((prev) => {
       // selected인 quiz을 삭제 후, id를 재정렬
       const newPrev = [...prev];
-      newPrev.splice(selected - 1, 1);
-      // quiz_preview_url undefined일 경우에 대한 예외처리
-      if (newPrev[selected - 2]?.quiz_preview_url) {
-        URL.revokeObjectURL(newPrev[selected - 2].quiz_preview_url || '');
+      newPrev.splice(selected, 1);
+      // previewUrl undefined일 경우에 대한 예외처리
+      if (newPrev[selected - 2]?.previewUrl) {
+        URL.revokeObjectURL(newPrev[selected - 2].previewUrl || '');
       }
-      return newPrev.map((quiz, index) => ({ ...quiz, quiz_id: index + 1 }));
+      return newPrev.map((quiz, index) => ({ ...quiz, number: index + 1 }));
     });
+  }, [selected]);
+
+  const onClickBack = useCallback(() => {
+    window.history.back();
+  }, []);
+
+  const addQuiz = useCallback(() => {
+    if (quiz.length >= 10) {
+      window.alert('슬라이드는 최대 10개까지만 추가할 수 있습니다.');
+      return;
+    }
+    setQuiz((prev) => [
+      ...prev,
+      {
+        number: prev.length + 1,
+        question: '제목',
+        choices: [
+          {
+            number: 1,
+            content: '',
+            isAnswer: 'NO_ANSWER',
+          },
+          {
+            number: 2,
+            content: '',
+            isAnswer: 'NO_ANSWER',
+          },
+          {
+            number: 3,
+            content: '',
+            isAnswer: 'NO_ANSWER',
+          },
+          {
+            number: 4,
+            content: '',
+            isAnswer: 'NO_ANSWER',
+          },
+        ],
+        image: null,
+        previewUrl: null,
+      },
+    ]);
     setIsShow(false);
   }, [selected]);
 
+  const onChangeTitle = useCallback(
+    (e: ChangeEvent<HTMLTextAreaElement>) => {
+      setQuiz((prev) => {
+        const newPrev = [...prev];
+        newPrev[selected].question = e.target.value;
+        return [...newPrev];
+      });
+    },
+    [selected],
+  );
+
+  const onClickOutside = useCallback(
+    (e: React.MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setIsShow(false);
+      }
+    },
+    [menuRef],
+  );
+
   return (
-    <Wrapper>
+    <Wrapper onClick={onClickOutside}>
       <Navbar>
-        <div>
+        <div onClick={onClickBack}>
           <img
             src="https://velog.velcdn.com/images/ea_st_ring/post/fa66daa9-ddeb-4ca5-894c-5fa5f38a0340/image.svg"
             style={{ transform: 'rotate(90deg)', cursor: 'pointer' }}
           />{' '}
         </div>
-        <div onClick={() => setIsShow(!isShow)}>
+        <div onClick={() => setIsShow(!isShow)} style={{ zIndex: 99 }}>
           <img
             src="https://velog.velcdn.com/images/ea_st_ring/post/cb0f63b2-1ab2-4a8c-8519-9c7d84d7a502/image.svg"
             style={{ cursor: 'pointer' }}
@@ -58,40 +124,44 @@ const MobileSlides = ({ quiz, setQuiz, selected, setSelected }: Props) => {
         </div>
       </Navbar>
       {isShow && (
-        <Modal top={menuBottomDistance} right={menuRightDistance}>
+        <Modal $top={menuBottomDistance} $right={menuRightDistance}>
           <div onClick={deleteItem}>
-            <img src="https://velog.velcdn.com/images/ea_st_ring/post/4fbd5754-4c51-440b-9ca6-098f5c3a5fd0/image.svg" />
+            <img src="https://velog.velcdn.com/images/ea_st_ring/post/9dda46cf-266e-4c49-b257-928527f652bc/image.svg" />
             <p>삭제</p>
           </div>
-          <div>
-            <img src="https://velog.velcdn.com/images/ea_st_ring/post/a228849c-a89b-4ed7-96c2-09fb6e16756a/image.svg" />
-            <p>저장</p>
+          <div onClick={addQuiz}>
+            <img src="https://velog.velcdn.com/images/ea_st_ring/post/befacb9b-cc83-485b-9a2c-83c8e921aa23/image.svg" />
+            <p>추가</p>
           </div>
         </Modal>
       )}
       <Dropdown>
         <SelectButton onClick={() => setIsDown(!isDown)} ref={selectedRef}>
-          <p>{selected}</p>
+          <p>{selected + 1}</p>
           <label>
             <img src="https://velog.velcdn.com/images/ea_st_ring/post/fa66daa9-ddeb-4ca5-894c-5fa5f38a0340/image.svg" />{' '}
           </label>
         </SelectButton>
-        <Opitons top={slideBottomDistance}>
+        <Opitons $top={slideBottomDistance}>
           {isDown &&
             quiz.map((item) => (
               <div
-                key={item.quiz_id}
+                key={item.number}
                 onClick={() => {
                   setIsDown(false);
-                  setSelected(item.quiz_id);
+                  setSelected(item.number - 1);
                 }}
               >
-                {item.quiz_id}
+                {item.number}
               </div>
             ))}
         </Opitons>
       </Dropdown>
-      <Title placeholder="질문을 입력하세요" />
+      <Title
+        onChange={onChangeTitle}
+        value={quiz[selected]?.question || ''}
+        placeholder="문제 제목을 입력해주세요."
+      />
     </Wrapper>
   );
 };
@@ -117,14 +187,16 @@ const Navbar = styled.div`
   width: 100%;
   padding: 20px 0px;
   div {
-    width: 20px;
-    padding: 0 20px;
+    width: 40px;
+    padding: 0px;
     height: 30px;
-    cursor: pointer;
+    img {
+      padding: 0px 20px;
+    }
   }
 `;
 
-const Title = styled.input`
+const Title = styled.textarea`
   width: 100%;
   height: 55px;
   padding: 0 20px;
@@ -132,6 +204,20 @@ const Title = styled.input`
   box-shadow: 0px 10px 10px -9px rgba(0, 0, 0, 0.47);
   -webkit-box-shadow: 0px 10px 10px -9px rgba(0, 0, 0, 0.47);
   -moz-box-shadow: 0px 10px 10px -9px rgba(0, 0, 0, 0.47);
+  resize: none;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Pretendard';
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  &::placeholder {
+    text-align: center;
+  }
+  &:focus {
+    outline: none;
+  }
 `;
 
 const Dropdown = styled.div`
@@ -157,7 +243,7 @@ const Opitons = styled.div<any>`
   position: absolute;
   width: 200px;
   height: fit-content;
-  top: ${(props) => props.top}px;
+  top: ${(props) => props.$top}px;
   display: flex;
   flex-direction: column;
   text-align: center;
@@ -202,8 +288,8 @@ const Modal = styled.div<any>`
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  top: ${(props) => props.top + 10}px;
-  left: ${(props) => props.right - 180}px;
+  top: ${(props) => props.$top + 10}px;
+  left: ${(props) => props.$right - 180}px;
   div {
     width: 180px;
     height: 50px;

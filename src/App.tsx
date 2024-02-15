@@ -25,11 +25,18 @@ import CSProblem from '@pages/CS/solving/CSProblem';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import MemberHeader from '@components/MemberHeader';
+import ReadyState from '@components/ReadyState';
+import NotFound from '@components/NotFound';
 
 function App() {
   const location = useLocation();
 
-  const { data, error } = useSWR('/v1/api/member/info', fetcher);
+  const { data, error } = useSWR('/v1/api/member/info', fetcher, {
+    onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
+      if (error.status === 400) return;
+      if (retryCount >= 10) return;
+    },
+  });
   //location.pathname !== '/cs/solving'
 
   return (
@@ -38,7 +45,7 @@ function App() {
         <GlobalStyle />
         <div className="wrapper">
           <div className="contentWrapper">
-            {data?.role === ('GENERAL' || 'MEMBER' || 'OLD_MEMBER' || 'ADMIN' || 'EDUCATION') ? (
+            {['GENERAL', 'MEMBER', 'OLD_MEMBER', 'ADMIN', 'EDUCATION'].includes(data?.role) ? (
               location.pathname !== '/cs/solving' ? (
                 <MemberHeader />
               ) : null
@@ -47,9 +54,8 @@ function App() {
             )}
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/team" element={<Team />} />
-              <Route path="/projects" element={<Projects />} />
+              <Route path="/projects" element={<ReadyState />} />
+              <Route path="/team" element={<ReadyState />} />
               <Route path="/cs" element={<CSHome />} />
               <Route path="/cs/start" element={<CSMain />} />
               <Route path="/cs/upload" element={<CSUpload />} />
@@ -63,6 +69,7 @@ function App() {
               <Route path="/findpw" element={<FindPWProcess />} />
               <Route path="/joinus" element={<SignUp />} />
               <Route path="/mypage" element={<MyPage />} />
+              <Route path="/*" element={<NotFound />} />
             </Routes>
           </div>
           {location.pathname !== '/cs/solving' && <Footer />}
