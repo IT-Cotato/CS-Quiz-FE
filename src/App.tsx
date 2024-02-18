@@ -27,6 +27,7 @@ import fetcher from '@utils/fetcher';
 import MemberHeader from '@components/MemberHeader';
 import ReadyState from '@components/ReadyState';
 import NotFound from '@components/NotFound';
+import HomeHeader from '@components/HomeHeader';
 
 function App() {
   const location = useLocation();
@@ -39,16 +40,24 @@ function App() {
   });
   //location.pathname !== '/cs/solving'
 
+  if (data) {
+    localStorage.setItem('role', data.role);
+    localStorage.setItem('name', data.name);
+  } else {
+    localStorage.removeItem('role');
+    localStorage.removeItem('name');
+  }
+
   return (
     <div className="App">
       <ThemeProvider theme={theme}>
         <GlobalStyle />
         <div className="wrapper">
           <div className="contentWrapper">
-            {['GENERAL', 'MEMBER', 'OLD_MEMBER', 'ADMIN', 'EDUCATION'].includes(data?.role) ? (
-              location.pathname !== '/cs/solving' ? (
-                <MemberHeader />
-              ) : null
+            {location.pathname == '/' ? (
+              <HomeHeader />
+            ) : ['GENERAL', 'MEMBER', 'OLD_MEMBER', 'ADMIN', 'EDUCATION'].includes(data?.role) ? (
+              <MemberHeader />
             ) : (
               <Header />
             )}

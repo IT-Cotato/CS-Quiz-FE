@@ -21,6 +21,10 @@ const CSUpload = () => {
   const generation = search.split('&')[0].split('=')[1];
   const week = search.split('&')[1].split('=')[1];
 
+  if (localStorage.getItem('role') === null) {
+    window.location.href = '/login';
+  }
+
   const fetchData = async () => {
     const response = await axios.get(process.env.REACT_APP_BASE_URL + '/v1/api/quiz/all', {
       params: {
