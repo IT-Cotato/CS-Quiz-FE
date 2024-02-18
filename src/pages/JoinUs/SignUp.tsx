@@ -287,11 +287,16 @@ const Wrapper = styled.div`
     font-size: 1.5rem;
     margin-bottom: 56px;
   }
+
+  @media screen and (max-width: 392px) {
+    margin-top: 40px;
+  }
 `;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
+  align-items: center;
   margin-bottom: 24px;
 `;
 
@@ -313,7 +318,7 @@ const InputBox = styled.input`
   border-radius: 10px;
   border: 2px solid #d7e5ca !important;
   background: #fff;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -323,6 +328,18 @@ const InputBox = styled.input`
   padding-left: 20px;
   &:focus {
     outline: none;
+  }
+
+  @media screen and (max-width: 768px) {
+    width: 440px !important;
+  }
+  @media screen and (max-width: 392px) {
+    width: 340px !important;
+    &::placeholder {
+      font-size: 0.74rem;
+    }
+    padding: 12px;
+    margin-bottom: 4px;
   }
 `;
 
@@ -347,6 +364,13 @@ const AuthButton = styled.button<{ disable: boolean }>`
     pointer-events: none;
     cursor: default;
   `}
+
+  @media screen and (max-width: 392px) {
+    width: 72px;
+    height: 32px;
+    font-size: 0.6rem;
+    top: 10px;
+  }
 `;
 
 const ButtonSection = styled.div`
@@ -357,6 +381,13 @@ const ButtonSection = styled.div`
   align-items: center;
   justify-content: space-around;
   margin-top: 48px;
+
+  @media screen and (max-width: 768px) {
+    width: 440px !important;
+  }
+  @media screen and (max-width: 392px) {
+    width: 340px !important;
+  }
 `;
 
 const Button = styled.button<{ bgColor?: boolean }>`
@@ -370,6 +401,10 @@ const Button = styled.button<{ bgColor?: boolean }>`
   color: #fff;
   &:hover {
     cursor: pointer;
+  }
+
+  @media screen and (max-width: 392px) {
+    width: 140px;
   }
 `;
 
