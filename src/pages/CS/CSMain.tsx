@@ -24,7 +24,7 @@ const CSMain = () => {
         <StartButton>
           <img src="https://velog.velcdn.com/images/ea_st_ring/post/bd736447-90ff-4a0a-b777-7730ef34ba94/image.svg" />
           &nbsp;
-          <p> 문제풀이 시작하기</p>
+          <p onClick={() => navigate('/cs/solving')}> 문제풀이 시작하기</p>
         </StartButton>
         <BackButton>
           <img src="https://velog.velcdn.com/images/ea_st_ring/post/f5fd7a4a-eeb4-4bce-937a-3b745bd8d66b/image.svg" />

@@ -1,12 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import ResetPW from './ResetPW';
+import api from '@/api/api';
 
 interface EmailAuthProps {
   goToNextStep: () => void;
+  email: string;
+  setEmail: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const EmailAuth: React.FC<EmailAuthProps> = ({ goToNextStep }) => {
+const EmailAuth: React.FC<EmailAuthProps> = ({ goToNextStep, email, setEmail }) => {
   const [inputs, setInputs] = useState<number[]>(Array(6).fill(null));
   const inputRef = useRef<any>([]);
 
@@ -28,19 +31,30 @@ const EmailAuth: React.FC<EmailAuthProps> = ({ goToNextStep }) => {
     setInputs(newInputs);
   };
 
+  const handleAuthCode = async () => {
+    await api
+      .get('/v1/api/auth/verification', {
+        params: {
+          email: email,
+          code: inputs.join(''),
+          type: 'find-password',
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        alert('인증이 완료되었습니다.');
+        localStorage.setItem('token', res.headers.accesstoken);
+      });
+  };
+
   const onSubmit = () => {
     if (!inputs.some((el) => el === null)) {
-      alert('인증이 완료되었습니다.');
-      // setShowFindPW(true);
+      handleAuthCode();
       goToNextStep();
     } else {
       alert('인증번호를 입력해주세요.');
     }
   };
-
-  // if (showFindPW) {
-  //   return <ResetPW />;
-  // }
 
   return (
     <Wrapper>

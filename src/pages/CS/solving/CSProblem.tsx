@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import defaultImg from '@assets/cotato_icon.png';
 import { ReactComponent as LightBulb } from '@assets/light.svg';
@@ -11,7 +11,7 @@ import smaller from '@assets/compress.svg';
 import BgCorrect from '@pages/CS/solving/BgCorrect';
 import BgIncorrect from '@pages/CS/solving/BgIncorrect';
 import BgWaiting from './BgWaiting';
-import { useLocation } from 'react-router-dom';
+import MemberHeader from '@components/MemberHeader';
 
 // 전체 문제 데이터(res) 받아와서 한 번만 까서 일단 문제 리스트에 다 넣기
 // problems.push(res.multiples)
@@ -39,13 +39,9 @@ type ShortAnswer = {
 };
 
 const CSProblem = () => {
-  const location = useLocation();
-  const search = location.search;
-  const generation = search.split('&')[0].split('=')[1];
-  const week = search.split('&')[1].split('=')[1];
-
   const [index, setIndex] = useState(0);
   const [chose, setChose] = useState(0);
+  const [multiples, setMultiples] = useState<number[]>([]);
   const [shortAns, setShortAns] = useState('');
 
   const [showWaiting, setShowWaiting] = useState(false);
@@ -60,6 +56,24 @@ const CSProblem = () => {
 
   const [isHoverOnLight, setIsHoverOnLight] = useState(false);
 
+  const [showHeader, setShowHeader] = useState(false);
+  const [animation, setAnimation] = useState('');
+
+  const propsForMemberHeader = {
+    showHeader,
+    setShowHeader,
+  };
+
+  window.addEventListener('mousemove', (e) => {
+    // console.log(e.clientY);
+    if (e.clientY < 150) {
+      setShowHeader(true);
+    } else {
+      // setAnimation('slide_up 0.3s ease-in-out;');
+      setShowHeader(false);
+    }
+  });
+
   const problems: Problem[] = [
     {
       number: 1,
@@ -70,7 +84,7 @@ const CSProblem = () => {
         {
           choiceNum: 1,
           choice: 'Apache',
-          isAnswer: 'NO_ANSWER',
+          isAnswer: 'ANSWER',
         },
         {
           choiceNum: 2,
@@ -163,15 +177,17 @@ const CSProblem = () => {
   ];
 
   // 전체 문제의 정답 배열 생성
-  const answers: (number | string[])[] = []; // [4, ['손민재', '조원영', '황동현'], ...]
+  const answers: (number[] | string[])[] = []; // [[1, 4], ['손민재', '조원영', '황동현'], ...]
 
   problems.forEach((el) => {
     if (el.multiple) {
+      const multipleAnswers: number[] = [];
       el.multiple.forEach((num) => {
         if (num.isAnswer === 'ANSWER') {
-          answers.push(num.choiceNum);
+          multipleAnswers.push(num.choiceNum);
         }
       });
+      answers.push(multipleAnswers);
     } else if (el.shortAnswer) {
       const shortAnswers: string[] = [];
       el.shortAnswer.forEach((ans) => {
@@ -204,6 +220,7 @@ const CSProblem = () => {
   // 다음문제 클릭 이벤트
   const nextProblem = () => {
     setChose(0);
+    setMultiples([]);
     setIsDirect(true);
     setShowWaiting(true);
     setTimeout(() => {
@@ -220,9 +237,9 @@ const CSProblem = () => {
   // 제출하기 클릭 이벤트
   const sumbitProblem = () => {
     if (problems[index].multiple) {
-      if (chose === 0) {
+      if (multiples.length === 0) {
         alert('답을 선택한 후 제출해주세요.');
-      } else if (chose !== answers[index]) {
+      } else if (JSON.stringify(multiples) !== JSON.stringify(answers[index])) {
         setShowIncorrect(true);
         setShowCorrect(false);
       } else {
@@ -248,6 +265,7 @@ const CSProblem = () => {
   };
 
   useEffect(() => {
+    console.log(multiples);
     if (showIncorrect) {
       const timeoutId = setTimeout(() => setShowIncorrect(false), 2000);
       return () => clearTimeout(timeoutId); // 컴포넌트가 언마운트되면 setTimeout 취소
@@ -260,10 +278,11 @@ const CSProblem = () => {
       const timeoutId = setTimeout(() => setShowWaiting(false), 8000);
       return () => clearTimeout(timeoutId);
     }
-  }, [showIncorrect, showCorrect, showWaiting]);
+  }, [showIncorrect, showCorrect, showWaiting, multiples]);
 
   return (
     <Wrapper>
+      {showHeader ? <MemberHeader {...propsForMemberHeader} /> : null}
       <ProgressContainer>
         <ProgressBar progress={(index + 1) * 10} />
       </ProgressContainer>
@@ -292,7 +311,14 @@ const CSProblem = () => {
           </LightOn>
         </LightImgContainer>
         {problems[index].multiple && (
-          <Choice chose={chose} setChose={setChose} items={choices} index={index} />
+          <Choice
+            chose={chose}
+            setChose={setChose}
+            multiples={multiples}
+            setMultiples={setMultiples}
+            items={choices}
+            index={index}
+          />
         )}
         {problems[index].shortAnswer && (
           <ShortAnswer
@@ -322,25 +348,78 @@ type ResizeProps = {
 };
 
 interface choiceProps {
-  chose: number; // 선택한 선지의 번호
+  chose: number; // 순간에 선택한 선지의 번호
   setChose: React.Dispatch<React.SetStateAction<number>>;
+  multiples: number[]; // 최종적으로 선택한 선지의 번호 배열
+  setMultiples: React.Dispatch<React.SetStateAction<number[]>>;
   items: string[][]; // 선지의 내용들
   index: number;
 }
 
-const Choice: React.FC<choiceProps> = ({ chose, setChose, items, index }) => {
+const Choice: React.FC<choiceProps> = ({
+  chose,
+  setChose,
+  multiples,
+  setMultiples,
+  items,
+  index,
+}) => {
   return (
     <ChoiceContainer>
-      <ChoiceBtn clicked={chose === 1} onClick={() => setChose(1)}>
+      <ChoiceBtn
+        clicked={multiples.includes(1)}
+        onClick={() => {
+          setChose(1);
+          if (multiples.includes(1) === false) {
+            multiples.push(1);
+          } else {
+            setMultiples(multiples.filter((el) => el !== 1));
+          }
+          console.log(multiples);
+        }}
+      >
         {items[index][0]}
       </ChoiceBtn>
-      <ChoiceBtn clicked={chose === 2} onClick={() => setChose(2)}>
+      <ChoiceBtn
+        clicked={multiples.includes(2)}
+        onClick={() => {
+          setChose(2);
+          if (multiples.includes(2) === false) {
+            multiples.push(2);
+          } else {
+            setMultiples(multiples.filter((el) => el !== 2));
+          }
+          console.log(multiples);
+        }}
+      >
         {items[index][1]}
       </ChoiceBtn>
-      <ChoiceBtn clicked={chose === 3} onClick={() => setChose(3)}>
+      <ChoiceBtn
+        clicked={multiples.includes(3)}
+        onClick={() => {
+          setChose(3);
+          if (multiples.includes(3) === false) {
+            multiples.push(3);
+          } else {
+            setMultiples(multiples.filter((el) => el !== 3));
+          }
+          console.log(multiples);
+        }}
+      >
         {items[index][2]}
       </ChoiceBtn>
-      <ChoiceBtn clicked={chose === 4} onClick={() => setChose(4)}>
+      <ChoiceBtn
+        clicked={multiples.includes(4)}
+        onClick={() => {
+          setChose(4);
+          if (multiples.includes(4) === false) {
+            multiples.push(4);
+          } else {
+            setMultiples(multiples.filter((el) => el !== 4));
+          }
+          console.log(multiples);
+        }}
+      >
         {items[index][3]}
       </ChoiceBtn>
     </ChoiceContainer>

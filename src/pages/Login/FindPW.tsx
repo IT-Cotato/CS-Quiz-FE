@@ -3,6 +3,7 @@
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import EmailAuth from './EmailAuth';
+import api from '@/api/api';
 
 interface FindPWProps {
   goToNextStep: () => void;
@@ -10,6 +11,8 @@ interface FindPWProps {
   setIsEmail: React.Dispatch<React.SetStateAction<boolean>>;
   isPassword: boolean;
   isPasswordCheck: boolean;
+  email: string;
+  setEmail: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const FindPW: React.FC<FindPWProps> = ({
@@ -18,8 +21,10 @@ const FindPW: React.FC<FindPWProps> = ({
   setIsEmail,
   isPassword,
   isPasswordCheck,
+  email,
+  setEmail,
 }) => {
-  const [email, setEmail] = useState('');
+  // const [email, setEmail] = useState('');
   const [errMessage, setErrMessage] = useState('');
   // const [isEmail, setIsEmail] = useState(false);
 
@@ -42,13 +47,33 @@ const FindPW: React.FC<FindPWProps> = ({
     [email],
   );
 
+  const emailData = {
+    email: email,
+  };
+
   const onSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (isEmail) {
         // setShowEmailAuth(true);
         console.log(email);
-        goToNextStep();
+        api
+          .post('/v1/api/auth/verification', emailData, {
+            params: {
+              type: 'find-password',
+            },
+          })
+          .then((res) => {
+            console.log(res);
+            console.log('이메일이 발송되었습니다.');
+            goToNextStep();
+          })
+          .catch((err) => {
+            console.log(err);
+            if (err.response.status === 404) {
+              alert('존재하지 않는 계정입니다.');
+            }
+          });
       } else if (!isEmail) {
         alert('이메일을 입력해주세요.');
         return;
@@ -121,7 +146,7 @@ const Label = styled.label`
 `;
 
 const InputBox = styled.input`
-  width: 480px !important;
+  width: 500px !important;
   height: 52px;
   border-radius: 10px;
   border: 2px solid #d7e5ca !important;
