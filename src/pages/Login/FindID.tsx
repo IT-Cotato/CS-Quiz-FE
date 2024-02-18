@@ -1,67 +1,89 @@
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
-import Select, { SingleValue } from 'react-select';
 import { useNavigate } from 'react-router-dom';
+import api from '@/api/api';
 
 const FindID = () => {
+  const [name, setName] = useState('');
   const [tel, setTel] = useState('');
-  const [errMessage, setErrMessage] = useState('');
+  const [isName, setIsName] = useState(false);
   const [isTel, setIsTel] = useState(false);
+  const [nameErrMsg, setNameErrMsg] = useState('');
+  const [telErrMsg, setTelErrMsg] = useState('');
+  const [apiErrMsg, setApiErrMsg] = useState('');
 
   const [showResult, setShowResult] = useState(false);
+  const [email, setEmail] = useState('');
+
+  const onChangeName = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setName(e.target.value);
+      if (!e.target.value) {
+        setIsName(false);
+        setNameErrMsg('필수 입력사항입니다.');
+      } else {
+        setIsName(true);
+        setNameErrMsg('');
+      }
+    },
+    [name],
+  );
 
   const onChangeTel = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const telRegex = /^01(?:0|1|[6-9])(?:\d{3}|\d{4})\d{4}$/;
       const telCurrent = e.target.value;
       setTel(telCurrent);
-      if (!telRegex.test(telCurrent)) {
-        setErrMessage('올바른 전화번호 형식이 아닙니다.');
+      if (!telCurrent) {
         setIsTel(false);
+        setTelErrMsg('필수 입력사항입니다.');
+      } else if (!telRegex.test(telCurrent)) {
+        setIsTel(false);
+        setTelErrMsg('올바른 전화번호 형식이 아닙니다.');
       } else {
-        setErrMessage('');
         setIsTel(true);
+        setTelErrMsg('');
+        setApiErrMsg(''); // 전화번호 수정 시, apiErrMsg 초기화
       }
     },
     [tel],
   );
-
-  const onResultHandler = useCallback(() => {
-    setShowResult(true);
-  }, []);
 
   const navigate = useNavigate();
   const navigateToLogin = () => {
     navigate('/login');
   };
 
-  const countryCode = [
-    { value: '82', label: '+82' }, // 대한민국
-    { value: '81', label: '+81' }, // 일본
-    { value: '86', label: '+86' }, // 중국
-    { value: '1', label: '+1' }, // 미국
-    { value: '44', label: '+44' }, // 영국
-    { value: '84', label: '+84' }, // 베트남
-    { value: '65', label: '+65' }, // 싱가포르
-    { value: '63', label: '+63' }, // 필리핀
-  ];
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [selectedOption, setSelectedOption] = useState(countryCode[0]);
-  const handleOptionChange = (
-    selectedOption: SingleValue<{ value: string; label: string }> | null,
-  ) => {
-    if (selectedOption === null) return;
-    setSelectedOption(selectedOption);
-    console.log(`선택된 국가코드:`, selectedOption);
-  };
-
   const onSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      console.log(tel);
+      console.log(name, tel);
+      api
+        .get('/v1/api/auth/email', {
+          params: {
+            name: name,
+            phone: tel,
+          },
+        })
+        .then((res) => {
+          console.log(res.data);
+          if (res.data.email) {
+            setEmail(res.data.email);
+            setShowResult(true);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          console.log(isName, isTel);
+          if (!isName || !isTel) {
+            setNameErrMsg('필수 입력 사항입니다.');
+            setTelErrMsg('필수 입력 사항입니다.');
+          } else {
+            setApiErrMsg('일치하는 정보가 없습니다.');
+          }
+        });
     },
-    [tel],
+    [name, tel],
   );
 
   return (
@@ -71,7 +93,7 @@ const FindID = () => {
         {showResult ? (
           <ResultWrapper>
             <p>
-              한승우님의 ID는 <span>co****@naver.com</span> 입니다.
+              {name}님의 ID는 <span>{email}</span> 입니다.
             </p>
             <Button type="submit" bgColor={showResult} onClick={navigateToLogin}>
               계속
@@ -81,29 +103,32 @@ const FindID = () => {
           <InputWrapper>
             <p>내 계정 ID를 찾으려면, 회원가입 시 입력한 전화번호를 기입해주세요.</p>
             <Form onSubmit={onSubmit}>
-              <InputSection>
-                <StyledSelect
-                  defaultValue={countryCode[0]}
-                  isClearable={false}
-                  isSearchable={false}
-                  menuPortalTarget={document.body}
-                  options={countryCode}
-                  styles={customStyles}
-                  onChange={handleOptionChange}
+              <Label>
+                <span>이름</span>
+                <InputBox
+                  type="text"
+                  id="name"
+                  name="name"
+                  placeholder="이름을 기입해주세요."
+                  value={name}
+                  onChange={onChangeName}
                 />
-                <InputBox>
-                  <input
-                    type="text"
-                    id="tel"
-                    name="tel"
-                    placeholder="'-'를 제외한 숫자만 입력해주세요."
-                    value={tel}
-                    onChange={onChangeTel}
-                  />
-                  {!isTel && <Error>{errMessage}</Error>}
-                </InputBox>
-              </InputSection>
-              <Button type="submit" bgColor={isTel} onClick={onResultHandler}>
+                {!isName && <Error>{nameErrMsg}</Error>}
+              </Label>
+              <Label>
+                <span>전화번호</span>
+                <InputBox
+                  type="text"
+                  id="tel"
+                  name="tel"
+                  placeholder="'-'를 제외한 숫자만 입력해주세요."
+                  value={tel}
+                  onChange={onChangeTel}
+                />
+                {!isTel && <Error>{telErrMsg}</Error>}
+                {apiErrMsg && <Error>{apiErrMsg}</Error>}
+              </Label>
+              <Button type="submit" bgColor={isName && isTel}>
                 계속
               </Button>
             </Form>
@@ -116,67 +141,18 @@ const FindID = () => {
 
 export default FindID;
 
-const customStyles = {
-  control: (provided: any) => ({
-    // select box의 스타일 설정
-    ...provided,
-    fontSize: '1rem',
-    borderBottom: '1px solid #7b7b7b',
-    borderTop: 'none',
-    borderLeft: 'none',
-    borderRight: 'none',
-    borderRadius: '0px',
-    outline: 'none',
-    width: '160px',
-    // border: state.isFocused ? 'none none 1px none' : 'none',
-  }),
-  option: (provided: any, state: any) => ({
-    ...provided,
-    backgroundColor: state.isSelected ? '#477feb' : '#fff',
-  }),
-  indicatorSeparator: (provided: any) => ({
-    ...provided,
-    display: 'none',
-    color: '#7b7b7b',
-  }),
-};
-
-const StyledSelect = styled(Select)`
-  border: none;
-  border-color: #fff;
-  &:focus {
-    border: none;
-  }
-  .react-select__control {
-    border: none;
-    /* cursor: pointer; */
-  }
-  .react-select__single-value {
-    font-size: 1rem;
-    font-weight: 400;
-  }
-  .react-select__option--is-selected {
-    background-color: #477feb;
-    color: white;
-  }
-  .react-select__option--is-focused {
-    border: 1px solid #e4ecfd;
-    color: black;
-  }
-`;
-
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 120px;
+  margin-top: 80px;
   h3 {
     font-size: 1.8rem;
     margin-bottom: 28px;
   }
   p {
     font-size: 1rem;
-    margin-bottom: 40px;
+    margin-bottom: 60px !important;
   }
 `;
 
@@ -204,32 +180,31 @@ const Form = styled.form`
   justify-content: center;
 `;
 
-const InputSection = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 480px;
-  justify-content: space-between;
-  margin-bottom: 60px;
-  .react-select-container {
-    border: none;
-    color: #fff;
+const Label = styled.label`
+  margin-bottom: 24px;
+  font-size: 1rem;
+  height: 80px;
+  span {
+    padding-left: 4px;
   }
 `;
 
-const InputBox = styled.div`
-  width: 280px;
-  height: 40px;
+const InputBox = styled.input`
+  width: 500px !important;
+  height: 52px;
+  border-radius: 10px;
+  border: 2px solid #d7e5ca !important;
+  background: #fff;
+  margin-bottom: 4px;
   display: flex;
-  flex-direction: column;
-  border-bottom: 1px solid ${({ theme }) => theme.color.grey};
-  input {
-    width: 280px;
-    padding-top: 12px;
-    border: none;
-    &:focus {
-      outline: none;
-    }
+  flex-direction: row;
+  align-items: center;
+  border: none;
+  width: 512px;
+  margin-top: 4px;
+  padding-left: 20px;
+  &:focus {
+    outline: none;
   }
 `;
 
@@ -239,12 +214,12 @@ const Error = styled.p`
   font-weight: 500;
   margin: 0;
   padding-left: 4px;
-  padding-top: 12px;
 `;
 
 const Button = styled.button<{ bgColor?: boolean }>`
   width: 500px;
   height: 52px;
+  margin-top: 12px;
   background: ${(props) => (props.bgColor ? '#85C88A' : '#D7E5CA')};
   color: #fff;
   font-size: 1.1rem;

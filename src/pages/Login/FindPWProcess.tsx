@@ -6,7 +6,7 @@ import ResetPW from '@pages/Login/ResetPW';
 const FindPWProcess = () => {
   const [step, setStep] = useState(0);
   const goToNextStep = () => setStep(step + 1);
-
+  const [email, setEmail] = useState('');
   const [mismatchError, setMismatchError] = useState(false);
   const [isEmail, setIsEmail] = useState(false);
   const [isPassword, setIsPassword] = useState(false);
@@ -18,10 +18,14 @@ const FindPWProcess = () => {
     setIsEmail,
     isPassword,
     isPasswordCheck,
+    email,
+    setEmail,
   };
 
   const propsForEmailAuth = {
     goToNextStep,
+    email,
+    setEmail,
   };
 
   const propsForResetPW = {

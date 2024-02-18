@@ -9,7 +9,12 @@ import axios from 'axios';
 import api from '@/api/api';
 
 const Login = () => {
-  const { data, error, mutate } = useSWR('/v1/api/member/info', fetcher);
+  const { data, error, mutate } = useSWR('/v1/api/member/info', fetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    // 서버 리소스를 한번 받아오고 나서는 다시 받아오지 않음
+  });
 
   const nagivate = useNavigate();
 
@@ -38,7 +43,7 @@ const Login = () => {
           .then((res) => {
             console.log(res.headers.accesstoken);
             localStorage.setItem('token', res.headers.accesstoken);
-            mutate('/v1/api/member/info');
+            mutate('/v1/api/member/info'); // 로그인 후에는 swr 요청을 수동으로 해준다
           });
       } catch (error) {
         console.log(error);
