@@ -9,12 +9,6 @@ import fetcher from '@utils/fetcher';
 import api from '@/api/api';
 
 const SignUp = () => {
-  const { data, error } = useSWR('', fetcher, {
-    revalidateIfStale: false,
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-  });
-
   const navigate = useNavigate();
 
   const [id, setId] = useState('');
@@ -23,6 +17,7 @@ const SignUp = () => {
   const [name, setName] = useState('');
   const [tel, setTel] = useState('');
   const [mismatchError, setMismatchError] = useState(false);
+  const [authNum, setAuthNum] = useState('');
 
   // 오류 메시지
   const [idMessage, setIdMessage] = useState('');
@@ -37,6 +32,7 @@ const SignUp = () => {
   const [isPasswordCheck, setIsPasswordCheck] = useState(false);
   const [isName, setIsName] = useState(false);
   const [isTel, setIsTel] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const onApply = () => {
@@ -118,7 +114,7 @@ const SignUp = () => {
   const emailData = {
     email: id,
   };
-  const handleEmailAuth = async () => {
+  const onSendEmail = async () => {
     await api
       .post('/v1/api/auth/verification', emailData, {
         params: {
@@ -127,7 +123,7 @@ const SignUp = () => {
       })
       .then((res) => {
         console.log(res);
-        alert('이메일 인증이 완료되었습니다.');
+        alert('인증 이메일이 발송되었습니다.');
       })
       .catch((err) => {
         console.log(err);
@@ -138,6 +134,30 @@ const SignUp = () => {
         }
       });
   };
+
+  const handleEmailAuth = async () => {
+    await api
+      .get('/v1/api/auth/verification', {
+        params: {
+          email: id,
+          code: authNum,
+          type: 'sign-up',
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        alert('이메일 인증이 완료되었습니다.');
+        setIsAuthorized(true);
+      })
+      .catch((err) => {
+        console.log(err);
+        alert('인증번호가 일치하지 않습니다. 다시 확인해주세요.'); // 10분 지난 경우 따로 처리?
+      });
+  };
+
+  const onChangeAuthNum = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setAuthNum(e.target.value);
+  }, []);
 
   const onSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
@@ -160,10 +180,10 @@ const SignUp = () => {
     [id, password, passwordCheck, name, tel, mismatchError],
   );
 
-  if (data) {
-    console.log(data);
-    navigate('/');
-  }
+  // if (data) {
+  //   console.log(data);
+  //   navigate('/');
+  // }
 
   return (
     <Wrapper>
@@ -180,11 +200,24 @@ const SignUp = () => {
               value={id}
               onChange={onChangeId}
             />
-            <AuthButton type="button" onClick={handleEmailAuth}>
-              인증하기
+            <AuthButton type="button" onClick={onSendEmail} disable={isAuthorized}>
+              인증 메일 발송
             </AuthButton>
           </InputWrapper>
           {!isId && <Error>{idMessage}</Error>}
+          <InputWrapper>
+            <InputBox
+              type="text"
+              id="id"
+              name="id"
+              placeholder="발송된 이메일의 인증번호를 입력해주세요."
+              value={authNum}
+              onChange={onChangeAuthNum}
+            />
+            <AuthButton type="button" onClick={handleEmailAuth} disable={isAuthorized}>
+              인증하기
+            </AuthButton>
+          </InputWrapper>
         </Label>
         <Label>
           <span>비밀번호</span>
@@ -293,8 +326,8 @@ const InputBox = styled.input`
   }
 `;
 
-const AuthButton = styled.button`
-  width: 72px;
+const AuthButton = styled.button<{ disable: boolean }>`
+  width: 92px;
   height: 36px;
   font-family: NanumSquareRound;
   font-size: 0.8rem;
@@ -306,6 +339,14 @@ const AuthButton = styled.button`
   position: absolute;
   right: 12px;
   top: 8px;
+  cursor: pointer;
+  ${(props) =>
+    props.disable &&
+    `
+    background: ${props.theme.color.lightGreen};
+    pointer-events: none;
+    cursor: default;
+  `}
 `;
 
 const ButtonSection = styled.div`
