@@ -42,13 +42,27 @@ const AnimatedText = () => {
   };
 
   const animDelay = 3; // 최소 2
+  const line1Ref = React.useRef<HTMLDivElement>(null);
+  const line2Ref = React.useRef<HTMLDivElement>(null);
+  let topValue = 0;
+
+  if (line1Ref.current && line2Ref.current) {
+    topValue = (line1Ref as any).current?.offsetTop - (line2Ref as any).current?.offsetTop;
+    console.log(topValue);
+  }
 
   return (
     <Box $anim_delay={animDelay}>
-      <Line1>
+      <Line1 ref={line1Ref}>
         {line1.map((char, idx) =>
           checkUpper(char) ? (
-            <UpperChar key={idx} $anim_delay={animDelay} top={0} left={spaces.shift() || 0}>
+            <UpperChar
+              key={idx}
+              $anim_delay={animDelay}
+              top={0}
+              left={spaces.shift() || 0}
+              className="notranslate"
+            >
               {char}
             </UpperChar>
           ) : (
@@ -59,10 +73,16 @@ const AnimatedText = () => {
         )}
       </Line1>
       <br />
-      <Line2 $anim_delay={animDelay}>
+      <Line2 $anim_delay={animDelay} ref={line2Ref}>
         {line2.map((char, idx) =>
           checkUpper(char) ? (
-            <UpperChar key={idx} $anim_delay={animDelay} top={-103} left={spaces.shift() || 0}>
+            <UpperChar
+              key={idx}
+              $anim_delay={animDelay}
+              top={topValue || -118}
+              left={spaces.shift() || 0}
+              className="notranslate"
+            >
               {char}
             </UpperChar>
           ) : (
@@ -88,7 +108,11 @@ const AnimatedText = () => {
 };
 
 const Box = styled.div<{ $anim_delay: number }>`
+  display: flex;
+  flex-direction: column;
   transition: 2s;
+  height: fit-content;
+  margin-top: 130px;
   cursor: default;
   .animated-char {
     /* opacity: 0; */
@@ -170,10 +194,9 @@ const Box = styled.div<{ $anim_delay: number }>`
     }
     &:hover {
       width: 200px;
-      background-color: #2c28c5;
+      background: linear-gradient(180deg, #6e6cfe 0%, rgba(189, 219, 255, 0.69) 100%);
       border-radius: 25px;
-      p {
-      }
+
       img {
         transform: translateX(-5px);
       }
@@ -193,11 +216,13 @@ const Box = styled.div<{ $anim_delay: number }>`
 const Line1 = styled.div`
   display: flex;
   flex-direction: row;
+  height: 100px;
 `;
 
 const Line2 = styled.div<{ $anim_delay: number }>`
   display: flex;
   flex-direction: row;
+  height: 100px;
   animation: moveRight 3s ${(props) => props.$anim_delay - 2}s forwards;
   @keyframes moveRight {
     0% {
