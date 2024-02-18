@@ -1,13 +1,13 @@
 import React, { useCallback } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
-import { ChoiceProps, ShortProps } from '@/typing/db';
+import { Multiples, ShortQuizzes } from '@/typing/db';
 
 type Item = {
-  isselected?: string;
+  $isselected?: string;
 };
 
-type QuizType = ChoiceProps | ShortProps;
+type QuizType = Multiples | ShortQuizzes;
 /**
  * 드래그 앤 드랍 컨테이너 컴포넌트
  * @param item : 문제를 담은 배열
@@ -34,10 +34,10 @@ const DndContainer = (
       // id 재정렬
       const itemsWithNewIds = items.map((item, index) => ({
         ...item,
-        quiz_id: index + 1,
+        number: index + 1,
       }));
       setItem(itemsWithNewIds);
-      setSelected(result.destination.index + 1);
+      setSelected(result.destination.index);
     },
     [item],
   );
@@ -49,8 +49,8 @@ const DndContainer = (
           <List {...provided.droppableProps} ref={provided.innerRef}>
             {item.map((item, index) => (
               <Draggable
-                key={`draggable-${item.quiz_id}`}
-                draggableId={`draggable-${item.quiz_id}`}
+                key={`draggable-${item.number}`}
+                draggableId={`draggable-${item.number}`}
                 index={index}
               >
                 {(provided) => (
@@ -60,13 +60,13 @@ const DndContainer = (
                     {...provided.dragHandleProps}
                   >
                     <Item
-                      key={item.quiz_id}
-                      isselected={selected === item.quiz_id ? 'true' : 'false'}
+                      key={item.number}
+                      $isselected={selected + 1 === item.number ? 'true' : 'false'}
                       onClick={() => {
-                        setSelected(item.quiz_id);
+                        setSelected(item.number - 1);
                       }}
                     >
-                      {item.quiz_id}
+                      {item.number}
                     </Item>
                   </div>
                 )}
@@ -94,7 +94,7 @@ const Item = styled.div<Item>`
   align-items: center;
   cursor: pointer;
   border: none;
-  background: ${(props: any) => (props.isselected === 'true' ? '#C4D7FF' : '#E4ECFD')};
+  background: ${(props: any) => (props.$isselected === 'true' ? '#C4D7FF' : '#E4ECFD')};
   box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.15);
   margin: 16px 0;
   transition: 0.2s;

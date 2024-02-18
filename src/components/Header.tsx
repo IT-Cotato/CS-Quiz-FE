@@ -20,7 +20,7 @@ const Header = () => {
   }, []);
 
   return (
-    <Wrapper is_top={isTop.toString()}>
+    <Wrapper $is_top={isTop.toString()}>
       <Logo src={logo} onClick={() => window.location.replace('/')} style={{ cursor: 'pointer' }} />
       <MenuSection>
         <MenuItem to="/">홈</MenuItem>
@@ -54,7 +54,7 @@ const Header = () => {
 
 export default Header;
 
-const Wrapper = styled.div<{ is_top: string }>`
+const Wrapper = styled.div<{ $is_top: string }>`
   display: flex;
   flex-direction: row;
   justify-content: space-between !important;
@@ -62,9 +62,9 @@ const Wrapper = styled.div<{ is_top: string }>`
   width: 100%;
   box-sizing: border-box;
   /* 스크롤이 최상단이 아닐 시 효과 부여 */
-  height: ${(props) => (props.is_top === 'true' ? '80px' : '72px')};
-  border-bottom: ${(props) => (props.is_top === 'true' ? 'none' : '1px solid rgba(0, 0, 0, 0.1)')};
-  box-shadow: ${(props) => (props.is_top === 'true' ? 'none' : '0px 4px 4px rgba(0, 0, 0, 0.25)')};
+  height: ${(props) => (props.$is_top === 'true' ? '80px' : '72px')};
+  border-bottom: ${(props) => (props.$is_top === 'true' ? 'none' : '1px solid rgba(0, 0, 0, 0.1)')};
+  box-shadow: ${(props) => (props.$is_top === 'true' ? 'none' : '0px 4px 4px rgba(0, 0, 0, 0.25)')};
   transition: all 0.2s ease-in-out;
   padding: 0 60px;
   position: sticky;

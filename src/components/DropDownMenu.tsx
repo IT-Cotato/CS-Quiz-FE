@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import arrowDown from '@assets/arrow_down.svg';
+import { ToastContainer, toast } from 'react-toastify';
 
 type Props = {
   isTop: string;
@@ -12,13 +13,13 @@ const DropDownMenu = ({ isTop }: Props) => {
   const MemberMenus = ['세션 기록', 'CS 문제풀이', '마이페이지'];
 
   const onClickMenu = useCallback(() => {
-    window.alert('코테이토의 멤버만 이용할 수 있는 서비스입니다.');
+    toast.info('코테이토 멤버 전용 서비스입니다!');
   }, []);
 
   return (
     <Container>
-      <Menu isopen={isOpen.toString()} menu_len={MemberMenus.length}>
-        <Button is_top={isTop}>
+      <Menu $isopen={isOpen.toString()} $menu_len={MemberMenus.length}>
+        <Button $is_top={isTop}>
           <p
             onClick={() => {
               setIsOpen(!isOpen);
@@ -46,6 +47,7 @@ const DropDownMenu = ({ isTop }: Props) => {
           </Links>
         )}
       </Menu>
+      <ToastContainer position="top-center" autoClose={2000} />
     </Container>
   );
 };
@@ -58,22 +60,23 @@ const Container = styled.div`
   align-items: center;
   text-align: center;
   margin-left: -100px;
-  height: 300px;
+  height: fit-content;
 `;
 
-const Menu = styled.div<{ isopen: string; menu_len: number }>`
+const Menu = styled.div<{ $isopen: string; $menu_len: number }>`
   background-color: #fff;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: start;
   margin-top: ${(props) =>
-    props.isopen === 'true' ? `${102 + (props.menu_len - 3) * 36}px` : '0px'};
+    props.$isopen === 'true' ? `${102 + (props.$menu_len - 3) * 36}px` : '0px'};
   color: #93c6fe;
   font-size: 1.2rem;
   font-weight: 500;
   width: 212px;
-  height: ${(props) => (props.isopen === 'true' ? `${150 + (props.menu_len - 3) * 36}px` : '50px')};
+  height: ${(props) =>
+    props.$isopen === 'true' ? `${150 + (props.$menu_len - 3) * 36}px` : '50px'};
   border: 3px solid #93c6fe;
   border-radius: 40px;
   transition: all 0.3s ease-in-out;
@@ -88,14 +91,14 @@ const Menu = styled.div<{ isopen: string; menu_len: number }>`
   }
 `;
 
-const Button = styled.div<{ is_top: string }>`
+const Button = styled.div<{ $is_top: string }>`
   display: flex;
   justify-content: center;
   align-items: center;
   height: 60px;
   position: absolute;
   transition: all 0.2s ease-in-out; // header의 움직임과 동일하게
-  top: ${(props) => (props.is_top === 'true' ? '10px' : '6px')};
+  top: ${(props) => (props.$is_top === 'true' ? '10px' : '6px')};
   cursor: pointer;
 `;
 
@@ -107,7 +110,7 @@ const Links = styled.div`
   width: 100%;
   height: fit-content;
   margin-top: 40px;
-  animation: fadeIn 0.6s ease-in-out;
+  animation: dimIn 0.6s ease-in-out;
   p {
     margin: 0;
     color: #93c6fe;
@@ -128,7 +131,7 @@ const Links = styled.div`
     margin-top: 4px;
   }
 
-  @keyframes fadeIn {
+  @keyframes dimIn {
     from {
       opacity: 0;
     }
