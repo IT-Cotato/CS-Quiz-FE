@@ -8,11 +8,29 @@ const HomeHeader = () => {
 
   return (
     <Wrapper>
-      <span>COTATO</span>
+      <span
+        onClick={() => {
+          navigate('/');
+        }}
+      >
+        COTATO
+      </span>
       <ul>
         <li>홈</li>
-        <li>프로젝트</li>
-        <li>팀 멤버</li>
+        <li
+          onClick={() => {
+            navigate('/projects');
+          }}
+        >
+          프로젝트
+        </li>
+        <li
+          onClick={() => {
+            navigate('/team');
+          }}
+        >
+          팀 멤버
+        </li>
         <li
           onClick={() => {
             navigate('/login');
@@ -20,7 +38,13 @@ const HomeHeader = () => {
         >
           로그인
         </li>
-        <li>Join us</li>
+        <li
+          onClick={() => {
+            navigate('/joinus');
+          }}
+        >
+          Join us
+        </li>
         <HomeDropDownMenu />
       </ul>
     </Wrapper>
@@ -35,7 +59,8 @@ const Wrapper = styled.div`
   justify-content: space-between;
   background: transparent;
   z-index: 10;
-  position: fixed;
+  position: absolute;
+  top: 0;
   span {
     z-index: 10;
     color: #fff;
@@ -46,6 +71,7 @@ const Wrapper = styled.div`
     font-weight: 400;
     line-height: normal;
     letter-spacing: 1.28px;
+    cursor: pointer;
   }
   ul {
     display: flex;
@@ -54,6 +80,7 @@ const Wrapper = styled.div`
     list-style: none;
     margin: 0;
     z-index: 10;
+    cursor: pointer;
     li {
       color: #fff;
       font-size: 16px;
