@@ -32,11 +32,7 @@ const HomeDropDownMenu = () => {
         {isOpen && (
           <Links>
             {MemberMenus.map((menu, idx) => (
-              <p
-                key={idx}
-                // style={idx === MemberMenus.length - 1 ? { borderRadius: '40px' } : {}}
-                onClick={onClickMenu}
-              >
+              <p key={idx} onClick={onClickMenu}>
                 {menu}
               </p>
             ))}
@@ -55,8 +51,7 @@ const Container = styled.div`
   text-align: center;
   min-height: fit-content;
   position: relative;
-  margin-top: -16px;
-  margin-left: 24px;
+  margin-top: -10px;
 `;
 
 const Menu = styled.div<{ $isopen: string; $menu_len: number }>`
@@ -88,6 +83,9 @@ const Menu = styled.div<{ $isopen: string; $menu_len: number }>`
     width: 20px;
     margin-left: 10px;
     transition: all 0.3s ease-in-out;
+  }
+  @media screen and (max-width: 960px) {
+    display: none;
   }
 `;
 
