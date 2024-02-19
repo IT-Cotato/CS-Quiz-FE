@@ -36,19 +36,21 @@ interface CSProblemProps {
 }
 
 const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId }) => {
-  const { data, error, mutate } = useSWR('/v1/api/member/info', fetcher, {
-    revalidateIfStale: false,
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-  });
+  const { data, error, isLoading, mutate } = useSWR('/v1/api/member/info', fetcher);
+  if (data) {
+    console.log(data);
+  } else {
+    console.log('data is undefined');
+  }
 
   const [showHeader, setShowHeader] = useState(false);
   const [quizData, setQuizData] = useState<Problem | undefined>();
   const [multiples, setMultiples] = useState<string[]>([]); // 객관식 선지의 내용 리스트
   const [biggerImg, setBiggerImg] = useState(false);
   const [selectNum, setSelectNum] = useState(0);
-  // const [selected, setSelected] = useState<number[]>([]);
   const [shortAns, setShortAns] = useState('');
+  const [showCorrect, setShowCorrect] = useState(false);
+  const [showIncorrect, setShowIncorrect] = useState(false);
 
   const inputRef = useRef<any>();
 
@@ -92,28 +94,37 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
 
   const submitProblem = () => {
     // 문제 제출하기
-    const input = quizData?.type === 'MULTIPLE_QUIZ' ? selectNum.toString() : shortAns;
+    const input = quizData?.choices ? selectNum.toString() : shortAns;
 
-    api
-      .post(
-        '/v1/api/record/reply',
-        {
-          quizId: quizId,
-          memberId: data.id,
-          input: input,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+    if (!data) {
+      console.log('data is not loaded yet');
+      return; // data가 undefined라면(아직 불러와지지 않았다면) 함수 종료
+    } else {
+      api
+        .post(
+          '/v1/api/record/reply',
+          {
+            quizId: quizId,
+            memberId: data.memberId,
+            input: input,
           },
-        },
-      )
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          },
+        )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.error(err);
+          console.log(quizId, data.memberId, input);
+          if (err.response.status === 400) {
+            alert('아직 제출 기한이 아닙니다.');
+          }
+        });
+    }
   };
 
   const propsForMemberHeader = {
