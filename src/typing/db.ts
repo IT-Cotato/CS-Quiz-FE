@@ -83,3 +83,45 @@ export type TQuiz = (Multiples | ShortQuizzes) & {
   approaach: boolean;
   start: boolean;
 };
+
+export interface IQuizAdmin {
+  quizId: number;
+  question: string;
+  quizNumber: number;
+  status: string;
+  start: string;
+}
+
+export interface IQuizAdminScorer {
+  quizId: number;
+  quizType: string;
+  quizNumber: number;
+  question: string;
+  answer: string[];
+}
+
+export interface IQuizAdminSubmit {
+  memberId: number;
+  memberName: string;
+  backFourNumber: string;
+  reply: string;
+}
+
+export interface IQuizAdminScorer {
+  memberId: number;
+  memberName: string;
+  backFourNumber: string;
+}
+
+export interface IGeneralUser {
+  id: number;
+  name: string;
+  backFourNumber: string;
+}
+
+export interface IEnrollMember {
+  id: number;
+  name: string;
+  position: string;
+  generationNumber: number;
+}
