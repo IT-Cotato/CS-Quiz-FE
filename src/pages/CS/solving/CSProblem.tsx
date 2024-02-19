@@ -7,6 +7,7 @@ import light from '@assets/light_on.svg';
 import bubble1 from '@assets/bubble_1.svg';
 import bubble2 from '@assets/bubble_2.svg';
 import bubble3 from '@assets/bubble_3.svg';
+import explaination from '@assets/explaination.svg';
 import MemberHeader from '@components/MemberHeader';
 import api from '@/api/api';
 import useSWR from 'swr';
@@ -51,6 +52,7 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
   const [shortAns, setShortAns] = useState('');
   const [showCorrect, setShowCorrect] = useState(false);
   const [showIncorrect, setShowIncorrect] = useState(false);
+  const [showExplaination, setShowExplaination] = useState(false);
 
   const inputRef = useRef<any>();
 
@@ -153,7 +155,18 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
           </ImageContainer>
         )}
         <LightImgContainer>
-          <LightBulb style={{ width: '28px' }} />
+          {!submitAllowed && showExplaination && (
+            <Explaination>
+              불이 켜지면
+              <br />
+              제출!
+            </Explaination>
+          )}
+          <LightBulb
+            style={{ width: '28px' }}
+            onMouseEnter={() => setShowExplaination(true)}
+            onMouseLeave={() => setShowExplaination(false)}
+          />
           {submitAllowed && (
             <LightOn>
               <img src={bubble1} alt="bubble 1" />
@@ -360,8 +373,24 @@ const LightImgContainer = styled.div`
   align-items: center;
 `;
 
-const LightOn = styled.div`
+const Explaination = styled.div`
+  background-image: url(${explaination});
   position: absolute;
+  bottom: 20px;
+  font-size: 0.75rem;
+  color: #454545;
+  width: 80px;
+  height: 64px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding-bottom: 10px;
+  margin-bottom: 44px;
+`;
+
+const LightOn = styled.div`
+  position: relative;
   width: 80px;
   height: 82px;
   padding: 0 auto;
