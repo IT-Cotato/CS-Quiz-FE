@@ -33,22 +33,14 @@ export interface IGeneration {
 }
 
 export interface ISession {
-  id: number;
-  number: number;
+  sessionId: number;
+  sessionNumber: number;
   description: string;
   photoUrl: string;
+  generationId: number;
   csEducation: string;
   itIssue: string;
   networking: string;
-  generationg: {
-    id: number;
-    name: string;
-    startDate: string;
-    endDate: string;
-    createdAt: string;
-    isRecruit: boolean;
-    modifiedAt: string;
-  };
 }
 
 export interface IEducation {
