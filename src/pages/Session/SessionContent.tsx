@@ -3,6 +3,8 @@ import { ISession } from '@/typing/db';
 import styled from 'styled-components';
 import SessionEmoji from '@pages/Session/SessionEmoji';
 import { ReactComponent as ModifyIcon } from '@assets/modify_icon.svg';
+import useSWR from 'swr';
+import fetcher from '@utils/fetcher';
 
 interface Props {
   session: ISession;
@@ -10,6 +12,8 @@ interface Props {
 }
 
 const SessionContent = ({ session, handleModifyButton }: Props) => {
+  const { data: user } = useSWR('/v1/api/member/info', fetcher);
+
   const [isHover, setIsHover] = useState(false);
 
   const onMouseEnterImage = useCallback(() => {
@@ -30,14 +34,14 @@ const SessionContent = ({ session, handleModifyButton }: Props) => {
       />
       {isHover ? (
         <HoverContent onMouseEnter={onMouseEnterImage} onMouseLeave={onMouseLeaveImage}>
-          <p>{session.number === 0 ? 'OT' : `${session.number}주차 세션`}</p>
+          <p>{session.sessionNumber === 0 ? 'OT' : `${session.sessionNumber}주차 세션`}</p>
           <p>{session.description}</p>
-          {/* 운영진만 보이게 */}
-          <ModifyIcon onClick={() => handleModifyButton(session)} />
+
+          {user?.role === 'ADMIN' && <ModifyIcon onClick={() => handleModifyButton(session)} />}
         </HoverContent>
       ) : (
         <Title>
-          <p>{session.number === 0 ? 'OT' : `${session.number}주차 세션`}</p>
+          <p>{session.sessionNumber === 0 ? 'OT' : `${session.sessionNumber}주차 세션`}</p>
           <EmojiWrapper>
             {session.csEducation === 'CS_ON' && <SessionEmoji activity="CS" />}
             {session.itIssue === 'IT_ON' && <SessionEmoji activity="IT" />}

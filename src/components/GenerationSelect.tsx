@@ -3,8 +3,8 @@ import { css, styled } from 'styled-components';
 import arrow_down_thin from '@assets/arrow_dwon_thin.svg';
 import arrow_up_thin from '@assets/arrow_up_thin.svg';
 import fetcher from '@utils/fetcher';
-import useSWR from 'swr';
 import { IGeneration } from '@/typing/db';
+import useSWRImmutable from 'swr/immutable';
 
 interface Props {
   /**
@@ -21,7 +21,7 @@ interface Props {
 
 const GenerationSelect = ({ onChangeGeneration, selectedGeneration }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { data: generationData } = useSWR<IGeneration[]>('/v1/api/generation', fetcher);
+  const { data: generationData } = useSWRImmutable<IGeneration[]>('/v1/api/generation', fetcher);
 
   const generationDropRef = useRef<HTMLDivElement>(null);
 
@@ -47,7 +47,7 @@ const GenerationSelect = ({ onChangeGeneration, selectedGeneration }: Props) => 
   return (
     <GenerationSelectWrapper ref={generationDropRef}>
       <SelectMenu isopen={isOpen ? 'open' : 'close'} onClick={() => setIsOpen(!isOpen)}>
-        <p>{selectedGeneration?.generationName}</p>
+        <p>{`${selectedGeneration?.generationNumber}기`}</p>
         {isOpen ? (
           <img src={arrow_up_thin} alt="arrow-up" />
         ) : (
@@ -58,7 +58,7 @@ const GenerationSelect = ({ onChangeGeneration, selectedGeneration }: Props) => 
             <ul>
               {generationData?.map((generation: IGeneration) => (
                 <li key={generation.generationId} onClick={() => onClickGeneration(generation)}>
-                  {generation.generationName}
+                  {`${generation.generationNumber}기`}
                 </li>
               ))}
             </ul>

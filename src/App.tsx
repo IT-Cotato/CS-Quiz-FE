@@ -14,8 +14,6 @@ import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from '@theme/GlobalStyle';
 import { theme } from '@theme/Theme';
 import CSManage from '@pages/CS/manage/CSManage';
-import QuizScorer from '@pages/CS/manage/QuizScorer';
-import AllScorer from '@pages/CS/manage/AllScorer';
 import Footer from '@components/Footer';
 import FindID from '@pages/Login/FindID';
 import FindPWProcess from '@pages/Login/FindPWProcess';
@@ -25,6 +23,7 @@ import CSProblem from '@pages/CS/solving/CSProblem';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import MemberHeader from '@components/MemberHeader';
+import Setting from '@pages/MyPage/setting/Setting';
 import ReadyState from '@components/ReadyState';
 import NotFound from '@components/NotFound';
 import HomeHeader from '@components/HomeHeader';
@@ -68,16 +67,14 @@ function App() {
               <Route path="/cs" element={<CSHome />} />
               <Route path="/cs/start" element={<CSMain />} />
               <Route path="/cs/upload" element={<CSUpload />} />
-              <Route path="/cs/manage" element={<CSManage />} />
-              <Route path="/cs/quizscorer" element={<QuizScorer />} />
-              <Route path="/cs/allscorer" element={<AllScorer />} />
+              <Route path="/cs/manage/*" element={<CSManage />} />
               <Route path="/cs/solving" element={<CSProblem />} />
               <Route path="/session" element={<SessionHome />} />
               <Route path="/login" element={<Login />} />
               <Route path="/findid" element={<FindID />} />
               <Route path="/findpw" element={<FindPWProcess />} />
               <Route path="/joinus" element={<SignUp />} />
-              <Route path="/mypage" element={<MyPage />} />
+              <Route path="/mypage/*" element={<MyPage />} />
               <Route path="/*" element={<NotFound />} />
             </Routes>
           </div>

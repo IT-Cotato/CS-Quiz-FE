@@ -1,37 +1,71 @@
-import React, { useCallback, useState } from 'react';
-import { IQuizContent } from '@pages/CS/manage/CSManage';
+import React, { useCallback } from 'react';
 import { css, styled } from 'styled-components';
 import ToggleButton from '@components/ToggleButton';
 import { ReactComponent as ArrowBack } from '@assets/arrow_back.svg';
 import { useNavigate } from 'react-router-dom';
+import { IQuizAdmin } from '@/typing/db';
+import useSWRImmutable from 'swr/immutable';
+import fetcher from '@utils/fetcher';
+import api from '@/api/api';
 
 interface Props {
-  quiz: IQuizContent;
-  generation: string;
-  week: string;
+  quiz: IQuizAdmin;
+  educationId: string | null;
 }
 
-const QuizContent = ({ quiz, generation, week }: Props) => {
-  const [isApproach, setIsApproach] = useState(false);
-  const [isQuizStart, setIsQuizStart] = useState(false);
+// 시작 막는 팝업창이랑 기다리는 팝업창
+
+const QuizContent = ({ quiz, educationId }: Props) => {
+  const { mutate } = useSWRImmutable(
+    `/v1/api/quiz/cs-admin/all?educationId=${educationId}`,
+    fetcher,
+  );
 
   const navigate = useNavigate();
 
   const onClickQuestionButton = useCallback(() => {
-    navigate(`/cs/quizscorer?generation=${generation}&week=${week}&quiz=${quiz.quizNumber}`, {
-      state: {
-        question: quiz.question,
-      },
-    });
-  }, [generation, week, quiz.quizNumber, quiz.question]);
+    navigate(`quizscorer?quizId=${quiz.quizId}`);
+  }, [quiz]);
 
   const onClickApproach = useCallback(() => {
-    setIsApproach(!isApproach);
-  }, [isApproach]);
+    let path = '';
+    if (quiz.status === 'QUIZ_OFF') {
+      path = '/v1/api/socket/access';
+    } else if (quiz.status === 'QUIZ_ON') {
+      path = '/v1/api/socket/deny';
+    }
+
+    api
+      .patch(path, { quizId: quiz.quizId })
+      .then(() => {
+        mutate();
+      })
+      .catch((err) => {
+        console.error(err);
+        mutate();
+      });
+  }, [quiz.status]);
 
   const onClickQuizStart = useCallback(() => {
-    setIsQuizStart(!isQuizStart);
-  }, [isQuizStart]);
+    let path = '';
+    if (quiz.start === 'QUIZ_OFF') {
+      path = '/v1/api/socket/start';
+    } else if (quiz.start === 'QUIZ_ON') {
+      path = '/v1/api/socket/stop';
+    }
+
+    api
+      .patch(path, { quizId: quiz.quizId })
+      .then(() => {
+        mutate();
+      })
+      .catch((err) => {
+        console.error(err);
+        mutate();
+      });
+
+    mutate();
+  }, [quiz.start]);
 
   return (
     <ContentBox>
@@ -44,11 +78,11 @@ const QuizContent = ({ quiz, generation, week }: Props) => {
       </TitleWrapper>
       <ToggleWrapper>
         <p>접근</p>
-        <ToggleButton toggled={isApproach} onClick={onClickApproach} />
+        <ToggleButton toggled={quiz.status === 'QUIZ_ON'} onClick={onClickApproach} />
       </ToggleWrapper>
       <ToggleWrapper>
         <p>문제풀이 시작</p>
-        <ToggleButton toggled={isQuizStart} onClick={onClickQuizStart} />
+        <ToggleButton toggled={quiz.start === 'QUIZ_ON'} onClick={onClickQuizStart} />
       </ToggleWrapper>
     </ContentBox>
   );

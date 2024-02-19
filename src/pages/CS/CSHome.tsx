@@ -7,12 +7,19 @@ import GenerationSelect from '@components/GenerationSelect';
 import CSModal from '@pages/CS/CSModal';
 import { IEducation, IGeneration } from '@/typing/db';
 import api from '@/api/api';
+import fetcher from '@utils/fetcher';
+import useSWR from 'swr';
+import { useNavigate } from 'react-router-dom';
 
 const CSHome = () => {
+  const { data: user, error } = useSWR('/v1/api/member/info', fetcher);
+
   const [educations, setEducations] = useState<undefined | IEducation[]>();
   const [isCSModalOpen, setIsCSModalOpen] = useState(false);
   const [modifyEducation, setModifyEducation] = useState<undefined | IEducation>();
   const [selectedGeneration, setSelectedGeneration] = useState<undefined | IGeneration>();
+
+  const navigate = useNavigate();
 
   const onChangeGeneration = useCallback(
     (generation?: IGeneration) => {
@@ -49,6 +56,10 @@ const CSHome = () => {
     setIsCSModalOpen(false);
   }, []);
 
+  if (error || user?.role === 'GENERAL') {
+    navigate('/');
+  }
+
   return (
     <>
       <CSWrapper>
@@ -58,9 +69,11 @@ const CSHome = () => {
             onChangeGeneration={onChangeGeneration}
             selectedGeneration={selectedGeneration}
           />
-          <ButtonWrapper>
-            <AddIcon onClick={onClickAddButton} />
-          </ButtonWrapper>
+          {user?.role === 'ADMIN' && (
+            <ButtonWrapper>
+              <AddIcon onClick={onClickAddButton} />
+            </ButtonWrapper>
+          )}
         </CSSetting>
         <CSContentsContainer>
           {!educations ? (
