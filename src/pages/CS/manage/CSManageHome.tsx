@@ -3,7 +3,6 @@ import { styled } from 'styled-components';
 import CSManageLayout from '@pages/CS/manage/CSManageLayout';
 import QuizContent from '@pages/CS/manage/QuizContent';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import useSWR from 'swr';
 import useSWRImmutable from 'swr/immutable';
 import fetcher from '@utils/fetcher';
 import { IQuizAdmin } from '@/typing/db';
@@ -51,7 +50,7 @@ const CSManageHome = () => {
   }, [quizStatus]);
 
   const onClickCheckAllScorer = useCallback(() => {
-    navigate(`/cs/allscorer?educationId=${educationId}`);
+    navigate(`allscorer?educationId=${educationId}`);
   }, []);
 
   return (
