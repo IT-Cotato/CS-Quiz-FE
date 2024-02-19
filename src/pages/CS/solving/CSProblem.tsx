@@ -154,12 +154,14 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
         )}
         <LightImgContainer>
           <LightBulb style={{ width: '28px' }} />
-          <LightOn>
-            <img src={bubble1} alt="bubble 1" />
-            <img src={bubble2} alt="bubble 2" />
-            <img src={bubble3} alt="bubble 3" />
-            <img src={light} alt="light" />
-          </LightOn>
+          {submitAllowed && (
+            <LightOn>
+              <img src={bubble1} alt="bubble 1" />
+              <img src={bubble2} alt="bubble 2" />
+              <img src={bubble3} alt="bubble 3" />
+              <img src={light} alt="light" />
+            </LightOn>
+          )}
         </LightImgContainer>
         {quizData?.choices && (
           <Choice selectNum={selectNum} setSelectNum={setSelectNum} contents={multiples} />
