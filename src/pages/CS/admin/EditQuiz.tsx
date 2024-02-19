@@ -197,7 +197,9 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
                 style={{ display: 'none' }}
                 onChange={handleFileChange}
               />
-              <img src="https://velog.velcdn.com/images/ea_st_ring/post/5bc62320-dd59-497f-9741-79945c54de6a/image.svg" />
+              {quiz[selected]?.previewUrl ? (
+                <img src="https://velog.velcdn.com/images/ea_st_ring/post/5bc62320-dd59-497f-9741-79945c54de6a/image.svg" />
+              ) : null}
               <p>컴퓨터에서 이미지를 드래그 및 가져오기</p>
             </>
           )}
