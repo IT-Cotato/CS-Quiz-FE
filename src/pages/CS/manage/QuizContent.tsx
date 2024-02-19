@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import { css, styled } from 'styled-components';
 import ToggleButton from '@components/ToggleButton';
 import { ReactComponent as ArrowBack } from '@assets/arrow_back.svg';
@@ -10,21 +10,18 @@ import api from '@/api/api';
 
 interface Props {
   quiz: IQuizAdmin;
+  educationId: string | null;
 }
 
 // 시작 막는 팝업창이랑 기다리는 팝업창
 
-const QuizContent = ({ quiz }: Props) => {
-  const { mutate } = useSWRImmutable(`/v1/api/quiz/cs-admin/all?educationId=${1}`, fetcher);
-  const [isApproach, setIsApproach] = useState(quiz.status === 'QUIZ_ON');
-  const [isQuizStart, setIsQuizStart] = useState(quiz.start === 'QUIZ_ON');
+const QuizContent = ({ quiz, educationId }: Props) => {
+  const { mutate } = useSWRImmutable(
+    `/v1/api/quiz/cs-admin/all?educationId=${educationId}`,
+    fetcher,
+  );
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    setIsApproach(quiz.status === 'QUIZ_ON');
-    setIsQuizStart(quiz.start === 'QUIZ_ON');
-  }, [quiz.status, quiz.start]);
 
   const onClickQuestionButton = useCallback(() => {
     navigate(`quizscorer?quizId=${quiz.quizId}`);
@@ -32,37 +29,43 @@ const QuizContent = ({ quiz }: Props) => {
 
   const onClickApproach = useCallback(() => {
     let path = '';
-    if (!isApproach) {
+    if (quiz.status === 'QUIZ_OFF') {
       path = '/v1/api/socket/access';
-    } else {
+    } else if (quiz.status === 'QUIZ_ON') {
       path = '/v1/api/socket/deny';
     }
 
     api
       .patch(path, { quizId: quiz.quizId })
       .then(() => {
-        setIsApproach(!isApproach);
         mutate();
       })
-      .catch((err) => console.error(err));
-  }, [isApproach]);
+      .catch((err) => {
+        console.error(err);
+        mutate();
+      });
+  }, [quiz.status]);
 
   const onClickQuizStart = useCallback(() => {
     let path = '';
-    if (!isQuizStart) {
+    if (quiz.start === 'QUIZ_OFF') {
       path = '/v1/api/socket/start';
-    } else {
+    } else if (quiz.start === 'QUIZ_ON') {
       path = '/v1/api/socket/stop';
     }
 
     api
       .patch(path, { quizId: quiz.quizId })
       .then(() => {
-        setIsQuizStart(!isQuizStart);
         mutate();
       })
-      .catch((err) => console.error(err));
-  }, [isQuizStart]);
+      .catch((err) => {
+        console.error(err);
+        mutate();
+      });
+
+    mutate();
+  }, [quiz.start]);
 
   return (
     <ContentBox>
@@ -75,11 +78,11 @@ const QuizContent = ({ quiz }: Props) => {
       </TitleWrapper>
       <ToggleWrapper>
         <p>접근</p>
-        <ToggleButton toggled={isApproach} onClick={onClickApproach} />
+        <ToggleButton toggled={quiz.status === 'QUIZ_ON'} onClick={onClickApproach} />
       </ToggleWrapper>
       <ToggleWrapper>
         <p>문제풀이 시작</p>
-        <ToggleButton toggled={isQuizStart} onClick={onClickQuizStart} />
+        <ToggleButton toggled={quiz.start === 'QUIZ_ON'} onClick={onClickQuizStart} />
       </ToggleWrapper>
     </ContentBox>
   );

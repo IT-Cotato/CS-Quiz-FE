@@ -32,7 +32,6 @@ const CSManageHome = () => {
   }, [quizData]);
 
   const onClickQuizButton = useCallback(() => {
-    const nextState = quizStatus.status === 'ONGOING' ? 'CLOSE' : 'ONGOING';
     let path = '';
     if (quizStatus.status === 'CLOSED' && confirm('교육을 시작하시겠습니까?')) {
       path = '/v1/api/socket/start/csquiz';
@@ -43,11 +42,15 @@ const CSManageHome = () => {
     api
       .patch(path, { educationId: educationId })
       .then(() => {
-        statusMutate({ status: nextState });
+        statusMutate();
         quizMutate();
       })
-      .catch((err) => console.error(err));
-  }, [quizStatus]);
+      .catch((err) => {
+        console.error(err);
+        statusMutate();
+        quizMutate();
+      });
+  }, [quizStatus?.status]);
 
   const onClickCheckAllScorer = useCallback(() => {
     navigate(`allscorer?educationId=${educationId}`);
@@ -65,7 +68,9 @@ const CSManageHome = () => {
           </Button>
         </ButtonWrapper>
         <QuizContentsWrapper>
-          {quizzes?.map((quiz) => <QuizContent key={quiz.quizId} quiz={quiz} />)}
+          {quizzes?.map((quiz) => (
+            <QuizContent key={quiz.quizId} quiz={quiz} educationId={educationId} />
+          ))}
         </QuizContentsWrapper>
       </ManageWrapper>
     </CSManageLayout>
