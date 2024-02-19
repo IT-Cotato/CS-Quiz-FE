@@ -14,11 +14,11 @@ const CSManageHome = () => {
   const educationId = searchParams.get('educationId');
   const navigate = useNavigate();
 
-  const { data: quizData } = useSWR(
+  const { data: quizData, mutate: quizMutate } = useSWRImmutable(
     `/v1/api/quiz/cs-admin/all?educationId=${educationId}`,
     fetcher,
   );
-  const { data: quizStatus, mutate } = useSWRImmutable(
+  const { data: quizStatus, mutate: statusMutate } = useSWRImmutable(
     `/v1/api/education/status?educationId=${educationId}`,
     fetcher,
   );
@@ -33,31 +33,21 @@ const CSManageHome = () => {
   }, [quizData]);
 
   const onClickQuizButton = useCallback(() => {
-    let confirmText = '';
-    const nextStatus = quizStatus.status === 'ONGOING' ? 'CLOSED' : 'ONGOING';
-    if (quizStatus.status === 'CLOSED') {
-      confirmText = '교육을 시작하시겠습니까?';
-    } else if (quizStatus.status === 'ONGOING') {
-      confirmText = '교육을 종료하시겠습니까?';
+    const nextState = quizStatus.status === 'ONGOING' ? 'CLOSE' : 'ONGOING';
+    let path = '';
+    if (quizStatus.status === 'CLOSED' && confirm('교육을 시작하시겠습니까?')) {
+      path = '/v1/api/socket/start/csquiz';
+    } else if (quizStatus.status === 'ONGOING' && confirm('교육을 종료하시겠습니까?')) {
+      path = '/v1/api/socket/close/csquiz';
     }
 
-    if (confirm(confirmText)) {
-      api
-        .patch(
-          '/v1/api/education/status',
-          {
-            educationId: educationId,
-            status: nextStatus,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-          },
-        )
-        .then(() => mutate({ status: nextStatus }, false))
-        .catch((err) => console.error(err));
-    }
+    api
+      .patch(path, { educationId: educationId })
+      .then(() => {
+        statusMutate({ status: nextState });
+        quizMutate();
+      })
+      .catch((err) => console.error(err));
   }, [quizStatus]);
 
   const onClickCheckAllScorer = useCallback(() => {

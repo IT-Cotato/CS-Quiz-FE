@@ -1,30 +1,67 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { css, styled } from 'styled-components';
 import ToggleButton from '@components/ToggleButton';
 import { ReactComponent as ArrowBack } from '@assets/arrow_back.svg';
 import { useNavigate } from 'react-router-dom';
 import { IQuizAdmin } from '@/typing/db';
+import useSWRImmutable from 'swr/immutable';
+import fetcher from '@utils/fetcher';
+import api from '@/api/api';
 
 interface Props {
   quiz: IQuizAdmin;
 }
 
+// 시작 막는 팝업창이랑 기다리는 팝업창
+
 const QuizContent = ({ quiz }: Props) => {
+  const { mutate } = useSWRImmutable(`/v1/api/quiz/cs-admin/all?educationId=${1}`, fetcher);
   const [isApproach, setIsApproach] = useState(quiz.status === 'QUIZ_ON');
   const [isQuizStart, setIsQuizStart] = useState(quiz.start === 'QUIZ_ON');
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setIsApproach(quiz.status === 'QUIZ_ON');
+    setIsQuizStart(quiz.start === 'QUIZ_ON');
+  }, [quiz.status, quiz.start]);
 
   const onClickQuestionButton = useCallback(() => {
     navigate(`quizscorer?quizId=${quiz.quizId}`);
   }, [quiz]);
 
   const onClickApproach = useCallback(() => {
-    setIsApproach(!isApproach);
+    let path = '';
+    if (!isApproach) {
+      path = '/v1/api/socket/access';
+    } else {
+      path = '/v1/api/socket/deny';
+    }
+
+    api
+      .patch(path, { quizId: quiz.quizId })
+      .then(() => {
+        setIsApproach(!isApproach);
+        mutate();
+      })
+      .catch((err) => console.error(err));
   }, [isApproach]);
 
   const onClickQuizStart = useCallback(() => {
-    setIsQuizStart(!isQuizStart);
+    let path = '';
+    if (!isQuizStart) {
+      path = '/v1/api/socket/start';
+    } else {
+      path = '/v1/api/socket/stop';
+    }
+
+    api
+      .patch(path, { quizId: quiz.quizId })
+      .then(() => {
+        setIsQuizStart(!isQuizStart);
+        mutate();
+      })
+      .catch((err) => console.error(err));
   }, [isQuizStart]);
 
   return (
