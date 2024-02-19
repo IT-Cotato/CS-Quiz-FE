@@ -84,7 +84,7 @@ const MyInfo = () => {
         {user?.role === 'ADMIN' && (
           <ButtonContainer>
             <p>관리자 권한 설정 </p>
-            <Link to="request">
+            <Link to="role-grant">
               <ButtonIcon />
             </Link>
           </ButtonContainer>
