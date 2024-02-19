@@ -58,16 +58,21 @@ const AnimatedText = () => {
     leftValue = charORef.current.offsetLeft;
     widthValue = charORef.current.offsetWidth;
   }
+  let correctionValue = [0, 0];
 
   useEffect(() => {
     if (charORef.current) {
+      // 높은 해상도에 대한 보정치 처리 추후 보강 필요
+      if (window.innerWidth > 1600) {
+        correctionValue = [9, 7];
+      }
       setSpaces([
         0,
         0,
-        -leftValue - widthValue * 1.4,
         -leftValue - widthValue * 1.3,
-        -leftValue - widthValue - 205,
-        -leftValue - widthValue - 205,
+        -leftValue - widthValue * 1.3 - correctionValue[0],
+        -leftValue - widthValue - 205 - correctionValue[1],
+        -leftValue - widthValue - 205 - correctionValue[1],
       ]);
     }
   }, [charORef.current]);
