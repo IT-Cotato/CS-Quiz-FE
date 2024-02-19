@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import background from '@assets/bg_waiting.svg';
 import { ReactComponent as Timer } from '@assets/timer.svg';
@@ -27,11 +26,8 @@ const BgWaiting: React.FC<WaitingProps> = ({ directToNext }) => {
     command: '',
   });
   const [showProblem, setShowProblem] = useState<boolean>(false);
-  const [showCorrect, setShowCorrect] = useState<boolean>(false);
-  const [showIncorrect, setShowIncorrect] = useState<boolean>(false);
   const [allowSubmit, setAllowSubmit] = useState<boolean>(false);
-
-  const navigate = useNavigate();
+  const [problemId, setProblemId] = useState<number>(0); // = quizId
 
   useEffect(() => {
     const initializeWebSocket = async () => {
@@ -81,8 +77,8 @@ const BgWaiting: React.FC<WaitingProps> = ({ directToNext }) => {
       try {
         const message = JSON.parse(event.data);
         setMessage(message);
-        // setMessage((prev) => [...prev, message]);
         console.log(message);
+        setProblemId(message.quizId); // 문제 번호 변경을 감지하여 리렌더링 시키기 위함
 
         if (
           message.status === null &&
@@ -133,7 +129,11 @@ const BgWaiting: React.FC<WaitingProps> = ({ directToNext }) => {
         <Timer style={{ width: '68px' }} />
         <div>곧 문제가 시작됩니다. &nbsp;잠시만 기다려주세요!</div>
       </Waiting>
-      <div className="problem">{showProblem && <CSProblem quizId={message.quizId} />}</div>
+      <div className="problem">
+        {showProblem && (
+          <CSProblem quizId={message.quizId} submitAllowed={allowSubmit} problemId={problemId} />
+        )}
+      </div>
     </Wrapper>
   );
 };
@@ -149,6 +149,7 @@ const Wrapper = styled.div`
   padding-bottom: 40px;
   .problem {
     background-color: #fff;
+    background-size: cover;
     position: absolute;
     overflow: auto;
     top: 0;
