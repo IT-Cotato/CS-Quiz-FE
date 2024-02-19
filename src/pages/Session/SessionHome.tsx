@@ -7,13 +7,20 @@ import { ReactComponent as SettingIcon } from '@assets/setting_icon.svg';
 import GenerationSelect from '@components/GenerationSelect';
 import { IGeneration, ISession } from '@/typing/db';
 import api from '@/api/api';
+import useSWR from 'swr';
+import fetcher from '@utils/fetcher';
+import { useNavigate } from 'react-router-dom';
 
 const SessionHome = () => {
+  const { data: user, error } = useSWR('/v1/api/member/info', fetcher);
+
   const [sessions, setSessions] = useState<undefined | ISession[]>();
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
   const [modifySession, setModifySession] = useState<undefined | ISession>();
   const [lastWeek, setLastWeek] = useState(0);
   const [selectedGeneration, setSelectedGeneration] = useState<IGeneration | undefined>();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (sessions && sessions.length > 0) {
@@ -58,6 +65,10 @@ const SessionHome = () => {
     setIsSessionModalOpen(false);
   }, []);
 
+  if (error || user?.role === 'GENERAL') {
+    navigate('/');
+  }
+
   return (
     <>
       <SessionWrapper>
@@ -67,10 +78,11 @@ const SessionHome = () => {
             onChangeGeneration={onChangeGeneration}
             selectedGeneration={selectedGeneration}
           />
-          {/* 권한에 따라 add는 선택적으로 보여지게 */}
-          <ButtonWrapper>
-            <AddIcon onClick={onClickAddButton} />
-          </ButtonWrapper>
+          {user?.role === 'ADMIN' && (
+            <ButtonWrapper>
+              <AddIcon onClick={onClickAddButton} />
+            </ButtonWrapper>
+          )}
         </SessionSetting>
         <SessionContentsContainer>
           {!sessions ? (

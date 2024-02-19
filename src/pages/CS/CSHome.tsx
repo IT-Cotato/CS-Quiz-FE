@@ -12,7 +12,7 @@ import useSWR from 'swr';
 import { useNavigate } from 'react-router-dom';
 
 const CSHome = () => {
-  const { data: user } = useSWR('/v1/api/member/info', fetcher);
+  const { data: user, error } = useSWR('/v1/api/member/info', fetcher);
 
   const [educations, setEducations] = useState<undefined | IEducation[]>();
   const [isCSModalOpen, setIsCSModalOpen] = useState(false);
@@ -56,7 +56,7 @@ const CSHome = () => {
     setIsCSModalOpen(false);
   }, []);
 
-  if (!user) {
+  if (error || user?.role === 'GENERAL') {
     navigate('/');
   }
 
@@ -69,9 +69,11 @@ const CSHome = () => {
             onChangeGeneration={onChangeGeneration}
             selectedGeneration={selectedGeneration}
           />
-          <ButtonWrapper>
-            <AddIcon onClick={onClickAddButton} />
-          </ButtonWrapper>
+          {user?.role === 'ADMIN' && (
+            <ButtonWrapper>
+              <AddIcon onClick={onClickAddButton} />
+            </ButtonWrapper>
+          )}
         </CSSetting>
         <CSContentsContainer>
           {!educations ? (
