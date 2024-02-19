@@ -83,6 +83,7 @@ const ManageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 70%;
+  margin-bottom: 132px;
 `;
 
 const ButtonWrapper = styled.div`
