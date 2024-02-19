@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import Ellipse from './Ellipse';
 import Cursor from './Cursor';
+import AnimatedText from './AnimatedText';
 
 const Home = () => {
   const body: any = document.querySelector('body');
@@ -16,31 +17,27 @@ const Home = () => {
     <Wrapper>
       <Ground>
         <Cursor
-          imgSrc="https://velog.velcdn.com/images/ea_st_ring/post/c8fcef9e-6162-44a5-a828-6facd5e193e8/image.svg"
+          imgSrc="https://velog.velcdn.com/images/ea_st_ring/post/fb798aac-3ce7-4de7-8070-7aa91370837b/image.svg"
           top={'90vh'}
-          left={'40%'}
-          time={30}
+          left={'30%'}
+          time={1}
           width={'250px'}
         />
-        <Cursor
-          imgSrc="https://velog.velcdn.com/images/ea_st_ring/post/e87ff3e2-5d58-42f9-8b45-121952a18697/image.svg"
-          top={'100vh'}
-          left={'80%'}
-          time={15}
-          width={'300px'}
+        <Ellipse top={'-45vh'} left={'-10%'} time={20} delay={0.2} width="600px" height="600px" />
+        <Ellipse top={'70vh'} left={'20%'} time={10} delay={0.4} width="500px" height="500px" />
+        <Ellipse top={'20vh'} left={'50%'} time={5} delay={1} width="100px" height="100px" />
+        <Ellipse
+          top={'10vh'}
+          left={'60%'}
+          time={10}
+          delay={1.2}
+          width="400px"
+          height="300px"
+          src="https://velog.velcdn.com/images/ea_st_ring/post/f773af96-fb7d-4f5e-8132-db3729bf3e04/image.png"
         />
-        <Ellipse top={'100vh'} left={'85%'} time={10} />
-        <Ellipse top={'100vh'} left={'13%'} time={6} />
-        <Ellipse top={'100vh'} left={'53%'} time={13} />
-        <Ellipse top={'90vh'} left={'99%'} time={5.5} />
-        <TwoEllipse src="https://velog.velcdn.com/images/ea_st_ring/post/42de9f26-69ba-4fbd-9e30-5d3d8c3eabd9/image.svg" />
-        <BigEllipse src="https://velog.velcdn.com/images/ea_st_ring/post/ed87f665-b5e7-46fb-b9ec-224d4343ce37/image.svg" />
+        <Ellipse top={'75vh'} left={'80%'} time={10} delay={0} width="100px" height="100px" />
         <TextBox>
-          <h2>IT 연합동아리 코테이토</h2>
-          <h1>COTATO</h1>
-          <p>Coding</p>
-          <p> Potatoes</p>
-          <button>지원하기</button>
+          <AnimatedText />
         </TextBox>
       </Ground>
       <Div></Div>
@@ -60,18 +57,29 @@ const Wrapper = styled.div`
 const Ground = styled.div`
   width: 100vw;
   max-width: 100vw;
-  min-height: 80%;
-  background-color: #f9faff;
+  min-height: 100%;
+  background-color: #0d0d0d;
 `;
 
 const TextBox = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  margin-top: 100px;
+  align-items: flex-start;
+  height: fit-content;
+  margin-top: 120px;
+  margin-left: 180px;
   z-index: 10;
+  color: #fff;
+  span {
+    font-size: 64px;
+    font-weight: 700;
+    font-family: 'Noto Sans';
+    z-index: 10;
+  }
+  span + span {
+    margin-left: 4px;
+  }
   h1 {
-    color: #212121;
     text-align: center;
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     font-family: 'Noto Sans';
@@ -83,7 +91,6 @@ const TextBox = styled.div`
     z-index: 10;
   }
   h3 {
-    color: #292929;
     text-align: center;
     font-family: 'Nanum Gothic';
     font-size: 24px;
@@ -122,24 +129,27 @@ const TextBox = styled.div`
   button:hover {
     transform: scale(1.02);
   }
-`;
-
-const TwoEllipse = styled.img`
-  position: absolute;
-  width: 300px;
-  top: 70vh;
-  left: 5%;
-  z-index: 1;
-  animation: float 1s;
-  @keyframes float {
-    0% {
-      transform: translateY(30vh);
-    }
-    100% {
-      transform: translateY(0);
-    }
+  @media screen and (max-width: 768px) {
+    margin-left: 80px;
   }
 `;
+
+// const Ellipse = styled.img`
+//   position: absolute;
+//   width: 300px;
+//   top: 70vh;
+//   left: 5%;
+//   z-index: 1;
+//   animation: float 1s;
+//   @keyframes float {
+//     0% {
+//       transform: translateY(30vh);
+//     }
+//     100% {
+//       transform: translateY(0);
+//     }
+//   }
+// `;
 
 const BigEllipse = styled.img`
   position: absolute;

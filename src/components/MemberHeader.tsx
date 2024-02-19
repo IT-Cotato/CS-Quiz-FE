@@ -1,12 +1,23 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '@assets/logo.svg';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 
-const MemberHeader = () => {
-  const { data, error } = useSWR('/v1/api/member/info', fetcher);
+interface MemberHeaderProps {
+  showHeader?: boolean;
+  setShowHeader?: (show: boolean) => void;
+}
+
+const MemberHeader: React.FC<MemberHeaderProps> = ({ showHeader, setShowHeader }) => {
+  const { data, error } = useSWR('/v1/api/member/info', fetcher, {
+    revalidateOnFocus: false,
+    revalidateIfStale: false,
+    dedupingInterval: 6000000, // 10분동안은 데이터가 변경되지 않는 한 재요청이 발생하지 않음
+  });
+
+  const navigate = useNavigate();
 
   return (
     <Wrapper>
@@ -20,7 +31,7 @@ const MemberHeader = () => {
       </MenuSection>
       <MyInfo>
         <img src="https://raw.githubusercontent.com/MinJaeSon/assets/f29298dfeed8daa40622f7d9568a0421f5183756/potato.svg" />
-        <p>{data.name}</p>
+        <p onClick={() => navigate('mypage')}>{data.name}</p>
       </MyInfo>
     </Wrapper>
   );
@@ -28,7 +39,7 @@ const MemberHeader = () => {
 
 export default MemberHeader;
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ showHeader?: boolean }>`
   display: flex;
   flex-direction: row;
   justify-content: space-between !important;
@@ -38,6 +49,10 @@ const Wrapper = styled.div`
   height: 72px;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   padding: 0 60px;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 100 !important;
   @media screen and (max-width: 960px) {
   }
 `;
@@ -87,5 +102,11 @@ const MyInfo = styled.div`
     font-size: 1.1rem;
     font-weight: 400;
     color: #000;
+    &:hover {
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-thickness: 1.2px;
+    }
   }
 `;

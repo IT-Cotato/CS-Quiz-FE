@@ -1,24 +1,25 @@
 import React, { ChangeEvent, DragEvent, useCallback, useEffect } from 'react';
 import styled from 'styled-components';
-import { ChoiceProps, ShortProps } from '@/typing/db';
+import { Multiples, ShortQuizzes } from '@/typing/db';
 
 type Props = {
-  quiz: (ChoiceProps | ShortProps)[];
+  quiz: (Multiples | ShortQuizzes)[];
   selected: number;
-  setQuiz: React.Dispatch<React.SetStateAction<(ChoiceProps | ShortProps)[]>>;
+  setQuiz: React.Dispatch<React.SetStateAction<(Multiples | ShortQuizzes)[]>>;
 };
 
 const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+
   const choices = 4;
   const addShortAnswer = useCallback(() => {
     setQuiz((prev) => {
       const newPrev = [...prev];
-      const copySelected = newPrev[selected - 1];
-      if (!isChoiceProps(copySelected)) {
+      const copySelected = newPrev[selected];
+      if (!isMultiples(copySelected)) {
         // 주관식 quiz_answer를 하나 추가
-        copySelected.quiz_answer.push({
-          choice_content: '',
+        copySelected.shortAnswers.push({
+          answer: '',
         });
       }
       return [...newPrev];
@@ -35,8 +36,8 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
             const file = e.dataTransfer.items[i].getAsFile();
             if (file) {
               const newPrev = [...quiz];
-              newPrev[selected - 1].quiz_image_file = file;
-              newPrev[selected - 1].quiz_preview_url = URL.createObjectURL(file);
+              newPrev[selected].image = file;
+              newPrev[selected].previewUrl = URL.createObjectURL(file);
               setQuiz(newPrev);
             }
           }
@@ -51,18 +52,18 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
    */
   const checkOnlyOne = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      if (e.target.checked) {
-        setQuiz((prev) => {
-          const newPrev = [...prev];
-          const copySelected = newPrev[selected - 1];
-          if (isChoiceProps(copySelected)) {
-            copySelected.quiz_answer[0].choice_num = Number(e.target.id);
-            copySelected.quiz_answer[0].choice_content =
-              copySelected.choices[copySelected.quiz_answer[0].choice_num - 1].choice_content;
-          }
-          return [...newPrev];
-        });
-      }
+      // choices 배열에 있으면 추가, 없으면 삭제
+      setQuiz((prev) => {
+        const next = [...prev];
+        const idx = Number(e.target.id) - 1;
+        const prevAnswer = (next[selected] as Multiples).choices[idx].isAnswer;
+        if (prevAnswer === 'NO_ANSWER') {
+          (next[selected] as Multiples).choices[idx].isAnswer = 'ANSWER';
+        } else {
+          (next[selected] as Multiples).choices[idx].isAnswer = 'NO_ANSWER';
+        }
+        return [...next];
+      });
     },
     [selected, quiz, choices],
   );
@@ -77,16 +78,28 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
   const handleFileChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newPrev = [...quiz];
-      newPrev[selected - 1].quiz_image_file = e.target.files[0];
-      newPrev[selected - 1].quiz_preview_url = URL.createObjectURL(e.target.files[0]);
+      newPrev[selected].image = e.target.files[0];
+      newPrev[selected].previewUrl = URL.createObjectURL(e.target.files[0]);
       setQuiz(newPrev);
+      console.log(newPrev);
     }
   }, []);
 
   // 타입 가드
-  const isChoiceProps = (quiz: ChoiceProps | ShortProps): quiz is ChoiceProps => {
-    return (quiz as ChoiceProps).choices !== undefined;
+  const isMultiples = (quiz: Multiples | ShortQuizzes): quiz is Multiples => {
+    return (quiz as Multiples).choices !== undefined;
   };
+
+  const onChangeTitle = useCallback(
+    (e: ChangeEvent<HTMLTextAreaElement>) => {
+      setQuiz((prev) => {
+        const newPrev = [...prev];
+        newPrev[selected].question = e.target.value;
+        return [...newPrev];
+      });
+    },
+    [selected],
+  );
 
   /**
    * 객관식 input 상태 관리 함수
@@ -95,14 +108,15 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
     (e: ChangeEvent<HTMLTextAreaElement>, id: string) => {
       setQuiz((prev) => {
         const newPrev = [...prev];
-        const copySelected = newPrev[selected - 1];
-        if (isChoiceProps(copySelected)) {
-          copySelected.choices[Number(id) - 1].choice_content = e.target.value;
-          if (copySelected.quiz_answer[0].choice_num === Number(id)) {
-            copySelected.quiz_answer[0].choice_content = e.target.value;
-          }
-        } else {
-          copySelected.quiz_answer[0].choice_content = e.target.value;
+        const copySelected = newPrev[selected];
+        if (isMultiples(copySelected)) {
+          copySelected.choices[Number(id) - 1].content = e.target.value;
+          //   if (copySelected.quiz_answer[0].choice_num === Number(id)) {
+          //     copySelected.quiz_answer[0].choice_content = e.target.value;
+          //   }
+          // } else {
+          //   copySelected.quiz_answer[0].choice_content = e.target.value;
+          // }
         }
         return [...newPrev];
       });
@@ -114,9 +128,9 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
     (e: ChangeEvent<HTMLInputElement>, id: string) => {
       setQuiz((prev) => {
         const newPrev = [...prev];
-        const copySelected = newPrev[selected - 1];
-        if (!isChoiceProps(copySelected)) {
-          copySelected.quiz_answer[Number(id) - 1].choice_content = e.target.value;
+        const copySelected = newPrev[selected];
+        if (!isMultiples(copySelected)) {
+          copySelected.shortAnswers[Number(id) - 1].answer = e.target.value;
         }
         return [...newPrev];
       });
@@ -129,11 +143,15 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
    */
   const deleteShortAnswer = useCallback(
     (id: number) => {
+      if ((quiz[selected] as ShortQuizzes).shortAnswers.length === 1) {
+        window.alert('주관식 답안은 최소 1개 이상이어야 합니다.');
+        return;
+      }
       setQuiz((prev) => {
         const newPrev = [...prev];
-        const copySelected = newPrev[selected - 1];
-        if (!isChoiceProps(copySelected)) {
-          copySelected.quiz_answer.splice(id, 1);
+        const copySelected = newPrev[selected];
+        if (!isMultiples(copySelected)) {
+          copySelected.shortAnswers.splice(id, 1);
         }
         return [...newPrev];
       });
@@ -145,111 +163,111 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
   useEffect(() => {
     return () => {
       quiz.forEach((quiz) => {
-        if (quiz.quiz_preview_url) {
-          URL.revokeObjectURL(quiz.quiz_preview_url);
+        if (quiz.previewUrl) {
+          URL.revokeObjectURL(quiz.previewUrl);
         }
       });
     };
   }, []);
   return (
     <Wrapper>
-      {selected === 0 ? (
-        <div>주제</div>
-      ) : (
-        <>
-          <MakeQuestionDiv>
-            <p>여기를 눌러 문제를 만들어 보세요.</p>
-          </MakeQuestionDiv>
-          <UploadDiv
-            onDrop={onDrop}
-            onDragOver={onDragOver}
-            image={quiz[selected - 1].quiz_preview_url || null}
-            onClick={() => {
-              fileInputRef.current?.click();
-            }}
-          >
-            {quiz[selected - 1].quiz_preview_url ? null : (
-              <>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  style={{ display: 'none' }}
-                  onChange={handleFileChange}
-                />
-                <img src="https://velog.velcdn.com/images/ea_st_ring/post/5bc62320-dd59-497f-9741-79945c54de6a/image.svg" />
-                <p>컴퓨터에서 이미지를 드래그 및 가져오기</p>
-              </>
-            )}
-          </UploadDiv>
-          {quiz[selected - 1].quiz_type === 'choice' ? (
-            <ChoiceDiv>
-              {Array.from(Array(choices)).map((_, index) => (
-                <Choice key={index}>
-                  <textarea
-                    placeholder={`답안 ${index + 1}`}
-                    onChange={(e) => {
-                      onChangeChoices(e, `${index + 1}`);
-                    }}
-                    value={
-                      isChoiceProps(quiz[selected - 1])
-                        ? (quiz[selected - 1] as ChoiceProps).choices[index].choice_content
-                        : ''
-                    }
-                    id={`${index + 1}`}
-                  />
-                  <input
-                    type="checkbox"
-                    id={`${index + 1}`}
-                    onChange={(e) => {
-                      checkOnlyOne(e);
-                    }}
-                    checked={
-                      (quiz[selected - 1] as ChoiceProps).quiz_answer[0].choice_num === index + 1
-                    }
-                  />
-                </Choice>
-              ))}
-            </ChoiceDiv>
-          ) : (
-            <Short>
-              {(quiz[selected - 1] as ShortProps).quiz_answer.map(
-                (answer: { choice_content: string }, index: number) => (
-                  <div key={index}>
-                    <input
-                      type="text"
-                      placeholder={`답안 ${index + 1}`}
-                      onChange={(e) => {
-                        onChangeShorts(e, `${index + 1}`);
-                      }}
-                      value={answer.choice_content}
-                    />
-                    <img
-                      onClick={() => {
-                        deleteShortAnswer(index);
-                      }}
-                      src="https://velog.velcdn.com/images/ea_st_ring/post/d5f4409f-39c9-43bd-bb35-c6d4fa8774be/image.svg"
-                    />
-                  </div>
-                ),
-              )}
-              <button
-                onClick={() => {
-                  addShortAnswer();
-                }}
-              >
-                답안 추가
-              </button>
-            </Short>
+      <>
+        <MakeQuestionDiv>
+          <textarea
+            onChange={onChangeTitle}
+            value={quiz[selected]?.question || ''}
+            placeholder="문제 제목을 입력해주세요."
+            tabIndex={0}
+          />
+        </MakeQuestionDiv>
+        <UploadDiv
+          onDrop={onDrop}
+          onDragOver={onDragOver}
+          $image={quiz[selected]?.previewUrl || quiz[selected]?.image || null}
+          onClick={() => {
+            // 클릭 시에도 업로드되도록 처리하기
+            // fileInputRef.current?.click();
+          }}
+        >
+          {quiz[selected]?.previewUrl ? null : (
+            <>
+              <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: 'none' }}
+                onChange={handleFileChange}
+              />
+              <img src="https://velog.velcdn.com/images/ea_st_ring/post/5bc62320-dd59-497f-9741-79945c54de6a/image.svg" />
+              <p>컴퓨터에서 이미지를 드래그 및 가져오기</p>
+            </>
           )}
-        </>
-      )}
+        </UploadDiv>
+        {isMultiples(quiz[selected]) ? (
+          <ChoiceDiv>
+            {Array.from(Array(choices)).map((_, index) => (
+              <Choice key={index}>
+                <textarea
+                  placeholder={`답안 ${index + 1}`}
+                  onChange={(e) => {
+                    onChangeChoices(e, `${index + 1}`);
+                  }}
+                  value={
+                    isMultiples(quiz[selected])
+                      ? (quiz[selected] as Multiples)?.choices[index]?.content
+                      : ''
+                  }
+                  id={`${index + 1}`}
+                />
+                <input
+                  type="checkbox"
+                  id={`${index + 1}`}
+                  tabIndex={index + 1}
+                  onChange={(e) => {
+                    checkOnlyOne(e);
+                  }}
+                  checked={(quiz[selected] as Multiples)?.choices[index]?.isAnswer === 'ANSWER'}
+                />
+              </Choice>
+            ))}
+          </ChoiceDiv>
+        ) : (
+          <Short>
+            {(quiz[selected] as ShortQuizzes)?.shortAnswers?.map((choice, index) => (
+              <div key={index}>
+                <input
+                  type="text"
+                  placeholder={`답안 ${index + 1}`}
+                  onChange={(e) => {
+                    onChangeShorts(e, `${index + 1}`);
+                  }}
+                  value={choice.answer || ''}
+                />
+                <img
+                  onClick={() => {
+                    deleteShortAnswer(index);
+                  }}
+                  src="https://velog.velcdn.com/images/ea_st_ring/post/d5f4409f-39c9-43bd-bb35-c6d4fa8774be/image.svg"
+                />
+              </div>
+            ))}
+            <button
+              onClick={() => {
+                addShortAnswer();
+              }}
+            >
+              <img src="https://velog.velcdn.com/images/ea_st_ring/post/02c4b979-5f46-4a3f-a319-1d9b10796b11/image.svg" />
+              답안 추가
+            </button>
+          </Short>
+        )}
+      </>
     </Wrapper>
   );
 };
 
 const Wrapper = styled.div`
   grid-area: centerbox;
-  width: 658px;
+  width: auto;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -265,7 +283,7 @@ const Wrapper = styled.div`
 `;
 
 const MakeQuestionDiv = styled.div`
-  width: 578px;
+  min-width: 578px;
   height: 95px;
   margin-top: 16px;
   border-radius: 5px;
@@ -275,12 +293,22 @@ const MakeQuestionDiv = styled.div`
   justify-content: center;
   align-items: center;
   margin-bottom: 24px;
-  p {
-    color: #757575;
+  textarea {
+    width: 100%;
+    height: 100%;
+    color: #000;
     font-family: NanumSquareRound;
-    font-size: 20px;
+    font-size: 16px;
+    padding: 8px;
     font-style: normal;
     font-weight: 400;
+    outline: none;
+    border: none;
+    resize: none;
+    &::placeholder {
+      text-align: center;
+      vertical-align: middle;
+    }
   }
   @media screen and (max-width: 768px) {
     display: none;
@@ -296,18 +324,20 @@ const UploadDiv = styled.div<any>`
   flex-direction: column;
   flex-shrink: 0;
   border-radius: 5px;
-  border: ${(props) => (props.image ? 'none' : '3px dashed #6f99f2')};
+  border: ${(props) => (props.$image ? 'none' : '3px dashed #6f99f2')};
   background-image: ${(props) =>
-    props.image ? `url(${props.image})` : `rgba(255, 255, 255, 0.2)`};
+    props.$image ? `url(${props.$image})` : `rgba(255, 255, 255, 0.2)`};
   background-size: 100%;
   background-position: center;
   margin-top: 12px;
   p {
+    display: ${(props) => (props.$image ? 'none' : 'block')};
     margin-top: 24px;
     color: #757575;
     font-family: Inter;
     font-size: 14px;
     font-weight: 400;
+    z-index: 1;
   }
   img {
     -webkit-user-drag: none;
@@ -315,6 +345,7 @@ const UploadDiv = styled.div<any>`
     -moz-user-drag: none;
     -o-user-drag: none;
     -user-drag: none;
+    z-index: 10;
   }
   @media screen and (max-width: 768px) {
     width: 100%;
@@ -338,7 +369,7 @@ const ChoiceDiv = styled.div`
 `;
 
 const Choice = styled.div`
-  width: 284px;
+  width: 100%;
   height: 160px;
   border-radius: 5px;
   padding: 10px 0px;
@@ -422,15 +453,35 @@ const Short = styled.div`
     margin-top: 16px;
   }
   button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 534px;
     height: 57px;
     border-radius: 5px;
-    background: transparent;
-    opacity: 0.8;
+    background: #fff;
     box-shadow: 2px 4px 10px 0px rgba(0, 0, 0, 0.25);
-    border: 2px dashed #7aff52;
+    border: none;
     margin-top: 16px;
     cursor: pointer;
+    font-size: 14px;
+    &:hover {
+      background: #f4f4f4;
+    }
+    img {
+      width: 20px;
+      height: 20px;
+      margin-right: 4px;
+    }
+  }
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    div {
+      width: 100%;
+    }
+    button {
+      width: 100%;
+    }
   }
 `;
 

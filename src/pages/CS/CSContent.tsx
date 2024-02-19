@@ -20,14 +20,7 @@ const CSContent = ({ education, handleModifyButton, generation }: Props) => {
   const navigate = useNavigate();
 
   const onclickContent = useCallback(() => {
-    navigate(
-      `/cs/start/?generationId=${generation?.generationId}&educationId=${education.educationId}&educationNumber=${education.educationNumber}`,
-      {
         state: {
-          subject: education.subject,
-        },
-      },
-    );
   }, [generation?.generationId, education.educationNumber]);
 
   const onClickModifyButton = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
