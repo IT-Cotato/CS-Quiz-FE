@@ -64,7 +64,7 @@ const AnimatedText = () => {
     if (charORef.current) {
       // 높은 해상도에 대한 보정치 처리 추후 보강 필요
       if (window.innerWidth > 1600) {
-        correctionValue = [9, 7];
+        correctionValue = [12, 7, 9];
       }
       setSpaces([
         0,
@@ -72,7 +72,7 @@ const AnimatedText = () => {
         -leftValue - widthValue * 1.3,
         -leftValue - widthValue * 1.3 - correctionValue[0],
         -leftValue - widthValue - 205 - correctionValue[1],
-        -leftValue - widthValue - 205 - correctionValue[1],
+        -leftValue - widthValue - 205 - correctionValue[2],
       ]);
     }
   }, [charORef.current]);
