@@ -9,6 +9,8 @@ import bubble2 from '@assets/bubble_2.svg';
 import bubble3 from '@assets/bubble_3.svg';
 import MemberHeader from '@components/MemberHeader';
 import api from '@/api/api';
+import useSWR from 'swr';
+import fetcher from '@utils/fetcher';
 
 type Problem = {
   id: number; // 문제의 PK
@@ -29,20 +31,26 @@ type Choices = {
 
 interface CSProblemProps {
   quizId: number | null;
+  submitAllowed: boolean;
+  problemId: number;
 }
 
-const CSProblem: React.FC<CSProblemProps> = ({ quizId }) => {
+const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId }) => {
+  const { data, error, mutate } = useSWR('/v1/api/member/info', fetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
+
   const [showHeader, setShowHeader] = useState(false);
   const [quizData, setQuizData] = useState<Problem | undefined>();
   const [multiples, setMultiples] = useState<string[]>([]); // 객관식 선지의 내용 리스트
   const [biggerImg, setBiggerImg] = useState(false);
   const [selectNum, setSelectNum] = useState(0);
-  const [selected, setSelected] = useState<number[]>([]);
+  // const [selected, setSelected] = useState<number[]>([]);
   const [shortAns, setShortAns] = useState('');
 
   const inputRef = useRef<any>();
-
-  // const multiples: string[] = []; // 객관식 선지의 내용 리스트
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,14 +63,6 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId }) => {
         .then((res) => {
           setQuizData(res.data);
           console.log(res.data);
-          // {
-          //   quizData?.choices &&
-          //     quizData.choices.forEach((item) => {
-          //       console.log(item.content);
-          //       // multiples.push(item.content);
-          //       setMultiples((prev) => [...prev, item.content]);
-          //     });
-          // }
           console.log(multiples);
         })
         .catch((err) => {
@@ -70,7 +70,7 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId }) => {
         });
     };
     fetchData();
-  }, []);
+  }, [problemId]); // quizId가 바뀌면 문제 데이터를 다시 불러옴
 
   useEffect(() => {
     // 객관식 선지의 내용을 리스트에 담기 (quizData가 업데이트된 후에 선지 내용 설정)
@@ -80,10 +80,6 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId }) => {
       });
     }
   }, [quizData]);
-
-  useEffect(() => {
-    console.log(selected);
-  }, [selected]);
 
   // 주관식 문제 입력 이벤트
   const onChangeShortAns = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,6 +92,28 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId }) => {
 
   const submitProblem = () => {
     // 문제 제출하기
+    const input = quizData?.type === 'MULTIPLE_QUIZ' ? selectNum.toString() : shortAns;
+
+    api
+      .post(
+        '/v1/api/record/reply',
+        {
+          quizId: quizId,
+          memberId: data.id,
+          input: input,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        },
+      )
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
 
   const propsForMemberHeader = {
@@ -133,15 +151,9 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId }) => {
           </LightOn>
         </LightImgContainer>
         {quizData?.choices && (
-          <Choice
-            selectNum={selectNum}
-            setSelectNum={setSelectNum}
-            selected={selected}
-            setSelected={setSelected}
-            contents={multiples}
-          />
+          <Choice selectNum={selectNum} setSelectNum={setSelectNum} contents={multiples} />
         )}
-        {quizData?.shortAnswers && (
+        {!quizData?.choices && (
           <ShortAnswer
             shortAns={shortAns}
             onChangeShortAns={onChangeShortAns}
@@ -160,68 +172,40 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId }) => {
 interface choiceProps {
   selectNum: number; // 선택한 선지의 번호
   setSelectNum: React.Dispatch<React.SetStateAction<number>>;
-  selected: number[]; // 최종적으로 선택한 선지의 번호 리스트
-  setSelected: React.Dispatch<React.SetStateAction<number[]>>;
   contents: string[]; // 객관식 선지의 내용 리스트
 }
 
-const Choice: React.FC<choiceProps> = ({
-  selectNum,
-  setSelectNum,
-  selected,
-  setSelected,
-  contents,
-}) => {
+const Choice: React.FC<choiceProps> = ({ selectNum, setSelectNum, contents }) => {
   return (
     <ChoiceContainer>
       <ChoiceBtn
-        clicked={selected.includes(1)}
+        clicked={selectNum === 1}
         onClick={() => {
           setSelectNum(1);
-          if (selected.includes(1) === false) {
-            setSelected([...selected, 1]);
-          } else {
-            setSelected(selected.filter((item) => item !== 1));
-          }
         }}
       >
         {contents[0]}
       </ChoiceBtn>
       <ChoiceBtn
-        clicked={selected.includes(2)}
+        clicked={selectNum === 2}
         onClick={() => {
           setSelectNum(2);
-          if (selected.includes(2) === false) {
-            setSelected([...selected, 2]);
-          } else {
-            setSelected(selected.filter((item) => item !== 2));
-          }
         }}
       >
         {contents[1]}
       </ChoiceBtn>
       <ChoiceBtn
-        clicked={selected.includes(3)}
+        clicked={selectNum === 3}
         onClick={() => {
           setSelectNum(3);
-          if (selected.includes(3) === false) {
-            setSelected([...selected, 3]);
-          } else {
-            setSelected(selected.filter((item) => item !== 3));
-          }
         }}
       >
         {contents[2]}
       </ChoiceBtn>
       <ChoiceBtn
-        clicked={selected.includes(4)}
+        clicked={selectNum === 4}
         onClick={() => {
           setSelectNum(4);
-          if (selected.includes(4) === false) {
-            setSelected([...selected, 4]);
-          } else {
-            setSelected(selected.filter((item) => item !== 4));
-          }
         }}
       >
         {contents[3]}
