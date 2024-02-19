@@ -6,40 +6,34 @@ import { IQuizAdminScorer, IQuizAdminSubmit } from '@/typing/db';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import AddAnswer from '@pages/CS/manage/scorer/AddAnswer';
+import useSWRImmutable from 'swr/immutable';
 
 const QuizScorer = () => {
   const [searchParams] = useSearchParams();
   const quizId = searchParams.get('quizId');
 
-  const { data: quiz, mutate } = useSWR<IQuizAdminScorer>(
+  const { data: quiz } = useSWRImmutable<IQuizAdminScorer>(
     `/v1/api/quiz/cs-admin?quizId=${quizId}`,
     fetcher,
   );
-  const { data: record } = useSWR(`/v1/api/record/all?quizId=${quizId}`, fetcher);
+  const { data: record } = useSWR(`/v1/api/record/all?quizId=${quizId}`, fetcher, {
+    dedupingInterval: 1000,
+  });
   const [submits, setSubmits] = useState<IQuizAdminSubmit[]>();
   const [scorer, setScorer] = useState<IQuizAdminScorer>();
-  // const [checkedScorer, setCheckedScorer] = useState(scorer);
 
   useEffect(() => {
     setSubmits(record?.records);
+    setSubmits([
+      {
+        memberId: 1,
+        memberName: 'name',
+        backFourNumber: '1234',
+        reply: '??',
+      },
+    ]);
     setScorer(record?.scorer);
   }, [record]);
-
-  // const onChangeRadio = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const newScorer = submitList.find((element) => element.id === parseInt(e.target.value));
-  //   if (newScorer) setCheckedScorer(newScorer);
-  // }, []);
-
-  // const onClickChangeButton = useCallback(() => {
-  //   setScorer(checkedScorer);
-  // }, [scorer, checkedScorer]);
-
-  const onClickConfirmButton = useCallback(() => {}, []);
-
-  const mutateAddAnswer = useCallback((addAnswer: string) => {
-    quiz?.answer.push(addAnswer);
-    mutate(quiz);
-  }, []);
 
   return (
     <CSManageLayout header="CS 문제별 득점자 확인">
@@ -49,26 +43,19 @@ const QuizScorer = () => {
           <p className="question">{quiz?.question}</p>
         </TitleWrapper>
         <ColumnDivision>
-          {/* 분리 필요? */}
           <HalfContainer width="55%">
             <p>제출 순 나열</p>
             <SubmitBox>
               {submits?.map((submit) => (
                 <SubmitContent key={submit.memberId}>
-                  <label>
-                    {/* <input
-                      type="radio"
-                      value={submit.id}
-                      checked={submit.id === checkedScorer.id}
-                      onChange={onChangeRadio}
-                    /> */}
-                    <p>
-                      {submit.memberName}({submit.backFourNumber})
-                    </p>
-                  </label>
+                  <p>
+                    {submit.memberName}({submit.backFourNumber})
+                  </p>
                   <SubmitResult>
-                    {submit.reply}
-                    {quiz?.quizType === 'MULTIPLE_QUIZ' && '번'}
+                    <p>
+                      {submit.reply}
+                      {quiz?.quizType === 'MULTIPLE_QUIZ' && '번'}
+                    </p>
                   </SubmitResult>
                 </SubmitContent>
               ))}
@@ -77,14 +64,8 @@ const QuizScorer = () => {
           <HalfContainer width="45%">
             <p>득점자</p>
             <ScorerBox>
-              <p>
-                {scorer?.memberName}({scorer?.backFourNumber})
-              </p>
+              <p>{scorer?.memberName ? `${scorer.memberName}(${scorer.backFourNumber})` : ''}</p>
             </ScorerBox>
-            {/* <ButtonWrapper>
-              <ChangeButton onClick={onClickChangeButton}>변경</ChangeButton>
-              <ConfirmButton onClick={onClickConfirmButton}>확인</ConfirmButton>
-            </ButtonWrapper> */}
             <p>문제 정답</p>
             <AnswerBox>
               {quiz?.answer.map((ans, idx) => (
@@ -94,7 +75,7 @@ const QuizScorer = () => {
                 </p>
               ))}
             </AnswerBox>
-            <AddAnswer quizId={quizId} mutateAddAnswer={mutateAddAnswer} />
+            <AddAnswer quizId={quizId} quizType={quiz?.quizType} />
           </HalfContainer>
         </ColumnDivision>
       </QuizScorerWrapper>
@@ -184,38 +165,19 @@ const SubmitContent = styled.div`
   padding: 0 12px;
   border-bottom: 1px solid rgba(28, 28, 28, 0.3);
 
-  > label {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
 
-    > p {
-      ${fontStyle};
-      margin-left: 12px;
-    }
-
-    > input {
-      cursor: pointer;
-
-      appearance: none;
-      width: 24px;
-      height: 24px;
-      margin-right: 12px;
-      border: 1px solid #808080;
-      border-radius: 50%;
-
-      &:checked {
-        border: 5px solid #ffffff;
-        border-radius: 50%;
-        background-color: #477feb;
-        box-shadow: 0 0 0 1px #808080;
-      }
-    }
+  > p {
+    ${fontStyle};
   }
 `;
 
 const ScorerBox = styled(Box)`
   width: 100%;
+  height: 56px;
+  margin-bottom: 20px;
 
   > p {
     ${fontStyle}
@@ -223,50 +185,17 @@ const ScorerBox = styled(Box)`
   }
 `;
 
-const SubmitResult = styled.p`
-  ${fontStyle};
-  color: #85c88a;
-`;
-
-const ButtonWrapper = styled.div`
-  display: flex;
-  width: 100%;
-  justify-content: flex-end;
-  margin: 24px 0 4px;
-`;
-
-const Button = styled.button`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100px;
-  height: 40px;
-  border-radius: 5px;
-  border: none;
-  margin-left: 8px;
-  cursor: pointer;
-
-  font-family: Inter;
-  font-size: 16px;
-  font-weight: 400;
-`;
-
-const ChangeButton = styled(Button)`
-  border-radius: 5px;
-  border: 1px solid #bebebe;
-  background: #feffff;
-  color: #2e2e2e;
-`;
-
-const ConfirmButton = styled(Button)`
-  background: #477feb;
-  color: #fff;
+const SubmitResult = styled.div`
+  > p {
+    ${fontStyle};
+    color: #85c88a;
+  }
 `;
 
 const AnswerBox = styled(Box)`
   display: block;
   width: 100%;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 
   > p {
     ${fontStyle};

@@ -2,13 +2,21 @@ import React, { ChangeEvent, FormEvent, useCallback, useState } from 'react';
 import { styled } from 'styled-components';
 import { ReactComponent as AddIcon } from '@assets/add_circle.svg';
 import api from '@/api/api';
+import useSWRImmutable from 'swr/immutable';
+import { IQuizAdminScorer } from '@/typing/db';
+import fetcher from '@utils/fetcher';
 
 interface Props {
   quizId: string | null;
-  mutateAddAnswer: (addAnswer: string) => void;
+  quizType?: string;
 }
 
-const AddAnswer = ({ quizId, mutateAddAnswer }: Props) => {
+const AddAnswer = ({ quizId, quizType }: Props) => {
+  const { mutate } = useSWRImmutable<IQuizAdminScorer>(
+    `/v1/api/quiz/cs-admin?quizId=${quizId}`,
+    fetcher,
+  );
+
   const [addAnswer, setAddAnswer] = useState('');
 
   const onChangeAddAnswer = useCallback(
@@ -23,24 +31,34 @@ const AddAnswer = ({ quizId, mutateAddAnswer }: Props) => {
       e.preventDefault();
 
       // 주관식인 경우만
-      api
-        .post(
-          '/v1/api/quiz/cs-admin/answer/add',
-          {
-            quizId: quizId,
-            answer: addAnswer,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
+      if (quizType === 'SHORT_QUIZ') {
+        api
+          .post(
+            '/v1/api/quiz/cs-admin/answer/add',
+            {
+              quizId: quizId,
+              answer: addAnswer,
             },
-          },
-        )
-        .then((res) => {
-          mutateAddAnswer(addAnswer);
-          setAddAnswer('');
-        })
-        .catch((err) => console.error(err));
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+              },
+            },
+          )
+          .then(() => {
+            api
+              .post('/v1/api/record/regrade', {
+                quizId: quizId,
+                newAnswer: addAnswer,
+              })
+              .then(() => {})
+              .catch((err) => console.error(err));
+
+            setAddAnswer('');
+            mutate();
+          })
+          .catch((err) => console.error(err));
+      }
     },
     [addAnswer],
   );
@@ -70,11 +88,15 @@ const AddAnswer = ({ quizId, mutateAddAnswer }: Props) => {
 export default React.memo(AddAnswer);
 
 const Form = styled.form`
-  color: #000;
-  font-family: Inter;
-  font-size: 20px;
-  font-weight: 500;
-  margin: 8px 0;
+  width: 100%;
+
+  > p {
+    color: #000;
+    font-family: Inter;
+    font-size: 20px;
+    font-weight: 500;
+    margin: 8px 0;
+  }
 `;
 
 const AddAnswerInputWrapper = styled.div`
@@ -110,7 +132,7 @@ const CleanAddAnswer = styled.div`
   position: absolute;
   top: 50%;
   right: 20px;
-  transform: translateY(-50%);
+  transform: translateY(-45%);
   cursor: pointer;
   border: none;
   background: transparent;
