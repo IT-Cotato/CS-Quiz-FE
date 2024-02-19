@@ -34,14 +34,14 @@ const SessionContent = ({ session, handleModifyButton }: Props) => {
       />
       {isHover ? (
         <HoverContent onMouseEnter={onMouseEnterImage} onMouseLeave={onMouseLeaveImage}>
-          <p>{session.number === 0 ? 'OT' : `${session.number}주차 세션`}</p>
+          <p>{session.sessionNumber === 0 ? 'OT' : `${session.sessionNumber}주차 세션`}</p>
           <p>{session.description}</p>
 
           {user?.role === 'ADMIN' && <ModifyIcon onClick={() => handleModifyButton(session)} />}
         </HoverContent>
       ) : (
         <Title>
-          <p>{session.number === 0 ? 'OT' : `${session.number}주차 세션`}</p>
+          <p>{session.sessionNumber === 0 ? 'OT' : `${session.sessionNumber}주차 세션`}</p>
           <EmojiWrapper>
             {session.csEducation === 'CS_ON' && <SessionEmoji activity="CS" />}
             {session.itIssue === 'IT_ON' && <SessionEmoji activity="IT" />}

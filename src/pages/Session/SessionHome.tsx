@@ -24,7 +24,7 @@ const SessionHome = () => {
 
   useEffect(() => {
     if (sessions && sessions.length > 0) {
-      setLastWeek(sessions[sessions.length - 1].number);
+      setLastWeek(sessions[sessions.length - 1].sessionNumber);
     } else {
       setLastWeek(-1);
     }
@@ -93,7 +93,7 @@ const SessionHome = () => {
           ) : (
             sessions?.map((session) => (
               <SessionContent
-                key={session.id}
+                key={session.sessionId}
                 session={session}
                 handleModifyButton={handleModifyButton}
               />
