@@ -35,8 +35,15 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek, generationId }:
   }, []);
 
   useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
+
+  useEffect(() => {
     if (session) {
-      setTitle(getTitle(session.number));
+      setTitle(getTitle(session.sessionNumber));
       setDescription(session.description);
       setItIssue(session.itIssue === 'IT_ON');
       setNetworking(session.networking === 'NW_ON');
@@ -75,7 +82,6 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek, generationId }:
     e.preventDefault();
   }, []);
 
-  // 기훈이 있을떄 해봐야 할듯
   const onClickAddButton = useCallback(
     (e: MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
@@ -97,12 +103,12 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek, generationId }:
           .then((res) => console.log(res))
           .catch((err) => console.log(err));
       } else {
-        // 업로드
+        //
       }
 
       // 제출 이후 모달을 끄는 동작 필요
     },
-    [session, itIssue, csEdu, networking, description],
+    [session, image, generationId, itIssue, csEdu, networking, description],
   );
 
   const closePopUp = useCallback(() => {
@@ -165,7 +171,7 @@ const modalStyle = {
   },
   content: {
     width: '740px',
-    height: '800px',
+    height: '840px',
     marginTop: '10%',
     top: '50%',
     left: '50%',
@@ -174,7 +180,6 @@ const modalStyle = {
     boxShadow: '0px 4px 15px 0px rgba(0, 0, 0, 0.15)',
     display: 'flex',
     justifyContent: 'center',
-    overflow: 'scroll',
   },
 };
 

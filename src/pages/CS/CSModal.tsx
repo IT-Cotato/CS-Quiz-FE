@@ -18,6 +18,13 @@ const CSModal = ({ isOpen, onCloseModal, educatoin }: Props) => {
   const [subject, setSubject] = useState('');
 
   useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
+
+  useEffect(() => {
     if (educatoin) {
       setWeek(`${educatoin.educationNumber}주차 교육`);
       setEducationNum(educatoin.educationNumber);
@@ -120,8 +127,7 @@ const modalStyle = {
   content: {
     width: '740px',
     height: '480px',
-    marginTop: '10%',
-    top: '50%',
+    top: '55%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
     borderRadius: '15px',
