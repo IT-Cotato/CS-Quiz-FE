@@ -3,8 +3,8 @@ import { css, styled } from 'styled-components';
 import arrow_down_thin from '@assets/arrow_dwon_thin.svg';
 import arrow_up_thin from '@assets/arrow_up_thin.svg';
 import fetcher from '@utils/fetcher';
-import useSWR from 'swr';
 import { IGeneration } from '@/typing/db';
+import useSWRImmutable from 'swr/immutable';
 
 interface Props {
   /**
@@ -21,7 +21,7 @@ interface Props {
 
 const GenerationSelect = ({ onChangeGeneration, selectedGeneration }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { data: generationData } = useSWR<IGeneration[]>('/v1/api/generation', fetcher);
+  const { data: generationData } = useSWRImmutable<IGeneration[]>('/v1/api/generation', fetcher);
 
   const generationDropRef = useRef<HTMLDivElement>(null);
 
