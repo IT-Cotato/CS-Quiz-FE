@@ -7,12 +7,19 @@ import GenerationSelect from '@components/GenerationSelect';
 import CSModal from '@pages/CS/CSModal';
 import { IEducation, IGeneration } from '@/typing/db';
 import api from '@/api/api';
+import fetcher from '@utils/fetcher';
+import useSWR from 'swr';
+import { useNavigate } from 'react-router-dom';
 
 const CSHome = () => {
+  const { data: user } = useSWR('/v1/api/member/info', fetcher);
+
   const [educations, setEducations] = useState<undefined | IEducation[]>();
   const [isCSModalOpen, setIsCSModalOpen] = useState(false);
   const [modifyEducation, setModifyEducation] = useState<undefined | IEducation>();
   const [selectedGeneration, setSelectedGeneration] = useState<undefined | IGeneration>();
+
+  const navigate = useNavigate();
 
   const onChangeGeneration = useCallback(
     (generation?: IGeneration) => {
@@ -48,6 +55,10 @@ const CSHome = () => {
   const onCloseModal = useCallback(() => {
     setIsCSModalOpen(false);
   }, []);
+
+  if (!user) {
+    navigate('/');
+  }
 
   return (
     <>

@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { ReactComponent as ModifyIcon } from '@assets/modify_icon.svg';
 import background from '@assets/cs_content_background.svg';
 import { IGeneration, IEducation } from '@/typing/db';
+import useSWR from 'swr';
+import fetcher from '@utils/fetcher';
 
 interface Props {
   education: IEducation;
@@ -12,6 +14,7 @@ interface Props {
 }
 
 const CSContent = ({ education, handleModifyButton, generation }: Props) => {
+  const { data: user } = useSWR('/v1/api/member/info', fetcher);
   const [isHover, setIsHover] = useState(false);
 
   const navigate = useNavigate();
@@ -40,7 +43,7 @@ const CSContent = ({ education, handleModifyButton, generation }: Props) => {
     >
       <ContentWeek>{`${education.educationNumber}주차 문제`}</ContentWeek>
       <ContentTitle>{education.subject}</ContentTitle>
-      {isHover && (
+      {user?.role === 'ADMIN' && isHover && (
         <HoverContent>
           <ModifyIcon onClick={onClickModifyButton} />
         </HoverContent>
