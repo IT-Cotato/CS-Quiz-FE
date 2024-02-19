@@ -97,7 +97,14 @@ const CSUpload = () => {
     <>
       <Wrapper>
         <TitleBox>
-          <BackButton />
+          <BackButton
+            onClick={() => {
+              const confirm = window.confirm('저장하지 않고 나가면 변경사항이 사라질 수 있어요!');
+              if (confirm) {
+                window.history.back();
+              }
+            }}
+          />
           <h1>CS 문제업로드</h1>
           <p>{`${generationId}기 / ${educationNumber}차 세션`}</p>
         </TitleBox>
