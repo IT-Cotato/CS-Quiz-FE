@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import CSManageLayout from '@pages/CS/manage/CSManageLayout';
 import { css, styled } from 'styled-components';
@@ -24,14 +24,6 @@ const QuizScorer = () => {
 
   useEffect(() => {
     setSubmits(record?.records);
-    setSubmits([
-      {
-        memberId: 1,
-        memberName: 'name',
-        backFourNumber: '1234',
-        reply: '??',
-      },
-    ]);
     setScorer(record?.scorer);
   }, [record]);
 
