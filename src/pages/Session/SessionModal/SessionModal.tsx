@@ -114,7 +114,7 @@ const SessionModal = ({
 
         api
           .patch('v1/api/session/update', formData)
-          .then((res) => {
+          .then(() => {
             fetchSessions(generationId);
             onCloseModal();
           })
@@ -186,7 +186,6 @@ export default SessionModal;
 const modalStyle = {
   overlay: {
     overflow: 'auto',
-    margin: '32px',
   },
   content: {
     width: '740px',
