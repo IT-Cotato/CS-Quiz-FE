@@ -12,7 +12,7 @@ import SignUp from '@pages/JoinUs/SignUp';
 import MyPage from '@pages/MyPage/MyPage';
 import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from '@theme/GlobalStyle';
-import { theme } from '@theme/theme';
+import { theme } from '@theme/Theme';
 import CSManage from '@pages/CS/manage/CSManage';
 import Footer from '@components/Footer';
 import FindID from '@pages/Login/FindID';
@@ -28,6 +28,8 @@ import ReadyState from '@components/ReadyState';
 import NotFound from '@components/NotFound';
 import HomeHeader from '@components/HomeHeader';
 import BgWaiting from '@pages/CS/solving/BgWaiting';
+import QuizScorer from '@pages/CS/manage/scorer/QuizScorer';
+import AllScorer from '@pages/CS/manage/scorer/AllScorer';
 
 function App() {
   const location = useLocation();
@@ -42,7 +44,7 @@ function App() {
 
   if (data) {
     localStorage.setItem('role', data.role);
-    localStorage.setItem('name', data.name);
+    localStorage.setItem('name', data.memberName);
   } else {
     localStorage.removeItem('role');
     localStorage.removeItem('name');
