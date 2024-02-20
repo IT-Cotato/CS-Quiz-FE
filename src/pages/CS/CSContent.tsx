@@ -21,7 +21,7 @@ const CSContent = ({ education, handleModifyButton, generation }: Props) => {
 
   const onclickContent = useCallback(() => {
     navigate(
-      `/cs/start/?generationId=${generation?.generationId}&educationId=${education.educationId}&educationNumber=${education.educationNumber}`,
+      `/cs/start?generationId=${generation?.generationId}&generationNumber=${generation?.generationNumber}&educationId=${education.educationId}&educationNumber=${education.educationNumber}`,
       {
         state: {
           subject: education.subject,
