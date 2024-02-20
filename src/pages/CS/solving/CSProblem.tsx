@@ -12,6 +12,8 @@ import MemberHeader from '@components/MemberHeader';
 import api from '@/api/api';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
+import BgCorrect from './BgCorrect';
+import BgIncorrect from './BgIncorrect';
 
 type Problem = {
   id: number; // 문제의 PK
@@ -85,6 +87,18 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
     }
   }, [quizData]);
 
+  useEffect(() => {
+    // 정답/오답 화면 표시 후 위에 깔리지 않도록 삭제
+    if (showCorrect) {
+      const timeoutId = setTimeout(() => setShowCorrect(false), 2500);
+      return () => clearTimeout(timeoutId);
+    }
+    if (showIncorrect) {
+      const timeoutId = setTimeout(() => setShowIncorrect(false), 2500);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [showCorrect, showIncorrect]);
+
   // 주관식 문제 입력 이벤트
   const onChangeShortAns = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setShortAns(e.target.value);
@@ -92,6 +106,7 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
 
   const nextProblem = () => {
     // 다음 문제로 이동
+    // 아직 다음 문제 안열렸으면 대기 상태로
   };
 
   const submitProblem = () => {
@@ -118,6 +133,11 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
         )
         .then((res) => {
           console.log(res);
+          if (res.data.result === 'true') {
+            setShowCorrect(true);
+          } else {
+            setShowIncorrect(true);
+          }
         })
         .catch((err) => {
           console.error(err);
@@ -191,6 +211,8 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
           <button onClick={submitProblem}>제출하기</button>
         </ButtonContainer>
       </QuizContainer>
+      {showCorrect && <BgCorrect />}
+      {showIncorrect && <BgIncorrect />}
     </Wrapper>
   );
 };
