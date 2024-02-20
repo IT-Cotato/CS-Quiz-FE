@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { styled } from 'styled-components';
 import { ReactComponent as ArrowUp } from '@assets/arrow_up.svg';
 import { ReactComponent as ArrowDown } from '@assets/arrow_down.svg';
@@ -7,18 +7,19 @@ import fetcher from '@utils/fetcher';
 import { ICsOnSession, IEducation } from '@/typing/db';
 
 interface Props {
+  selectetdSession?: ICsOnSession;
+  onChangeSession: (session: ICsOnSession) => void;
   education?: IEducation;
   generationId?: number;
 }
 
-const SessionSelect = ({ education, generationId }: Props) => {
+const SessionSelect = ({ selectetdSession, onChangeSession, education, generationId }: Props) => {
   const { data: sessions } = useSWRImmutable<ICsOnSession[]>(
     `/v1/api/session/cs-on?generationId=${generationId}`,
     fetcher,
   );
 
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedSessoin, setSelectedSession] = useState<ICsOnSession>();
 
   const sessionDropRef = useRef<HTMLDivElement>(null);
 
@@ -32,35 +33,24 @@ const SessionSelect = ({ education, generationId }: Props) => {
     return () => window.removeEventListener('mousedown', handleClick);
   }, [sessionDropRef]);
 
-  const getSessionStr = useCallback(() => {
-    if (!selectedSessoin && !education) {
-      return '세션 주차를 선택하세요.';
-    }
-
-    let num = 0;
-    if (selectedSessoin) {
-      num = selectedSessoin.sessionNumber;
-    } else if (education) {
-      num = education.sessionNumber;
-    }
-
-    return `${num}주차 세션`;
-  }, [selectedSessoin, education]);
-
   return (
     <SessionSelectWrapper ref={sessionDropRef}>
       <SelectMenu
-        selected={selectedSessoin ? 'selected' : 'unselected'}
+        selected={selectetdSession ? 'selected' : 'unselected'}
         isopen={isOpen ? 'open' : 'close'}
         onClick={() => !education && setIsOpen(!isOpen)}
       >
-        <p>{getSessionStr()}</p>
+        <p>
+          {selectetdSession
+            ? `${selectetdSession.sessionNumber}주차 세션`
+            : '세션 주차를 선택하세요'}
+        </p>
         {isOpen ? <ArrowUp /> : <ArrowDown />}
         {isOpen && (
           <SessoinList>
             <ul>
               {sessions?.map((session, index) => (
-                <li key={index} onClick={() => setSelectedSession(session)}>
+                <li key={index} onClick={() => onChangeSession(session)}>
                   {`${session.sessionNumber}주차 세션`}
                 </li>
               ))}

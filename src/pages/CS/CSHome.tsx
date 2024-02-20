@@ -155,7 +155,7 @@ const CSContentsContainer = styled.div`
   align-content: start;
   width: 70%;
   height: 1000px;
-  margin-top: 28px;
+  margin: 28px 0 120px;
 
   @media only screen and (max-width: 957px) {
     justify-content: center;

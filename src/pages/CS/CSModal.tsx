@@ -3,8 +3,9 @@ import styled, { css } from 'styled-components';
 import ReactModal from 'react-modal';
 import { ReactComponent as CloseIcon } from '@assets/close_icon.svg';
 import TextBox from '@components/TextBox';
-import { IEducation } from '@/typing/db';
+import { ICsOnSession, IEducation } from '@/typing/db';
 import SessionSelect from '@components/SessionSelect';
+import api from '@/api/api';
 
 interface Props {
   isOpen: boolean;
@@ -15,13 +16,13 @@ interface Props {
 }
 
 const CSModal = ({ isOpen, onCloseModal, educatoin, generationId, fetchEducations }: Props) => {
-  const [sessionNumber, setSessionNumber] = useState(-1);
+  const [selectedSession, setSelectedSession] = useState<ICsOnSession>();
   const [educationNum, setEducationNum] = useState('');
   const [subject, setSubject] = useState('');
 
   useEffect(() => {
     if (educatoin) {
-      setSessionNumber(educatoin.sessionNumber);
+      setSelectedSession({ sessionId: 0, sessionNumber: educatoin.sessionNumber });
       setEducationNum(`${educatoin.educationNumber}주차 교육`);
       setSubject(educatoin.subject);
     }
@@ -35,6 +36,10 @@ const CSModal = ({ isOpen, onCloseModal, educatoin, generationId, fetchEducation
     setEducationNum('');
     setSubject('');
     document.body.style.overflow = 'unset';
+  }, []);
+
+  const onChangeSession = useCallback((session: ICsOnSession) => {
+    setSelectedSession(session);
   }, []);
 
   const onChangeEducationNum = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -55,16 +60,32 @@ const CSModal = ({ isOpen, onCloseModal, educatoin, generationId, fetchEducation
     (e: MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
       if (!educatoin) {
-        // 업로드 요청
-        console.log('upload');
+        api
+          .post('/v1/api/education/add', {
+            subject: subject,
+            sessionId: selectedSession?.sessionId,
+            educationNum: parseInt(educationNum),
+          })
+          .then(() => {
+            fetchEducations(generationId);
+            onCloseModal();
+          })
+          .catch((err) => console.error(err));
       } else {
-        // 수정 요청
-        console.log('modify');
+        api
+          .patch('/v1/api/education', {
+            educationId: educatoin.educationId,
+            newSubject: subject,
+            newNumber: parseInt(educationNum),
+          })
+          .then(() => {
+            fetchEducations(generationId);
+            onCloseModal();
+          })
+          .catch((err) => console.error(err));
       }
-
-      // 제출 이후 모달을 끄는 동작 필요
     },
-    [educatoin, educationNum, subject],
+    [educatoin, educationNum, subject, selectedSession],
   );
 
   return (
@@ -82,7 +103,12 @@ const CSModal = ({ isOpen, onCloseModal, educatoin, generationId, fetchEducation
           <h3>{!educatoin ? '교육 추가' : '교육 수정'}</h3>
         </Header>
         <BoxContainer>
-          <SessionSelect education={educatoin} generationId={generationId} />
+          <SessionSelect
+            education={educatoin}
+            selectetdSession={selectedSession}
+            onChangeSession={onChangeSession}
+            generationId={generationId}
+          />
           <TextBox
             value={educationNum}
             placeholder="교육 주차를 입력하세요"
