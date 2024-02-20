@@ -27,7 +27,7 @@ const CSMain = () => {
         <h3>COTATO</h3>
         <h1>CS QUIZ</h1>
         <p>{`${generationId}기/ ${educationNumber}차 세션`}</p>
-        <span>AWS</span>
+        <span>{subject}</span>
       </TitleBox>
       <NavBox>
         <StartButton>
