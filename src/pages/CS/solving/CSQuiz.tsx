@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import background from '@assets/bg_waiting.svg';
 import { ReactComponent as Timer } from '@assets/timer.svg';
@@ -153,7 +153,7 @@ const Wrapper = styled.div`
     background-size: cover;
     position: absolute;
     height: 100vh;
-    overflow: auto;
+    overflow: hidden;
     top: 0;
     right: 0;
     left: 0;

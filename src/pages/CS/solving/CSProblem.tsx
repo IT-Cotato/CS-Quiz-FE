@@ -316,7 +316,8 @@ const Wrapper = styled.div`
   height: 100vh;
   position: relative;
   padding-bottom: 40px;
-  overflow: hidden;
+  overflow: auto;
+  overflow-x: hidden;
 `;
 
 const ProgressContainer = styled.div`
