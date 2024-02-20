@@ -87,7 +87,13 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
           console.error(err);
         });
     };
-    fetchData();
+
+    const initializeData = async () => {
+      await setMultiples([]); // 문제 바뀔 때 이전 선지 초기화
+      fetchData();
+    };
+
+    initializeData();
   }, [problemId]); // quizId가 바뀌면 문제 데이터를 다시 불러옴
 
   useEffect(() => {
@@ -97,6 +103,9 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
         setMultiples((prev) => [...prev, item.content]);
       });
     }
+    // 문제 바뀔 때 이전 입력 답안 초기화
+    setShortAns('');
+    setSelectNum(0);
   }, [quizData]);
 
   useEffect(() => {
@@ -315,7 +324,7 @@ const Wrapper = styled.div`
   width: 100%;
   height: 100vh;
   position: relative;
-  padding-bottom: 40px;
+  padding-bottom: 60px;
   overflow: auto;
   overflow-x: hidden;
 `;
