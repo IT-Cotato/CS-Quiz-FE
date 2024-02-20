@@ -2,42 +2,43 @@ import React, { useEffect, useRef, useState } from 'react';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { ko } from 'date-fns/locale';
-import dayjs from 'dayjs';
 import { styled } from 'styled-components';
 
 interface Props {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  dates: Date[] | undefined;
+  setDates: React.Dispatch<React.SetStateAction<Date[] | undefined>>;
 }
 
-const GenerationDayPicker = ({ isOpen, setIsOpen }: Props) => {
-  const [days, setDays] = useState<Date[]>();
+const GenerationDayPicker = ({ isOpen, setIsOpen, dates, setDates }: Props) => {
+  const calendarRef = useRef<HTMLDivElement>(null);
 
-  const calendarRef = useRef(null);
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (calendarRef.current && !calendarRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener('mousedown', handleClick);
+    return () => window.removeEventListener('mousedown', handleClick);
+  }, [calendarRef]);
 
-  // useEffect(() => {
-  //   const handleClick = (e: any) => {
-  //     if (calendarRef.current && !calendarRef.current.contains(e.target)) {
-  //       setIsOpen(false);
-  //     }
-  //   };
-  //   window.addEventListener('mousedown', handleClick);
-  //   return () => window.removeEventListener('mousedown', handleClick);
-  // }, [calendarRef]);
-
-  if (isOpen) {
+  if (!isOpen) {
     return <></>;
   }
 
   return (
-    <StyledDayPicker
-      // ref={calendarRef}
-      locale={ko}
-      mode="multiple"
-      max={2}
-      selected={days}
-      onSelect={setDays}
-    />
+    <div ref={calendarRef}>
+      <StyledDayPicker
+        locale={ko}
+        mode="multiple"
+        max={2}
+        selected={dates}
+        onSelect={setDates}
+        showOutsideDays
+      />
+    </div>
   );
 };
 
