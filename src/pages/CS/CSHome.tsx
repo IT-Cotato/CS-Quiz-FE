@@ -149,7 +149,6 @@ const CSContentsContainer = styled.div`
   flex-direction: row;
   align-content: start;
   width: 70%;
-  height: 1000px;
   margin-top: 28px;
 
   @media only screen and (max-width: 957px) {
