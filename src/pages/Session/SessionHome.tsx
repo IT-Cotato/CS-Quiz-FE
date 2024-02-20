@@ -85,7 +85,7 @@ const SessionHome = () => {
           )}
         </SessionSetting>
         <SessionContentsContainer>
-          {!sessions ? (
+          {sessions?.length === 0 ? (
             <SessionReady>
               <SettingIcon />
               <p>세션 준비중입니다.</p>

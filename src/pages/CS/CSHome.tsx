@@ -76,13 +76,13 @@ const CSHome = () => {
           )}
         </CSSetting>
         <CSContentsContainer>
-          {!educations ? (
+          {educations?.length === 0 ? (
             <CSReady>
               <SettingIcon />
               <p>CS 문제풀이 준비중입니다.</p>
             </CSReady>
           ) : (
-            educations.map((education) => (
+            educations?.map((education) => (
               <CSContent
                 key={education.educationId}
                 education={education}
