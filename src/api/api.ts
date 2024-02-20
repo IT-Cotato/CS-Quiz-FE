@@ -22,6 +22,7 @@ api.interceptors.response.use(
     // 토큰 만료
     if (response.staus === 401) {
       if (response.data.message === 'UNAUTHORIZED') {
+        localStorage.removeItem('token');
         const refreshResponse = await getRefreshToken();
 
         if (response.status === 200) {
