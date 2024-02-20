@@ -110,7 +110,13 @@ const HomeHeader = () => {
         <>
           {MemberMenus()}
           <Profile>
-            <p>{name}</p>
+            <p
+              onClick={() => {
+                navigate('/mypage');
+              }}
+            >
+              {name}
+            </p>
           </Profile>
         </>
       ) : (
@@ -192,6 +198,7 @@ const WindowUl = styled.ul`
   li:first-child {
     margin-right: 80px;
   }
+
   @media screen and (max-width: 960px) {
     li {
       font-size: 14px;
@@ -289,11 +296,13 @@ const Profile = styled.div`
   height: 36px;
   border-radius: 22px;
   background: linear-gradient(180deg, #6e6cfe 0%, rgba(189, 219, 255, 0.69) 100%);
+  cursor: pointer;
   p {
     color: black;
     font-size: 16px;
+    font-weight: 800;
   }
-  margin-top: -8px;
+  margin-top: -6px;
   @media screen and (max-width: 768px) {
     display: none;
   }
