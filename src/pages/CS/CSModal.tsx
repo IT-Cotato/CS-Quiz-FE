@@ -11,14 +11,17 @@ interface Props {
   onCloseModal: () => void;
   educatoin?: IEducation;
   generationId?: number;
+  fetchEducations: (generationId?: number) => void;
 }
 
-const CSModal = ({ isOpen, onCloseModal, educatoin, generationId }: Props) => {
+const CSModal = ({ isOpen, onCloseModal, educatoin, generationId, fetchEducations }: Props) => {
+  const [sessionNumber, setSessionNumber] = useState(-1);
   const [educationNum, setEducationNum] = useState('');
   const [subject, setSubject] = useState('');
 
   useEffect(() => {
     if (educatoin) {
+      setSessionNumber(educatoin.sessionNumber);
       setEducationNum(`${educatoin.educationNumber}주차 교육`);
       setSubject(educatoin.subject);
     }
@@ -79,7 +82,7 @@ const CSModal = ({ isOpen, onCloseModal, educatoin, generationId }: Props) => {
           <h3>{!educatoin ? '교육 추가' : '교육 수정'}</h3>
         </Header>
         <BoxContainer>
-          <SessionSelect generationId={generationId} />
+          <SessionSelect education={educatoin} generationId={generationId} />
           <TextBox
             value={educationNum}
             placeholder="교육 주차를 입력하세요"

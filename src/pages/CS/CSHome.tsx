@@ -26,21 +26,25 @@ const CSHome = () => {
       setSelectedGeneration(generation);
 
       if (generation) {
-        api
-          .get('/v1/api/education', {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-            params: {
-              generationId: generation.generationId,
-            },
-          })
-          .then((res) => setEducations(res.data))
-          .catch((err) => console.error(err));
+        fetchEducations(generation.generationId);
       }
     },
     [selectedGeneration],
   );
+
+  const fetchEducations = useCallback((generationId?: number) => {
+    api
+      .get('/v1/api/education', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        params: {
+          generationId: generationId,
+        },
+      })
+      .then((res) => setEducations(res.data))
+      .catch((err) => console.error(err));
+  }, []);
 
   const onClickAddButton = useCallback(() => {
     setModifyEducation(undefined);
@@ -98,6 +102,7 @@ const CSHome = () => {
         onCloseModal={onCloseModal}
         educatoin={modifyEducation}
         generationId={selectedGeneration?.generationId}
+        fetchEducations={fetchEducations}
       />
     </>
   );
@@ -149,6 +154,7 @@ const CSContentsContainer = styled.div`
   flex-direction: row;
   align-content: start;
   width: 70%;
+  height: 1000px;
   margin-top: 28px;
 
   @media only screen and (max-width: 957px) {
