@@ -584,10 +584,15 @@ const ButtonContainer = styled.div<{ disabled: boolean }>`
   }
   ${(props) =>
     props.disabled &&
-    `button:last-child {
-    background: ${props.theme.color.lightGrey};
-    &:hover {
-      cursor: default;
+    `button:first-child {
+      &:hover {
+        cursor: default;
+      }
+    }
+    button:last-child {
+      background: ${props.theme.color.lightGrey};
+      &:hover {
+        cursor: default;
     }
   }`}
 `;
