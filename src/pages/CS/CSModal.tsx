@@ -18,13 +18,6 @@ const CSModal = ({ isOpen, onCloseModal, educatoin }: Props) => {
   const [subject, setSubject] = useState('');
 
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
-
-  useEffect(() => {
     if (educatoin) {
       setWeek(`${educatoin.educationNumber}주차 교육`);
       setEducationNum(educatoin.educationNumber);
@@ -32,10 +25,15 @@ const CSModal = ({ isOpen, onCloseModal, educatoin }: Props) => {
     }
   }, [educatoin]);
 
-  const cleanInputState = useCallback(() => {
+  const handleAfterOpen = useCallback(() => {
+    document.body.style.overflow = 'hidden';
+  }, []);
+
+  const handleAfterClose = useCallback(() => {
     setWeek('');
     setEducationNum(0);
     setSubject('');
+    document.body.style.overflow = 'unset';
   }, []);
 
   // 로직을 쫌더 엄격하게 가야할듯
@@ -80,7 +78,12 @@ const CSModal = ({ isOpen, onCloseModal, educatoin }: Props) => {
   );
 
   return (
-    <ReactModal isOpen={isOpen} onAfterClose={cleanInputState} style={modalStyle}>
+    <ReactModal
+      isOpen={isOpen}
+      onAfterOpen={handleAfterOpen}
+      onAfterClose={handleAfterClose}
+      style={modalStyle}
+    >
       <ModalWrapper>
         <ModalCloseButton>
           <CloseIcon width="57" height="56" fill="#686868" onClick={onCloseModal} />

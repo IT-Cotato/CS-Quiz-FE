@@ -34,12 +34,12 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek, generationId }:
     return `${week}주차 세션`;
   }, []);
 
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
+  // useEffect(() => {
+  //   document.body.style.overflow = 'hidden';
+  //   return () => {
+  //     document.body.style.overflow = 'unset';
+  //   };
+  // }, []);
 
   useEffect(() => {
     if (session) {
@@ -53,13 +53,18 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek, generationId }:
     }
   }, [session, lastWeek]);
 
-  const cleanInputState = useCallback(() => {
+  const handleAfterOpen = useCallback(() => {
+    document.body.style.overflow = 'hidden';
+  }, []);
+
+  const handelAfterClose = useCallback(() => {
     setTitle('');
     setImage(null);
     setItIssue(true);
     setCsEdu(true);
     setNetworking(false);
     setDescription('');
+    document.body.style.overflow = 'unset';
   }, []);
 
   const onChangeItNews = useCallback(() => {
@@ -116,7 +121,12 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek, generationId }:
   }, []);
 
   return (
-    <ReactModal isOpen={isOpen} onAfterClose={cleanInputState} style={modalStyle}>
+    <ReactModal
+      isOpen={isOpen}
+      onAfterOpen={handleAfterOpen}
+      onAfterClose={handelAfterClose}
+      style={modalStyle}
+    >
       <ModalWrapper>
         <ModalCloseButton>
           <CloseIcon width="57" height="56" fill="#686868" onClick={onCloseModal} />
