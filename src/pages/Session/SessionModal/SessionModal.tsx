@@ -15,9 +15,17 @@ interface Props {
   session?: ISession;
   lastWeek: number;
   generationId?: number;
+  fetchSessions: (generationId?: number) => void;
 }
 
-const SessionModal = ({ isOpen, onCloseModal, session, lastWeek, generationId }: Props) => {
+const SessionModal = ({
+  isOpen,
+  onCloseModal,
+  session,
+  lastWeek,
+  generationId,
+  fetchSessions,
+}: Props) => {
   const [title, setTitle] = useState('');
   const [image, setImage] = useState<Blob | null>(null);
   const [itIssue, setItIssue] = useState(true);
@@ -79,33 +87,39 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek, generationId }:
   const onClickDeleteButton = useCallback((e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
   }, []);
-
+  console.log(session?.sessionId.toString());
   const onClickAddButton = useCallback(
     (e: MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
+
+      const formData = new FormData();
+      if (image) formData.append('sessionImage', image);
+      formData.append('description', description);
+      formData.append('ItIssue', itIssue ? 'IT_ON' : 'IT_OFF');
+      formData.append('Networking', networking ? 'NW_ON' : 'NW_OFF');
+      formData.append('CsEducation', csEdu ? 'CS_ON' : 'CS_OFF');
+
       if (!session) {
-        const formData = new FormData();
-        if (image) formData.append('sessionImage', image);
         if (generationId) formData.append('generationId', generationId.toString());
-        formData.append('description', description);
-        formData.append('ItIssue', itIssue ? 'IT_ON' : 'IT_OFF');
-        formData.append('Networking', networking ? 'NW_ON' : 'NW_OFF');
-        formData.append('CsEducation', csEdu ? 'CS_ON' : 'CS_OFF');
-        console.log(csEdu);
 
         api
-          .post('/v1/api/session/add', formData, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
+          .post('/v1/api/session/add', formData)
+          .then(() => {
+            fetchSessions(generationId);
+            onCloseModal();
           })
-          .then((res) => console.log(res))
           .catch((err) => console.log(err));
       } else {
-        //
-      }
+        formData.append('sessionId', session.sessionId.toString());
 
-      // 제출 이후 모달을 끄는 동작 필요
+        api
+          .patch('v1/api/session/update', formData)
+          .then((res) => {
+            fetchSessions(generationId);
+            onCloseModal();
+          })
+          .catch((err) => console.error(err));
+      }
     },
     [session, image, generationId, itIssue, csEdu, networking, description],
   );
@@ -172,10 +186,11 @@ export default SessionModal;
 const modalStyle = {
   overlay: {
     overflow: 'auto',
+    margin: '32px',
   },
   content: {
     width: '740px',
-    height: '840px',
+    height: '800px',
     marginTop: '10%',
     top: '50%',
     left: '50%',
