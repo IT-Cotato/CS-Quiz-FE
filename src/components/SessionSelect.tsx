@@ -4,19 +4,20 @@ import { ReactComponent as ArrowUp } from '@assets/arrow_up.svg';
 import { ReactComponent as ArrowDown } from '@assets/arrow_down.svg';
 import useSWRImmutable from 'swr/immutable';
 import fetcher from '@utils/fetcher';
+import { ICsOnSession } from '@/typing/db';
 
 interface Props {
   generationId?: number;
 }
 
 const SessionSelect = ({ generationId }: Props) => {
-  const { data: sessions } = useSWRImmutable(
+  const { data: sessions } = useSWRImmutable<ICsOnSession[]>(
     `/v1/api/session/cs-on?generationId=${generationId}`,
     fetcher,
   );
 
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedSessoin, setSelectedSession] = useState(-1);
+  const [selectedSessoin, setSelectedSession] = useState<ICsOnSession>();
 
   const sessionDropRef = useRef<HTMLDivElement>(null);
 
@@ -33,18 +34,22 @@ const SessionSelect = ({ generationId }: Props) => {
   return (
     <SessionSelectWrapper ref={sessionDropRef}>
       <SelectMenu
-        selected={selectedSessoin !== -1 ? 'selected' : 'unselected'}
+        selected={selectedSessoin ? 'selected' : 'unselected'}
         isopen={isOpen ? 'open' : 'close'}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <p>{selectedSessoin === -1 ? '세션 주차를 선택하세요.' : `${selectedSessoin}주차 세션`}</p>
+        <p>
+          {!selectedSessoin
+            ? '세션 주차를 선택하세요.'
+            : `${selectedSessoin.sessionNumber}주차 세션`}
+        </p>
         {isOpen ? <ArrowUp /> : <ArrowDown />}
         {isOpen && (
           <SessoinList>
             <ul>
-              {sessions.map((session: any, index: any) => (
+              {sessions?.map((session, index) => (
                 <li key={index} onClick={() => setSelectedSession(session)}>
-                  {`${session}주차 세션`}
+                  {`${session.sessionNumber}주차 세션`}
                 </li>
               ))}
             </ul>
@@ -101,6 +106,7 @@ const SessoinList = styled.div`
   top: 60px;
   left: 0;
   width: 100%;
+  min-height: 40px;
   flex-shrink: 0;
   border-radius: 10px;
   border: 1px solid #7b7b7b;
