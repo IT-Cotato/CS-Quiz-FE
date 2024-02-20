@@ -20,9 +20,8 @@ api.interceptors.response.use(
     const { config, response } = error;
 
     // 토큰 만료
-    if (response.staus === 401) {
-      if (response.data.message === 'UNAUTHORIZED') {
-        localStorage.removeItem('token');
+    if (response.status === 401) {
+      if (response.data.status === 'UNAUTHORIZED') {
         const refreshResponse = await getRefreshToken();
 
         if (response.status === 200) {
@@ -32,6 +31,7 @@ api.interceptors.response.use(
           config.headers.Authorization = `Bearer ${newToken}`;
           return axios(config);
         } else {
+          localStorage.removeItem('token');
           window.location.replace('/');
         }
       }
