@@ -14,6 +14,7 @@ import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import BgCorrect from './BgCorrect';
 import BgIncorrect from './BgIncorrect';
+import BgWaiting from './BgWaiting';
 
 type Problem = {
   id: number; // 문제의 PK
@@ -55,8 +56,19 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
   const [showCorrect, setShowCorrect] = useState(false);
   const [showIncorrect, setShowIncorrect] = useState(false);
   const [showExplaination, setShowExplaination] = useState(false);
+  const [returnToWaiting, setReturnToWaiting] = useState(false);
 
   const inputRef = useRef<any>();
+
+  // 최초 마운트 이후부터 문제 변경을 감지하여 다음 문제 보여주기
+  const mountRef = useRef(false);
+  useEffect(() => {
+    if (!mountRef.current) {
+      mountRef.current = true;
+    } else {
+      setReturnToWaiting(false);
+    }
+  }, [problemId]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -135,6 +147,10 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
           console.log(res);
           if (res.data.result === 'true') {
             setShowCorrect(true);
+            if (submitAllowed) {
+              // 정답인데 아직 문제가 닫히지 않은 경우 대기화면으로 보냄
+              setTimeout(() => setReturnToWaiting(true), 2500);
+            }
           } else {
             setShowIncorrect(true);
           }
@@ -213,6 +229,7 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
       </QuizContainer>
       {showCorrect && <BgCorrect />}
       {showIncorrect && <BgIncorrect />}
+      {returnToWaiting && <BgWaiting />}
     </Wrapper>
   );
 };
@@ -293,9 +310,10 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
+  height: 100vh;
   position: relative;
   padding-bottom: 40px;
-  overflow: auto;
+  overflow: hidden;
 `;
 
 const ProgressContainer = styled.div`
