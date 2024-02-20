@@ -119,6 +119,9 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
   const nextProblem = () => {
     // 다음 문제로 이동
     // 아직 다음 문제 안열렸으면 대기 상태로
+    if (submitAllowed) {
+      setReturnToWaiting(true);
+    }
   };
 
   const submitProblem = () => {
