@@ -47,6 +47,14 @@ const Image = styled.img<EllipseProps>`
       transform: translateY(0);
     }
   }
+  @media screen and (max-width: 768px) {
+    top: ${(props) =>
+      parseInt((props.top as string).split('px')[0]) -
+      parseInt((props.top as string).split('px')[0]) * 0.2 +
+      150}px;
+    width: ${(props) => parseInt((props.width as string).split('px')[0]) / 2}px;
+    height: ${(props) => parseInt((props.height as string).split('px')[0]) / 2}px;
+  }
 `;
 
 export default Ellipse;
