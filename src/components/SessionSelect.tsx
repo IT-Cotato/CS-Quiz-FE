@@ -2,10 +2,19 @@ import React, { useEffect, useRef, useState } from 'react';
 import { styled } from 'styled-components';
 import { ReactComponent as ArrowUp } from '@assets/arrow_up.svg';
 import { ReactComponent as ArrowDown } from '@assets/arrow_down.svg';
+import useSWRImmutable from 'swr/immutable';
+import fetcher from '@utils/fetcher';
 
-const sessionData = [1, 2, 3];
+interface Props {
+  generationId?: number;
+}
 
-const SessionSelect = () => {
+const SessionSelect = ({ generationId }: Props) => {
+  const { data: sessions } = useSWRImmutable(
+    `/v1/api/session/cs-on?generationId=${generationId}`,
+    fetcher,
+  );
+
   const [isOpen, setIsOpen] = useState(false);
   const [selectedSessoin, setSelectedSession] = useState(-1);
 
@@ -33,7 +42,7 @@ const SessionSelect = () => {
         {isOpen && (
           <SessoinList>
             <ul>
-              {sessionData.map((session, index) => (
+              {sessions.map((session: any, index: any) => (
                 <li key={index} onClick={() => setSelectedSession(session)}>
                   {`${session}주차 세션`}
                 </li>

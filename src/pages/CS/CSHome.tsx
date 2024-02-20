@@ -93,7 +93,12 @@ const CSHome = () => {
           )}
         </CSContentsContainer>
       </CSWrapper>
-      <CSModal isOpen={isCSModalOpen} onCloseModal={onCloseModal} educatoin={modifyEducation} />
+      <CSModal
+        isOpen={isCSModalOpen}
+        onCloseModal={onCloseModal}
+        educatoin={modifyEducation}
+        generationId={selectedGeneration?.generationId}
+      />
     </>
   );
 };

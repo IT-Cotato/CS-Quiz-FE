@@ -10,17 +10,16 @@ interface Props {
   isOpen: boolean;
   onCloseModal: () => void;
   educatoin?: IEducation;
+  generationId?: number;
 }
 
-const CSModal = ({ isOpen, onCloseModal, educatoin }: Props) => {
-  const [week, setWeek] = useState('');
-  const [educationNum, setEducationNum] = useState(0);
+const CSModal = ({ isOpen, onCloseModal, educatoin, generationId }: Props) => {
+  const [educationNum, setEducationNum] = useState('');
   const [subject, setSubject] = useState('');
 
   useEffect(() => {
     if (educatoin) {
-      setWeek(`${educatoin.educationNumber}주차 교육`);
-      setEducationNum(educatoin.educationNumber);
+      setEducationNum(`${educatoin.educationNumber}주차 교육`);
       setSubject(educatoin.subject);
     }
   }, [educatoin]);
@@ -30,26 +29,14 @@ const CSModal = ({ isOpen, onCloseModal, educatoin }: Props) => {
   }, []);
 
   const handleAfterClose = useCallback(() => {
-    setWeek('');
-    setEducationNum(0);
+    setEducationNum('');
     setSubject('');
     document.body.style.overflow = 'unset';
   }, []);
 
-  // 로직을 쫌더 엄격하게 가야할듯
-  const onChangeWeek = useCallback(
-    (e: ChangeEvent<HTMLTextAreaElement>) => {
-      const num = parseInt(e.target.value);
-
-      if (num && num !== educationNum) {
-        setEducationNum(num);
-        setWeek(`${num}주차 교육`);
-      } else {
-        setWeek(e.target.value);
-      }
-    },
-    [week],
-  );
+  const onChangeEducationNum = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
+    setEducationNum(e.target.value);
+  }, []);
 
   const onChangeSubject = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
     setSubject(e.target.value);
@@ -74,7 +61,7 @@ const CSModal = ({ isOpen, onCloseModal, educatoin }: Props) => {
 
       // 제출 이후 모달을 끄는 동작 필요
     },
-    [educatoin, week, educationNum, subject],
+    [educatoin, educationNum, subject],
   );
 
   return (
@@ -92,11 +79,11 @@ const CSModal = ({ isOpen, onCloseModal, educatoin }: Props) => {
           <h3>{!educatoin ? '교육 추가' : '교육 수정'}</h3>
         </Header>
         <BoxContainer>
-          <SessionSelect />
+          <SessionSelect generationId={generationId} />
           <TextBox
-            value={week}
+            value={educationNum}
             placeholder="교육 주차를 입력하세요"
-            onChange={onChangeWeek}
+            onChange={onChangeEducationNum}
             height="60px"
           />
           <TextBox
