@@ -87,7 +87,7 @@ const SessionModal = ({
   const onClickDeleteButton = useCallback((e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
   }, []);
-  console.log(session?.sessionId.toString());
+
   const onClickAddButton = useCallback(
     (e: MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
