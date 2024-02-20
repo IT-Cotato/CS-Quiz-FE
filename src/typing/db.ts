@@ -118,9 +118,9 @@ export interface IKingMember {
   backFourNumber: string;
 }
 
-export interface IGeneralUser {
-  id: number;
-  name: string;
+export interface IApplyMember {
+  memberId: number;
+  memberName: string;
   backFourNumber: string;
 }
 
@@ -129,4 +129,13 @@ export interface IEnrollMember {
   name: string;
   position: string;
   generationNumber: number;
+}
+
+export interface IMyPageInfo {
+  memberId: number;
+  email: string;
+  name: string;
+  generationNumber: number;
+  memberPosition: string;
+  phoneNumber: string;
 }
