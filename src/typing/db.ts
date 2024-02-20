@@ -104,6 +104,20 @@ export interface IQuizAdminScorer {
   backFourNumber: string;
 }
 
+export interface IQuizAllScorer {
+  quizId: number;
+  quizNumber: number;
+  scorerId: number;
+  scorerName: string;
+  backFourNumber: string;
+}
+
+export interface IKingMember {
+  memberId: number;
+  memberName: string;
+  backFourNumber: string;
+}
+
 export interface IGeneralUser {
   id: number;
   name: string;
