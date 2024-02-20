@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '@assets/logo.svg';
@@ -19,6 +19,10 @@ const MemberHeader: React.FC<MemberHeaderProps> = ({ showHeader, setShowHeader }
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    console.log(data);
+  }, []);
+
   return (
     <Wrapper>
       <Logo src={logo} onClick={() => window.location.replace('/')} style={{ cursor: 'pointer' }} />
@@ -31,7 +35,7 @@ const MemberHeader: React.FC<MemberHeaderProps> = ({ showHeader, setShowHeader }
       </MenuSection>
       <MyInfo>
         <img src="https://raw.githubusercontent.com/MinJaeSon/assets/f29298dfeed8daa40622f7d9568a0421f5183756/potato.svg" />
-        <p onClick={() => navigate('mypage')}>{data.name}</p>
+        <p onClick={() => navigate('mypage')}>{data?.memberName}</p>
       </MyInfo>
     </Wrapper>
   );
