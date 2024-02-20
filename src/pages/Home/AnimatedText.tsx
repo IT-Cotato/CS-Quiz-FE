@@ -60,6 +60,8 @@ const AnimatedText = () => {
   }
   let correctionValue = [0, 0];
 
+  let correctionValue = [0, 0, 0];
+
   useEffect(() => {
     if (charORef.current) {
       // 높은 해상도에 대한 보정치 처리 추후 보강 필요
