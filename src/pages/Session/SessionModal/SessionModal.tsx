@@ -34,13 +34,6 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek, generationId }:
     return `${week}주차 세션`;
   }, []);
 
-  // useEffect(() => {
-  //   document.body.style.overflow = 'hidden';
-  //   return () => {
-  //     document.body.style.overflow = 'unset';
-  //   };
-  // }, []);
-
   useEffect(() => {
     if (session) {
       setTitle(getTitle(session.sessionNumber));
@@ -97,7 +90,8 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek, generationId }:
         formData.append('description', description);
         formData.append('ItIssue', itIssue ? 'IT_ON' : 'IT_OFF');
         formData.append('Networking', networking ? 'NW_ON' : 'NW_OFF');
-        formData.append('CSEducation', csEdu ? 'CS_ON' : 'CS_OFF');
+        formData.append('CsEducation', csEdu ? 'CS_ON' : 'CS_OFF');
+        console.log(csEdu);
 
         api
           .post('/v1/api/session/add', formData, {
