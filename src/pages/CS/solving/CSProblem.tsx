@@ -1,299 +1,153 @@
-import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import styled from 'styled-components';
-import defaultImg from '@assets/cotato_icon.png';
+import bigger from '@assets/expand.svg';
+import smaller from '@assets/compress.svg';
 import { ReactComponent as LightBulb } from '@assets/light.svg';
 import light from '@assets/light_on.svg';
 import bubble1 from '@assets/bubble_1.svg';
 import bubble2 from '@assets/bubble_2.svg';
 import bubble3 from '@assets/bubble_3.svg';
-import bigger from '@assets/expand.svg';
-import smaller from '@assets/compress.svg';
-import BgCorrect from '@pages/CS/solving/BgCorrect';
-import BgIncorrect from '@pages/CS/solving/BgIncorrect';
-import BgWaiting from './BgWaiting';
+import explaination from '@assets/explaination.svg';
 import MemberHeader from '@components/MemberHeader';
-
-// 전체 문제 데이터(res) 받아와서 한 번만 까서 일단 문제 리스트에 다 넣기
-// problems.push(res.multiples)
-// problems.push(res.shortQuizzes)
-// number 기준으로 1번 문제부터 오름차순 정렬
-// map으로 1번부터 10번까지 문제 뿌려주기
+import api from '@/api/api';
+import useSWR from 'swr';
+import fetcher from '@utils/fetcher';
 
 type Problem = {
-  number: number;
-  type: string;
-  question: string;
-  image?: string;
-  multiple?: Choices[];
-  shortAnswer?: ShortAnswer[];
+  id: number; // 문제의 PK
+  number: number; // 문제 번호
+  type: string; // 문제 유형 (객관식 or 주관식)
+  question: string; // 문제 내용
+  image?: string; // 문제 이미지 url
+  choices?: Choices[]; // 객관식 선지
+  shortAnswers?: [] | null; // 주관식 정답
 };
 
 type Choices = {
-  choiceNum: number;
-  choice: string;
-  isAnswer: string;
+  choiceId: number; // 객관식 선지의 PK
+  number: number; // 객관식 선지 번호
+  content: string; // 객관식 선지 내용
+  isAnswer?: string | null; // 해당 선지의 정답 여부
 };
 
-type ShortAnswer = {
-  answer: string;
-};
+interface CSProblemProps {
+  quizId: number | null;
+  submitAllowed: boolean;
+  problemId: number;
+}
 
-const CSProblem = () => {
-  const [index, setIndex] = useState(0);
-  const [chose, setChose] = useState(0);
-  const [multiples, setMultiples] = useState<number[]>([]);
+const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId }) => {
+  const { data, error, isLoading, mutate } = useSWR('/v1/api/member/info', fetcher);
+  if (data) {
+    console.log(data);
+  } else {
+    console.log('data is undefined');
+  }
+
+  const [showHeader, setShowHeader] = useState(false);
+  const [quizData, setQuizData] = useState<Problem | undefined>();
+  const [multiples, setMultiples] = useState<string[]>([]); // 객관식 선지의 내용 리스트
+  const [biggerImg, setBiggerImg] = useState(false);
+  const [selectNum, setSelectNum] = useState(0);
   const [shortAns, setShortAns] = useState('');
-
-  const [showWaiting, setShowWaiting] = useState(false);
   const [showCorrect, setShowCorrect] = useState(false);
   const [showIncorrect, setShowIncorrect] = useState(false);
-
-  const [biggerImg, setBiggerImg] = useState(false);
-
-  const [isDirect, setIsDirect] = useState(false);
+  const [showExplaination, setShowExplaination] = useState(false);
 
   const inputRef = useRef<any>();
 
-  const [isHoverOnLight, setIsHoverOnLight] = useState(false);
+  useEffect(() => {
+    const fetchData = async () => {
+      await api
+        .get(`/v1/api/quiz/${quizId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        })
+        .then((res) => {
+          setQuizData(res.data);
+          console.log(res.data);
+          console.log(multiples);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    };
+    fetchData();
+  }, [problemId]); // quizId가 바뀌면 문제 데이터를 다시 불러옴
 
-  const [showHeader, setShowHeader] = useState(false);
-  const [animation, setAnimation] = useState('');
-
-  const propsForMemberHeader = {
-    showHeader,
-    setShowHeader,
-  };
-
-  window.addEventListener('mousemove', (e) => {
-    // console.log(e.clientY);
-    if (e.clientY < 150) {
-      setShowHeader(true);
-    } else {
-      // setAnimation('slide_up 0.3s ease-in-out;');
-      setShowHeader(false);
-    }
-  });
-
-  const problems: Problem[] = [
-    {
-      number: 1,
-      type: 'MULTIPLE_QUIZ',
-      question: '다음 중 웹 서버의 종류가 아닌 것은?',
-      image: defaultImg,
-      multiple: [
-        {
-          choiceNum: 1,
-          choice: 'Apache',
-          isAnswer: 'ANSWER',
-        },
-        {
-          choiceNum: 2,
-          choice: 'Nginx',
-          isAnswer: 'NO_ANSWER',
-        },
-        {
-          choiceNum: 3,
-          choice: 'IIS',
-          isAnswer: 'NO_ANSWER',
-        },
-        {
-          choiceNum: 4,
-          choice: 'Tomcat',
-          isAnswer: 'ANSWER',
-        },
-      ],
-    },
-    {
-      number: 2,
-      type: 'SHORT_QUIZ',
-      question: 'CS 플젝 프론트엔드는?',
-      image: defaultImg,
-      shortAnswer: [
-        {
-          answer: '손민재',
-        },
-        {
-          answer: '조원영',
-        },
-        {
-          answer: '황동현',
-        },
-      ],
-    },
-    {
-      number: 3,
-      type: 'MULTIPLE_QUIZ',
-      question: 'CS플젝 마감 일자를 고르시오.',
-      multiple: [
-        {
-          choiceNum: 1,
-          choice: '1월 31일',
-          isAnswer: 'NO_ANSWER',
-        },
-        {
-          choiceNum: 2,
-          choice: '2월 16일',
-          isAnswer: 'ANSWER',
-        },
-        {
-          choiceNum: 3,
-          choice: '2월 23일',
-          isAnswer: 'NO_ANSWER',
-        },
-        {
-          choiceNum: 4,
-          choice: '2월 29일',
-          isAnswer: 'NO_ANSWER',
-        },
-      ],
-    },
-    {
-      number: 4,
-      type: 'MULTIPLE_QUIZ',
-      question: 'CS플젝 마감 일자를 고르시오.',
-      multiple: [
-        {
-          choiceNum: 1,
-          choice: '1월 31일',
-          isAnswer: 'NO_ANSWER',
-        },
-        {
-          choiceNum: 2,
-          choice: '2월 16일',
-          isAnswer: 'ANSWER',
-        },
-        {
-          choiceNum: 3,
-          choice: '2월 23일',
-          isAnswer: 'NO_ANSWER',
-        },
-        {
-          choiceNum: 4,
-          choice: '2월 29일',
-          isAnswer: 'NO_ANSWER',
-        },
-      ],
-    },
-  ];
-
-  // 전체 문제의 정답 배열 생성
-  const answers: (number[] | string[])[] = []; // [[1, 4], ['손민재', '조원영', '황동현'], ...]
-
-  problems.forEach((el) => {
-    if (el.multiple) {
-      const multipleAnswers: number[] = [];
-      el.multiple.forEach((num) => {
-        if (num.isAnswer === 'ANSWER') {
-          multipleAnswers.push(num.choiceNum);
-        }
+  useEffect(() => {
+    // 객관식 선지의 내용을 리스트에 담기 (quizData가 업데이트된 후에 선지 내용 설정)
+    if (quizData?.choices) {
+      quizData.choices.forEach((item) => {
+        setMultiples((prev) => [...prev, item.content]);
       });
-      answers.push(multipleAnswers);
-    } else if (el.shortAnswer) {
-      const shortAnswers: string[] = [];
-      el.shortAnswer.forEach((ans) => {
-        shortAnswers.push(ans.answer);
-      });
-      answers.push(shortAnswers);
     }
-  });
-
-  // 객관식 문제의 선지 배열 생성
-  const choices: string[][] = []; // [['Apache', 'Nginx', 'IIS', 'Tomcat'], ...]]
-
-  problems.forEach((el) => {
-    if (el.multiple) {
-      const eachChoices: string[] = [];
-      el.multiple.forEach((ch) => {
-        eachChoices.push(ch.choice);
-      });
-      choices.push(eachChoices);
-    } else {
-      choices.push([]);
-    }
-  });
+  }, [quizData]);
 
   // 주관식 문제 입력 이벤트
   const onChangeShortAns = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setShortAns(e.target.value);
   }, []);
 
-  // 다음문제 클릭 이벤트
   const nextProblem = () => {
-    setChose(0);
-    setMultiples([]);
-    setIsDirect(true);
-    setShowWaiting(true);
-    setTimeout(() => {
-      if (index < 9) {
-        setIndex(index + 1);
-        setIsDirect(false);
-      }
-      window.scrollTo(0, 0);
-    }, 4000);
-    console.log(choices);
-    console.log(answers);
+    // 다음 문제로 이동
   };
 
-  // 제출하기 클릭 이벤트
-  const sumbitProblem = () => {
-    if (problems[index].multiple) {
-      if (multiples.length === 0) {
-        alert('답을 선택한 후 제출해주세요.');
-      } else if (JSON.stringify(multiples) !== JSON.stringify(answers[index])) {
-        setShowIncorrect(true);
-        setShowCorrect(false);
-      } else {
-        setShowCorrect(true);
-        setShowIncorrect(false);
-        nextProblem();
-      }
-      console.log(answers);
-      console.log(chose);
-    } else if (problems[index].shortAnswer) {
-      if (!shortAns) {
-        alert('답을 입력한 후 제출해주세요.');
-      } else if (!(answers[index] as string[]).includes(shortAns)) {
-        setShowIncorrect(true);
-        setShowCorrect(false);
-      } else {
-        setShowCorrect(true);
-        setShowIncorrect(false);
-        nextProblem();
-      }
-      console.log(shortAns);
+  const submitProblem = () => {
+    // 문제 제출하기
+    const input = quizData?.choices ? selectNum.toString() : shortAns;
+
+    if (!data) {
+      console.log('data is not loaded yet');
+      return; // data가 undefined라면(아직 불러와지지 않았다면) 함수 종료
+    } else {
+      api
+        .post(
+          '/v1/api/record/reply',
+          {
+            quizId: quizId,
+            memberId: data.memberId,
+            input: input,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          },
+        )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.error(err);
+          console.log(quizId, data.memberId, input);
+          if (err.response.status === 400) {
+            alert('아직 제출 기한이 아닙니다.');
+          }
+        });
     }
   };
 
-  useEffect(() => {
-    console.log(multiples);
-    if (showIncorrect) {
-      const timeoutId = setTimeout(() => setShowIncorrect(false), 2000);
-      return () => clearTimeout(timeoutId); // 컴포넌트가 언마운트되면 setTimeout 취소
-    }
-    if (showCorrect) {
-      const timeoutId = setTimeout(() => setShowCorrect(false), 2000);
-      return () => clearTimeout(timeoutId);
-    }
-    if (showWaiting) {
-      const timeoutId = setTimeout(() => setShowWaiting(false), 8000);
-      return () => clearTimeout(timeoutId);
-    }
-  }, [showIncorrect, showCorrect, showWaiting, multiples]);
+  const propsForMemberHeader = {
+    showHeader,
+    setShowHeader,
+  };
 
   return (
     <Wrapper>
       {showHeader ? <MemberHeader {...propsForMemberHeader} /> : null}
       <ProgressContainer>
-        <ProgressBar progress={(index + 1) * 10} />
+        <ProgressBar progress={(quizData?.number as number) * 10} />
       </ProgressContainer>
       <QuizContainer>
         <QuestionContainer>
-          <p>문제 {problems[index].number}</p>
-          <span>{problems[index].question}</span>
+          <p>문제 {quizData?.number}</p>
+          <span>{quizData?.question}</span>
         </QuestionContainer>
-        {problems[index].image && (
+        {quizData?.image && (
           <ImageContainer bigger={biggerImg}>
-            <Image src={problems[index].image} alt={`문제${problems[index].number}의 이미지`} />
+            <Image src={quizData?.image} alt={`문제${quizData?.number}의 이미지`} />
             <ResizeIcon
               src={biggerImg ? smaller : bigger}
               onClick={() => setBiggerImg(!biggerImg)}
@@ -301,26 +155,31 @@ const CSProblem = () => {
           </ImageContainer>
         )}
         <LightImgContainer>
-          {isHoverOnLight && <div>불이 켜지면 제출!</div>}
-          <LightBulb style={{ width: '28px' }} />
-          <LightOn>
-            <img src={bubble1} alt="bubble 1" />
-            <img src={bubble2} alt="bubble 2" />
-            <img src={bubble3} alt="bubble 3" />
-            <img src={light} alt="light" />
-          </LightOn>
-        </LightImgContainer>
-        {problems[index].multiple && (
-          <Choice
-            chose={chose}
-            setChose={setChose}
-            multiples={multiples}
-            setMultiples={setMultiples}
-            items={choices}
-            index={index}
+          {!submitAllowed && showExplaination && (
+            <Explaination>
+              불이 켜지면
+              <br />
+              제출!
+            </Explaination>
+          )}
+          <LightBulb
+            style={{ width: '28px' }}
+            onMouseEnter={() => setShowExplaination(true)}
+            onMouseLeave={() => setShowExplaination(false)}
           />
+          {submitAllowed && (
+            <LightOn>
+              <img src={bubble1} alt="bubble 1" />
+              <img src={bubble2} alt="bubble 2" />
+              <img src={bubble3} alt="bubble 3" />
+              <img src={light} alt="light" />
+            </LightOn>
+          )}
+        </LightImgContainer>
+        {quizData?.choices && (
+          <Choice selectNum={selectNum} setSelectNum={setSelectNum} contents={multiples} />
         )}
-        {problems[index].shortAnswer && (
+        {!quizData?.choices && (
           <ShortAnswer
             shortAns={shortAns}
             onChangeShortAns={onChangeShortAns}
@@ -329,98 +188,53 @@ const CSProblem = () => {
         )}
         <ButtonContainer>
           <button onClick={nextProblem}>다음문제</button>
-          <button onClick={sumbitProblem}>제출하기</button>
+          <button onClick={submitProblem}>제출하기</button>
         </ButtonContainer>
       </QuizContainer>
-      {showWaiting && <BgWaiting directToNext={isDirect} />}
-      {showCorrect && <BgCorrect />}
-      {showIncorrect && <BgIncorrect />}
     </Wrapper>
   );
 };
 
-type ChoiceProps = {
-  clicked?: boolean;
-};
-
-type ResizeProps = {
-  bigger?: boolean;
-};
-
 interface choiceProps {
-  chose: number; // 순간에 선택한 선지의 번호
-  setChose: React.Dispatch<React.SetStateAction<number>>;
-  multiples: number[]; // 최종적으로 선택한 선지의 번호 배열
-  setMultiples: React.Dispatch<React.SetStateAction<number[]>>;
-  items: string[][]; // 선지의 내용들
-  index: number;
+  selectNum: number; // 선택한 선지의 번호
+  setSelectNum: React.Dispatch<React.SetStateAction<number>>;
+  contents: string[]; // 객관식 선지의 내용 리스트
 }
 
-const Choice: React.FC<choiceProps> = ({
-  chose,
-  setChose,
-  multiples,
-  setMultiples,
-  items,
-  index,
-}) => {
+const Choice: React.FC<choiceProps> = ({ selectNum, setSelectNum, contents }) => {
   return (
     <ChoiceContainer>
       <ChoiceBtn
-        clicked={multiples.includes(1)}
+        clicked={selectNum === 1}
         onClick={() => {
-          setChose(1);
-          if (multiples.includes(1) === false) {
-            multiples.push(1);
-          } else {
-            setMultiples(multiples.filter((el) => el !== 1));
-          }
-          console.log(multiples);
+          setSelectNum(1);
         }}
       >
-        {items[index][0]}
+        {contents[0]}
       </ChoiceBtn>
       <ChoiceBtn
-        clicked={multiples.includes(2)}
+        clicked={selectNum === 2}
         onClick={() => {
-          setChose(2);
-          if (multiples.includes(2) === false) {
-            multiples.push(2);
-          } else {
-            setMultiples(multiples.filter((el) => el !== 2));
-          }
-          console.log(multiples);
+          setSelectNum(2);
         }}
       >
-        {items[index][1]}
+        {contents[1]}
       </ChoiceBtn>
       <ChoiceBtn
-        clicked={multiples.includes(3)}
+        clicked={selectNum === 3}
         onClick={() => {
-          setChose(3);
-          if (multiples.includes(3) === false) {
-            multiples.push(3);
-          } else {
-            setMultiples(multiples.filter((el) => el !== 3));
-          }
-          console.log(multiples);
+          setSelectNum(3);
         }}
       >
-        {items[index][2]}
+        {contents[2]}
       </ChoiceBtn>
       <ChoiceBtn
-        clicked={multiples.includes(4)}
+        clicked={selectNum === 4}
         onClick={() => {
-          setChose(4);
-          if (multiples.includes(4) === false) {
-            multiples.push(4);
-          } else {
-            setMultiples(multiples.filter((el) => el !== 4));
-          }
-          console.log(multiples);
+          setSelectNum(4);
         }}
       >
-        {items[index][3]}
+        {contents[3]}
       </ChoiceBtn>
     </ChoiceContainer>
   );
@@ -459,6 +273,7 @@ const Wrapper = styled.div`
   width: 100%;
   position: relative;
   padding-bottom: 40px;
+  overflow: auto;
 `;
 
 const ProgressContainer = styled.div`
@@ -514,7 +329,7 @@ const QuestionContainer = styled.div`
   }
 `;
 
-const ImageContainer = styled.div<ResizeProps>`
+const ImageContainer = styled.div<{ bigger: boolean }>`
   position: relative;
   width: 528px;
   height: 301px;
@@ -558,8 +373,24 @@ const LightImgContainer = styled.div`
   align-items: center;
 `;
 
-const LightOn = styled.div`
+const Explaination = styled.div`
+  background-image: url(${explaination});
   position: absolute;
+  bottom: 20px;
+  font-size: 0.75rem;
+  color: #454545;
+  width: 80px;
+  height: 64px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding-bottom: 10px;
+  margin-bottom: 44px;
+`;
+
+const LightOn = styled.div`
+  position: relative;
   width: 80px;
   height: 82px;
   padding: 0 auto;
@@ -635,7 +466,7 @@ const ChoiceContainer = styled.div`
   align-items: stretch !important;
 `;
 
-const ChoiceBtn = styled.div<ChoiceProps>`
+const ChoiceBtn = styled.div<{ clicked: boolean }>`
   width: 454px;
   min-height: 68px;
   height: fit-content;

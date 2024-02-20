@@ -104,6 +104,7 @@ const Wrapper = styled.div`
 const Form = styled.form`
   display: flex;
   flex-direction: column;
+  align-items: center;
   margin-bottom: 24px;
 `;
 
@@ -130,6 +131,13 @@ const InputBox = styled.div`
     margin-left: 20px;
     margin-right: 8px;
   }
+
+  @media screen and (max-width: 768px) {
+    width: 440px;
+  }
+  @media screen and (max-width: 392px) {
+    width: 340px;
+  }
 `;
 
 const LoginButton = styled.button`
@@ -144,6 +152,13 @@ const LoginButton = styled.button`
   color: #fff;
   &:hover {
     cursor: pointer;
+  }
+
+  @media screen and (max-width: 768px) {
+    width: 440px;
+  }
+  @media screen and (max-width: 392px) {
+    width: 340px;
   }
 `;
 
@@ -161,6 +176,15 @@ const LinkContainer = styled.div`
     margin: 0 8px;
     height: 16px;
   }
+
+  @media screen and (max-width: 768px) {
+    width: 440px;
+  }
+  @media screen and (max-width: 392px) {
+    width: 340px;
+    height: 48px;
+    margin-top: 20px;
+  }
 `;
 
 const StyledLink = styled(Link)`
@@ -168,4 +192,8 @@ const StyledLink = styled(Link)`
   text-align: center;
   text-decoration: none;
   font-size: 0.9rem;
+
+  @media screen and (max-width: 392px) {
+    font-size: 0.8rem;
+  }
 `;

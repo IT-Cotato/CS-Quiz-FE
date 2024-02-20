@@ -12,7 +12,7 @@ import SignUp from '@pages/JoinUs/SignUp';
 import MyPage from '@pages/MyPage/MyPage';
 import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from '@theme/GlobalStyle';
-import { theme } from '@theme/Theme';
+import { theme } from '@theme/theme';
 import CSManage from '@pages/CS/manage/CSManage';
 import Footer from '@components/Footer';
 import FindID from '@pages/Login/FindID';
@@ -27,6 +27,7 @@ import Setting from '@pages/MyPage/setting/Setting';
 import ReadyState from '@components/ReadyState';
 import NotFound from '@components/NotFound';
 import HomeHeader from '@components/HomeHeader';
+import BgWaiting from '@pages/CS/solving/BgWaiting';
 
 function App() {
   const location = useLocation();
@@ -67,8 +68,10 @@ function App() {
               <Route path="/cs" element={<CSHome />} />
               <Route path="/cs/start" element={<CSMain />} />
               <Route path="/cs/upload" element={<CSUpload />} />
+              <Route path="/cs/solving" element={<BgWaiting />} />
               <Route path="/cs/manage/*" element={<CSManage />} />
-              <Route path="/cs/solving" element={<CSProblem />} />
+              <Route path="/cs/quizscorer" element={<QuizScorer />} />
+              <Route path="/cs/allscorer" element={<AllScorer />} />
               <Route path="/session" element={<SessionHome />} />
               <Route path="/login" element={<Login />} />
               <Route path="/findid" element={<FindID />} />
