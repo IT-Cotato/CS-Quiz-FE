@@ -27,6 +27,7 @@ import fetcher from '@utils/fetcher';
 import MemberHeader from '@components/MemberHeader';
 import ReadyState from '@components/ReadyState';
 import NotFound from '@components/NotFound';
+import BgWaiting from '@pages/CS/solving/BgWaiting';
 
 function App() {
   const location = useLocation();
@@ -62,7 +63,7 @@ function App() {
               <Route path="/cs/manage" element={<CSManage />} />
               <Route path="/cs/quizscorer" element={<QuizScorer />} />
               <Route path="/cs/allscorer" element={<AllScorer />} />
-              <Route path="/cs/solving" element={<CSProblem />} />
+              <Route path="/cs/solving" element={<BgWaiting />} />
               <Route path="/session" element={<SessionHome />} />
               <Route path="/login" element={<Login />} />
               <Route path="/findid" element={<FindID />} />
