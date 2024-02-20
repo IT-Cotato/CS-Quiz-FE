@@ -206,7 +206,7 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
             inputRef={inputRef}
           />
         )}
-        <ButtonContainer>
+        <ButtonContainer disabled={!submitAllowed}>
           <button onClick={nextProblem}>다음문제</button>
           <button onClick={submitProblem}>제출하기</button>
         </ButtonContainer>
@@ -523,7 +523,7 @@ const ShortAnswerContainer = styled.div`
   }
 `;
 
-const ButtonContainer = styled.div`
+const ButtonContainer = styled.div<{ disabled: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -551,4 +551,12 @@ const ButtonContainer = styled.div`
       margin-left: 8px;
     }
   }
+  ${(props) =>
+    props.disabled &&
+    `button:last-child {
+    background: ${props.theme.color.lightGrey};
+    &:hover {
+      cursor: default;
+    }
+  }`}
 `;
