@@ -45,6 +45,7 @@ export interface IEducation {
   educationId: number;
   subject: string;
   educationNumber: number;
+  sessionNumber: number;
 }
 
 export interface Multiples {
