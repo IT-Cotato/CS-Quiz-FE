@@ -6,7 +6,7 @@ import HamburgerMenu from './HamburgerMenu';
 
 const HomeHeader = () => {
   const navigate = useNavigate();
-
+  const token = localStorage.getItem('token');
   const role = localStorage.getItem('role');
   const name = localStorage.getItem('name');
 
@@ -106,7 +106,7 @@ const HomeHeader = () => {
         </span>
       </div>
 
-      {role ? (
+      {token ? (
         <>
           {MemberMenus()}
           <Profile>
