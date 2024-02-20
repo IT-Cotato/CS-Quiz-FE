@@ -25,6 +25,11 @@ export interface IGeneration {
   generationNumber: string;
 }
 
+export interface ICsOnSession {
+  sessionId: number;
+  sessionNumber: number;
+}
+
 export interface ISession {
   sessionId: number;
   sessionNumber: number;
