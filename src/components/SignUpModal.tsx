@@ -42,7 +42,7 @@ const Container = styled.div`
     font-family: NanumSquareRound;
     font-size: 1.5rem;
     font-weight: 600;
-    margin-bottom: 0;
+    margin-bottom: 0 !important;
     margin-top: 0;
   }
   p {
