@@ -11,7 +11,10 @@ import api from '@/api/api';
 
 const MyInfo = () => {
   const { data: user } = useSWR('/v1/api/member/info', fetcher);
-  const { data: myInfo } = useSWRImmutable<IMyPageInfo>('v1/api/mypage/info', fetcher);
+  const { data: myInfo } = useSWRImmutable<IMyPageInfo>(
+    `/v1/api/member/${user?.memberId}/mypage`,
+    fetcher,
+  );
 
   const onClickLogout = useCallback(() => {
     api
@@ -39,7 +42,7 @@ const MyInfo = () => {
             <InfoWrapper>
               <p>아이디</p>
               <TextContainer>
-                <p>{myInfo?.memberId}</p>
+                <p>{myInfo?.email}</p>
               </TextContainer>
             </InfoWrapper>
           </IDWrapper>
@@ -55,7 +58,7 @@ const MyInfo = () => {
           <InfoWrapper>
             <p>이름</p>
             <TextContainer>
-              <p>{myInfo?.memberName}</p>
+              <p>{myInfo?.name}</p>
             </TextContainer>
           </InfoWrapper>
           <InfoWrapper>
