@@ -35,8 +35,15 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek, generationId }:
   }, []);
 
   useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
+
+  useEffect(() => {
     if (session) {
-      setTitle(getTitle(session.number));
+      setTitle(getTitle(session.sessionNumber));
       setDescription(session.description);
       setItIssue(session.itIssue === 'IT_ON');
       setNetworking(session.networking === 'NW_ON');
@@ -73,22 +80,16 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek, generationId }:
 
   const onClickDeleteButton = useCallback((e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    console.log('delete');
-    // 삭제 이후 모달을 끄는 동작 필요
   }, []);
 
-  // 기훈이 있을떄 해봐야 할듯
   const onClickAddButton = useCallback(
     (e: MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
       if (!session) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const week = lastWeek + 1;
-
         const formData = new FormData();
         if (image) formData.append('sessionImage', image);
         if (generationId) formData.append('generationId', generationId.toString());
-        formData.append('descriprion', description);
+        formData.append('description', description);
         formData.append('ItIssue', itIssue ? 'IT_ON' : 'IT_OFF');
         formData.append('Networking', networking ? 'NW_ON' : 'NW_OFF');
         formData.append('CSEducation', csEdu ? 'CS_ON' : 'CS_OFF');
@@ -101,17 +102,13 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek, generationId }:
           })
           .then((res) => console.log(res))
           .catch((err) => console.log(err));
-
-        // 업로드 요청
-        console.log('upload');
       } else {
-        // 수정 요청
-        console.log('modify');
+        //
       }
 
       // 제출 이후 모달을 끄는 동작 필요
     },
-    [session, itIssue, csEdu, networking, description],
+    [session, image, generationId, itIssue, csEdu, networking, description],
   );
 
   const closePopUp = useCallback(() => {
@@ -174,7 +171,7 @@ const modalStyle = {
   },
   content: {
     width: '740px',
-    height: '800px',
+    height: '840px',
     marginTop: '10%',
     top: '50%',
     left: '50%',

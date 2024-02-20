@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { ReactComponent as ArrowBack } from '@/assets/arrow_back.svg';
 import { Multiples, ShortQuizzes } from '@/typing/db';
@@ -18,13 +18,25 @@ type QuizType = Multiples | ShortQuizzes;
 const CSUpload = () => {
   const location = useLocation();
   const search = location.search;
-  const generation = search.split('&')[0].split('=')[1];
-  const week = search.split('&')[1].split('=')[1];
+  const [params] = useSearchParams();
+  const generationId = params.get('generationId');
+  const educationId = params.get('educationId');
+  const educationNumber = params.get('educationNumber');
+
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
 
   const fetchData = async () => {
     const response = await axios.get(process.env.REACT_APP_BASE_URL + '/v1/api/quiz/all', {
       params: {
-        educationId: 1,
+        educationId: educationId,
       },
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token'),
@@ -75,13 +87,26 @@ const CSUpload = () => {
   // 현재 선택된 슬라이드를 나타내기 위한 state
   const [selected, setSelected] = useState(0);
 
+  setTimeout(() => {
+    if (!['ADMIN', 'EDUCATION'].includes(localStorage.getItem('role') as string)) {
+      window.location.href = '/';
+    }
+  }, 500);
+
   return (
     <>
       <Wrapper>
         <TitleBox>
-          <BackButton />
+          <BackButton
+            onClick={() => {
+              const confirm = window.confirm('저장하지 않고 나가면 변경사항이 사라질 수 있어요!');
+              if (confirm) {
+                window.history.back();
+              }
+            }}
+          />
           <h1>CS 문제업로드</h1>
-          <p>{`${generation}기 / ${week}차 세션`}</p>
+          <p>{`${generationId}기 / ${educationNumber}차 세션`}</p>
         </TitleBox>
         <Section>
           <Slides quiz={quiz} setQuiz={setQuiz} selected={selected} setSelected={setSelected} />

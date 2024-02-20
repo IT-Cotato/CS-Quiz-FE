@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import CSManageLayout from './CSManageLayout';
+import CSManageLayout from '../CSManageLayout';
 import { css, styled } from 'styled-components';
 
 /*

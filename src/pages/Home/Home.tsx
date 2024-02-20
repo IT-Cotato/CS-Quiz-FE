@@ -16,35 +16,26 @@ const Home = () => {
   return (
     <Wrapper>
       <Ground>
-        <Cursor
+        {/* <Cursor
           imgSrc="https://velog.velcdn.com/images/ea_st_ring/post/fb798aac-3ce7-4de7-8070-7aa91370837b/image.svg"
           top={'90vh'}
           left={'30%'}
           time={1}
           width={'250px'}
-        />
-        <Ellipse top={'-45vh'} left={'-10%'} time={20} delay={0.2} width="600px" height="600px" />
-        <Ellipse top={'70vh'} left={'20%'} time={10} delay={0.4} width="500px" height="500px" />
-        <Ellipse top={'20vh'} left={'50%'} time={5} delay={1} width="100px" height="100px" />
+        /> */}
+        <Ellipse top={'-450px'} left={'-10%'} time={20} delay={0.2} width="600px" height="600px" />
+        <Ellipse top={'600px'} left={'20%'} time={10} delay={0.4} width="500px" height="500px" />
+        <Ellipse top={'200px'} left={'50%'} time={5} delay={1} width="100px" height="100px" />
+        <Ellipse top={'470px'} left={'80%'} time={10} delay={0} width="100px" height="100px" />
         <Ellipse
-          top={'10vh'}
-          left={'60%'}
+          top={'300px'}
+          left={'55%'}
           time={10}
           delay={1.2}
           width="400px"
           height="300px"
           src="https://velog.velcdn.com/images/ea_st_ring/post/f773af96-fb7d-4f5e-8132-db3729bf3e04/image.png"
         />
-        <Ellipse top={'75vh'} left={'80%'} time={10} delay={0} width="100px" height="100px" />
-        <TopDiv>
-          <div>
-            <p>IT 연합동아리 코테이토</p>
-            <span>COTATO</span>
-          </div>
-          <div>
-            <p>Since 2022</p>
-          </div>
-        </TopDiv>
         <TextBox>
           <AnimatedText />
         </TextBox>
@@ -68,27 +59,6 @@ const Ground = styled.div`
   max-width: 100vw;
   min-height: 100%;
   background-color: #0d0d0d;
-`;
-
-const TopDiv = styled.div`
-  display: flex;
-  padding: 10px 50px;
-  justify-content: space-between;
-  width: 100%;
-  z-index: 10;
-  color: #fff;
-  div {
-    z-index: 10;
-  }
-  div:first-child {
-    p {
-      font-size: 16px;
-    }
-    span {
-      font-size: 24px;
-      font-weight: 700;
-    }
-  }
 `;
 
 const TextBox = styled.div`
@@ -158,6 +128,9 @@ const TextBox = styled.div`
   }
   button:hover {
     transform: scale(1.02);
+  }
+  @media screen and (max-width: 768px) {
+    margin-left: 80px;
   }
 `;
 

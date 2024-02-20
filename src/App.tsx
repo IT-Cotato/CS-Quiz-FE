@@ -14,8 +14,6 @@ import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from '@theme/GlobalStyle';
 import { theme } from '@theme/theme';
 import CSManage from '@pages/CS/manage/CSManage';
-import QuizScorer from '@pages/CS/manage/QuizScorer';
-import AllScorer from '@pages/CS/manage/AllScorer';
 import Footer from '@components/Footer';
 import FindID from '@pages/Login/FindID';
 import FindPWProcess from '@pages/Login/FindPWProcess';
@@ -25,8 +23,10 @@ import CSProblem from '@pages/CS/solving/CSProblem';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import MemberHeader from '@components/MemberHeader';
+import Setting from '@pages/MyPage/setting/Setting';
 import ReadyState from '@components/ReadyState';
 import NotFound from '@components/NotFound';
+import HomeHeader from '@components/HomeHeader';
 import BgWaiting from '@pages/CS/solving/BgWaiting';
 
 function App() {
@@ -40,16 +40,24 @@ function App() {
   });
   //location.pathname !== '/cs/solving'
 
+  if (data) {
+    localStorage.setItem('role', data.role);
+    localStorage.setItem('name', data.name);
+  } else {
+    localStorage.removeItem('role');
+    localStorage.removeItem('name');
+  }
+
   return (
     <div className="App">
       <ThemeProvider theme={theme}>
         <GlobalStyle />
         <div className="wrapper">
           <div className="contentWrapper">
-            {['GENERAL', 'MEMBER', 'OLD_MEMBER', 'ADMIN', 'EDUCATION'].includes(data?.role) ? (
-              location.pathname !== '/cs/solving' ? (
-                <MemberHeader />
-              ) : null
+            {location.pathname == '/' ? (
+              <HomeHeader />
+            ) : ['GENERAL', 'MEMBER', 'OLD_MEMBER', 'ADMIN', 'EDUCATION'].includes(data?.role) ? (
+              <MemberHeader />
             ) : (
               <Header />
             )}
@@ -60,16 +68,16 @@ function App() {
               <Route path="/cs" element={<CSHome />} />
               <Route path="/cs/start" element={<CSMain />} />
               <Route path="/cs/upload" element={<CSUpload />} />
-              <Route path="/cs/manage" element={<CSManage />} />
+              <Route path="/cs/solving" element={<BgWaiting />} />
+              <Route path="/cs/manage/*" element={<CSManage />} />
               <Route path="/cs/quizscorer" element={<QuizScorer />} />
               <Route path="/cs/allscorer" element={<AllScorer />} />
-              <Route path="/cs/solving" element={<BgWaiting />} />
               <Route path="/session" element={<SessionHome />} />
               <Route path="/login" element={<Login />} />
               <Route path="/findid" element={<FindID />} />
               <Route path="/findpw" element={<FindPWProcess />} />
               <Route path="/joinus" element={<SignUp />} />
-              <Route path="/mypage" element={<MyPage />} />
+              <Route path="/mypage/*" element={<MyPage />} />
               <Route path="/*" element={<NotFound />} />
             </Routes>
           </div>
