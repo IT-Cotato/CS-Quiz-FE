@@ -15,6 +15,8 @@ import fetcher from '@utils/fetcher';
 import BgCorrect from './BgCorrect';
 import BgIncorrect from './BgIncorrect';
 import BgWaiting from './BgWaiting';
+import BgKingKing from './BgKingKing';
+import { set } from 'date-fns';
 
 type Problem = {
   id: number; // 문제의 PK
@@ -57,6 +59,7 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
   const [showIncorrect, setShowIncorrect] = useState(false);
   const [showExplaination, setShowExplaination] = useState(false);
   const [returnToWaiting, setReturnToWaiting] = useState(false);
+  const [showKingKing, setShowKingKing] = useState(false);
 
   const inputRef = useRef<any>();
 
@@ -119,6 +122,13 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
       return () => clearTimeout(timeoutId);
     }
   }, [showCorrect, showIncorrect]);
+
+  useEffect(() => {
+    if (quizData?.number === 10) {
+      setShowKingKing(true);
+      // setTimeout(() => setShowKingKing(false), 10000);
+    }
+  }, [quizData]);
 
   // 주관식 문제 입력 이벤트
   const onChangeShortAns = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -241,6 +251,7 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
       </QuizContainer>
       {showCorrect && <BgCorrect />}
       {showIncorrect && <BgIncorrect />}
+      {showKingKing && <BgKingKing quizId={quizId} />}
       {returnToWaiting && <BgWaiting />}
     </Wrapper>
   );
