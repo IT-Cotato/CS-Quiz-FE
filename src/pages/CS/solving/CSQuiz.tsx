@@ -6,6 +6,7 @@ import api from '@/api/api';
 import CSProblem from './CSProblem';
 import MemberHeader from '@components/MemberHeader';
 import BgWaiting from './BgWaiting';
+import { useNavigate } from 'react-router-dom';
 
 interface WaitingProps {
   directToNext?: boolean;
@@ -43,6 +44,8 @@ const CSQuiz: React.FC<WaitingProps> = () => {
       setShowHeader(false);
     }
   });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const initializeWebSocket = async () => {
@@ -129,6 +132,8 @@ const CSQuiz: React.FC<WaitingProps> = () => {
           // 전구 활성화, 정답 제출 허용
           setShowProblem(true);
           setAllowSubmit(true);
+        } else if (message.command === 'exit') {
+          navigate('/cs');
         } else {
           console.log('exception error');
         }
