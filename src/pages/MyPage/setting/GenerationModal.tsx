@@ -5,17 +5,30 @@ import { ReactComponent as CloseIcon } from '@assets/close_icon.svg';
 import TextBox from '@components/TextBox';
 import { ReactComponent as CalendarIcon } from '@assets/calendar_icon.svg';
 import GenerationDayPicker from '@pages/MyPage/setting/GenerationDayPicker';
+import dayjs from 'dayjs';
+import api from '@/api/api';
 
 interface Props {
-  isOpen: boolean;
-  onCloseModal: React.Dispatch<React.SetStateAction<boolean>>;
+  modalOpen: boolean;
+  setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const GenerationModal = ({ isOpen, onCloseModal }: Props) => {
+const GenerationModal = ({ modalOpen, setModalOpen }: Props) => {
   const [generation, setGeneration] = useState('');
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [period, setPeriod] = useState('');
+  const [dates, setDates] = useState<Date[] | undefined>([]);
   const [sessionCount, setSessionCount] = useState('');
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+
+  const handleAfterOpen = useCallback(() => {
+    document.body.style.overflow = 'hidden';
+  }, []);
+
+  const handelAfterClose = useCallback(() => {
+    setGeneration('');
+    setDates([]);
+    setSessionCount('');
+    document.body.style.overflow = 'unset';
+  }, []);
 
   const onChageGeneration = useCallback(
     (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -31,18 +44,43 @@ const GenerationModal = ({ isOpen, onCloseModal }: Props) => {
     [sessionCount],
   );
 
-  const cleanInputState = useCallback(() => {
-    setGeneration('');
-    // setDays(undefined);
-    setPeriod('');
-    setSessionCount('');
-  }, []);
+  const getDateStr = useCallback(() => {
+    if (dates && dates.length > 0) {
+      dates.sort((left, right) => left.getTime() - right.getTime());
+
+      const startStr = dayjs(dates[0]).format('YYYY년 MM월 DD일');
+      if (dates.length >= 2) {
+        const endStr = dayjs(dates[1]).format('YYYY년 MM월 DD일');
+        return `${startStr} ~ ${endStr}`;
+      }
+
+      return `${startStr}`;
+    }
+    return '';
+  }, [dates]);
+
+  const onClickUploadButton = useCallback(() => {
+    api
+      .post('v1/api/generation/add', {
+        generationNumber: parseInt(generation),
+        sessionCount: sessionCount,
+        startDate: dates?.at(0),
+        endDate: dates?.at(1),
+      })
+      .then(() => setModalOpen(false))
+      .catch((err) => console.error(err));
+  }, [generation, sessionCount, dates]);
 
   return (
-    <ReactModal isOpen={isOpen} style={modalStyle} onAfterClose={cleanInputState}>
+    <ReactModal
+      isOpen={modalOpen}
+      style={modalStyle}
+      onAfterOpen={handleAfterOpen}
+      onAfterClose={handelAfterClose}
+    >
       <ModalWrapper>
         <ModalCloseButton>
-          <CloseIcon width="36" height="36" fill="#BBBBBB" onClick={() => onCloseModal(false)} />
+          <CloseIcon width="36" height="36" fill="#BBBBBB" onClick={() => setModalOpen(false)} />
         </ModalCloseButton>
         <ModalHeader>
           <h3>기수 추가</h3>
@@ -56,7 +94,7 @@ const GenerationModal = ({ isOpen, onCloseModal }: Props) => {
           />
           <PeriodWrapper>
             <TextBox
-              value={period}
+              value={getDateStr()}
               placeholder="기수의 기간을 설정하세요."
               height="60px"
               readOnly={true}
@@ -73,11 +111,16 @@ const GenerationModal = ({ isOpen, onCloseModal }: Props) => {
           />
         </BoxContainer>
         <ButtonContainer>
-          <UploadButton>
+          <UploadButton onClick={onClickUploadButton}>
             <p>추가하기</p>
           </UploadButton>
         </ButtonContainer>
-        {/* <GenerationDayPicker isOpen={isCalendarOpen} setIsOpen={setIsCalendarOpen} /> */}
+        <GenerationDayPicker
+          isOpen={isCalendarOpen}
+          setIsOpen={setIsCalendarOpen}
+          dates={dates}
+          setDates={setDates}
+        />
       </ModalWrapper>
     </ReactModal>
   );

@@ -1,13 +1,30 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import styled, { css } from 'styled-components';
 import cotato from '@assets/cotato_icon.png';
 import { ReactComponent as ButtonIcon } from '@assets/button_icon.svg';
 import { Link } from 'react-router-dom';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
+import useSWRImmutable from 'swr/immutable';
+import { IMyPageInfo } from '@/typing/db';
+import api from '@/api/api';
 
 const MyInfo = () => {
   const { data: user } = useSWR('/v1/api/member/info', fetcher);
+  const { data: myInfo } = useSWRImmutable<IMyPageInfo>(
+    `/v1/api/member/${user?.memberId}/mypage`,
+    fetcher,
+  );
+
+  const onClickLogout = useCallback(() => {
+    api
+      .post('v1/api/auth/logout')
+      .then(() => {
+        localStorage.clear();
+        window.location.replace('/');
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
   return (
     <FlexBox>
@@ -18,9 +35,6 @@ const MyInfo = () => {
         </MyPageHeader>
         <MyDataHeader>
           <h3>내 정보</h3>
-          <Button color="#bbb">
-            <p>변경하기</p>
-          </Button>
         </MyDataHeader>
         <DataBox>
           <IDWrapper>
@@ -28,14 +42,14 @@ const MyInfo = () => {
             <InfoWrapper>
               <p>아이디</p>
               <TextContainer>
-                <p>cotato</p>
+                <p>{myInfo?.email}</p>
               </TextContainer>
             </InfoWrapper>
           </IDWrapper>
           <InfoWrapper>
             <p>비밀번호</p>
             <TextContainer>
-              <p>*********</p>
+              <p>********</p>
               <Button color="#000">
                 <p>변경</p>
               </Button>
@@ -44,26 +58,25 @@ const MyInfo = () => {
           <InfoWrapper>
             <p>이름</p>
             <TextContainer>
-              <p>감자</p>
-              <p className="name-limit">2/7(공백포함)</p>
+              <p>{myInfo?.name}</p>
             </TextContainer>
           </InfoWrapper>
           <InfoWrapper>
             <p>합격기수</p>
             <TextContainer>
-              <p>8기</p>
+              <p>{myInfo?.generationNumber}기</p>
             </TextContainer>
           </InfoWrapper>
           <InfoWrapper>
             <p>포지션</p>
             <TextContainer>
-              <p>농작물</p>
+              <p>{myInfo?.memberPosition}</p>
             </TextContainer>
           </InfoWrapper>
           <InfoWrapper>
             <p>전화번호</p>
             <TextContainer>
-              <p>010-0101-0101</p>
+              <p>{myInfo?.phoneNumber}</p>
             </TextContainer>
           </InfoWrapper>
         </DataBox>
@@ -96,7 +109,7 @@ const MyInfo = () => {
           </Link>
         </ButtonContainer>
         <LogoutButtonWrapper>
-          <button>
+          <button onClick={onClickLogout}>
             <p>로그아웃</p>
           </button>
         </LogoutButtonWrapper>
@@ -213,15 +226,6 @@ const TextContainer = styled.div`
   > p {
     ${fontStyle};
   }
-
-  > .name-limit {
-    color: #bbb;
-
-    font-family: Pretendard;
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 160%;
-  }
 `;
 
 const IDWrapper = styled.div`
@@ -235,7 +239,6 @@ const ProfileImage = styled.div`
   border-radius: 50%;
   margin-right: 32px;
   background-image: url(${cotato});
-  /* background: red; */
   background-size: cover;
 `;
 

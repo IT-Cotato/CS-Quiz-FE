@@ -117,6 +117,7 @@ const GenerationList = styled.div`
   top: 40px;
   left: 0;
   width: 100%;
+  min-height: 40px;
   flex-shrink: 0;
   border-radius: 5px;
   background: #f3f7ff;

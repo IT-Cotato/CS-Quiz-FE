@@ -26,21 +26,25 @@ const CSHome = () => {
       setSelectedGeneration(generation);
 
       if (generation) {
-        api
-          .get('/v1/api/education', {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-            params: {
-              generationId: generation.generationId,
-            },
-          })
-          .then((res) => setEducations(res.data))
-          .catch((err) => console.error(err));
+        fetchEducations(generation.generationId);
       }
     },
     [selectedGeneration],
   );
+
+  const fetchEducations = useCallback((generationId?: number) => {
+    api
+      .get('/v1/api/education', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        params: {
+          generationId: generationId,
+        },
+      })
+      .then((res) => setEducations(res.data))
+      .catch((err) => console.error(err));
+  }, []);
 
   const onClickAddButton = useCallback(() => {
     setModifyEducation(undefined);
@@ -76,13 +80,13 @@ const CSHome = () => {
           )}
         </CSSetting>
         <CSContentsContainer>
-          {!educations ? (
+          {educations?.length === 0 ? (
             <CSReady>
               <SettingIcon />
               <p>CS 문제풀이 준비중입니다.</p>
             </CSReady>
           ) : (
-            educations.map((education) => (
+            educations?.map((education) => (
               <CSContent
                 key={education.educationId}
                 education={education}
@@ -93,7 +97,13 @@ const CSHome = () => {
           )}
         </CSContentsContainer>
       </CSWrapper>
-      <CSModal isOpen={isCSModalOpen} onCloseModal={onCloseModal} educatoin={modifyEducation} />
+      <CSModal
+        isOpen={isCSModalOpen}
+        onCloseModal={onCloseModal}
+        educatoin={modifyEducation}
+        generationId={selectedGeneration?.generationId}
+        fetchEducations={fetchEducations}
+      />
     </>
   );
 };
@@ -145,7 +155,7 @@ const CSContentsContainer = styled.div`
   align-content: start;
   width: 70%;
   height: 1000px;
-  margin-top: 28px;
+  margin: 28px 0 120px;
 
   @media only screen and (max-width: 957px) {
     justify-content: center;

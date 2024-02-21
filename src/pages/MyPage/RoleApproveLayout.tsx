@@ -39,7 +39,6 @@ const FlexBox = styled.div`
 
 const Wrapper = styled.div`
   display: flex;
-  /* align-items: center; */
   flex-direction: column;
   max-width: 920px;
   width: 80%;
@@ -59,6 +58,7 @@ export const ButtonContainer = styled.div`
   position: relative;
   width: 250px;
   height: 40px;
+  margin-bottom: 20px;
 `;
 
 interface ButtonProps {
