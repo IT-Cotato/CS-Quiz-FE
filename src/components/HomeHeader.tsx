@@ -14,13 +14,12 @@ const HomeHeader = () => {
   });
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    console.log(data);
-  }, []);
-
-  const role = data?.role;
-  const name = data?.memberName;
+  const token = localStorage.getItem('token');
+  const role = localStorage.getItem('role');
+  const name = localStorage.getItem('name');
+  // 로그인 시 localStorage 작업 필요
+  // const role = data?.role;
+  // const name = data?.memberName;
 
   const NonMemberMenus = () => {
     return (
@@ -118,7 +117,7 @@ const HomeHeader = () => {
         </span>
       </div>
 
-      {role ? (
+      {token ? (
         <>
           {MemberMenus()}
           <Profile>

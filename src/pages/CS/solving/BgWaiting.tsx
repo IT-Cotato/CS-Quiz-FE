@@ -1,9 +1,24 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { ReactComponent as Timer } from '@assets/timer.svg';
 import background from '@assets/bg_waiting.svg';
 
-const BgWaiting = () => {
+type Props = {
+  quizNum?: number;
+  setShowKingKing?: (value: boolean) => void;
+};
+
+const BgWaiting = ({ quizNum, setShowKingKing }: Props) => {
+  console.log('quizNum', quizNum);
+  useEffect(() => {
+    if (setShowKingKing && quizNum === 10) {
+      setShowKingKing(true);
+      setTimeout(() => {
+        setShowKingKing(false);
+      }, 5000);
+    }
+  }, []);
+
   return (
     <Wrapper>
       <Waiting>
@@ -26,6 +41,7 @@ const Wrapper = styled.div`
   background-size: cover;
   position: absolute;
   position: fixed;
+  z-index: 10;
   overflow: auto;
   top: 0;
   right: 0;

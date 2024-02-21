@@ -124,10 +124,10 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
   }, [showCorrect, showIncorrect]);
 
   useEffect(() => {
-    if (quizData?.number === 10) {
-      setShowKingKing(true);
-      // setTimeout(() => setShowKingKing(false), 10000);
-    }
+    // if (quizData?.number === 10) {
+    //   setShowKingKing(true);
+    //   setTimeout(() => setShowKingKing(false), 10000);
+    // }
   }, [quizData]);
 
   // 주관식 문제 입력 이벤트
@@ -252,7 +252,9 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
       {showCorrect && <BgCorrect />}
       {showIncorrect && <BgIncorrect />}
       {showKingKing && <BgKingKing quizId={quizId} />}
-      {returnToWaiting && <BgWaiting />}
+      {returnToWaiting && (
+        <BgWaiting quizNum={(quizData?.number as number) + 1} setShowKingKing={setShowKingKing} />
+      )}
     </Wrapper>
   );
 };
