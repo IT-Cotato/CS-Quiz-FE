@@ -2,12 +2,18 @@ import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
-const HamburgerMenu = () => {
+type Props = {
+  color?: string;
+  pixel?: string;
+  top?: string;
+};
+
+const HamburgerMenu = ({ color, pixel, top }: Props) => {
   const ref = React.useRef<HTMLDivElement>(null);
   const [open, setOpen] = React.useState(false);
   const role = localStorage.getItem('role');
   return (
-    <MobileMenus>
+    <MobileMenus color={color} pixel={pixel} top={top}>
       <div
         ref={ref}
         className="hamburger-menu"
@@ -60,17 +66,17 @@ const HamburgerMenu = () => {
   );
 };
 
-const MobileMenus = styled.div`
+const MobileMenus = styled.div<Props>`
   display: none;
   z-index: 100;
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: ${(props) => props.pixel || '768px'}) {
     display: block;
     .hamburger-menu {
       width: 40px;
       height: 40px;
       position: relative;
-      margin: 4px 0 0 0;
+      margin: ${(props) => props.top || '4px'} 0 0 0;
       -webkit-transform: rotate(0deg);
       -moz-transform: rotate(0deg);
       -o-transform: rotate(0deg);
@@ -85,7 +91,7 @@ const MobileMenus = styled.div`
         position: absolute;
         height: 2px;
         width: 100%;
-        background: #e4e4e4;
+        background: ${(props) => props.color || '#e4e4e4'};
         border-radius: 9px;
         opacity: 1;
         left: 0;
