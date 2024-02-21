@@ -32,7 +32,7 @@ const CSMain = () => {
       </TitleBox>
       <NavBox>
         <StartButton>
-          <p> 문제풀이 시작하기</p>
+          <p onClick={() => navigate('/cs/solving')}> 문제풀이 시작하기</p>
         </StartButton>
         <OtherButton>
           <p

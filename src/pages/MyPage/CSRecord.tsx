@@ -367,13 +367,12 @@ const FameInfoDiv = styled.div`
 `;
 
 const ProgressBar = styled.div`
-  width: 500px;
+  width: 100%;
   height: 14px;
   flex-shrink: 0;
   border-radius: 20px;
   background: #85c88a;
   @media screen and (max-width: 768px) {
-    width: 100%;
     min-width: 270px;
   }
 `;

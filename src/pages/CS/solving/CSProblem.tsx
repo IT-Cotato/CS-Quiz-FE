@@ -12,6 +12,11 @@ import MemberHeader from '@components/MemberHeader';
 import api from '@/api/api';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
+import BgCorrect from './BgCorrect';
+import BgIncorrect from './BgIncorrect';
+import BgWaiting from './BgWaiting';
+import BgKingKing from './BgKingKing';
+import { set } from 'date-fns';
 
 type Problem = {
   id: number; // 문제의 PK
@@ -53,8 +58,20 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
   const [showCorrect, setShowCorrect] = useState(false);
   const [showIncorrect, setShowIncorrect] = useState(false);
   const [showExplaination, setShowExplaination] = useState(false);
+  const [returnToWaiting, setReturnToWaiting] = useState(false);
+  const [showKingKing, setShowKingKing] = useState(false);
 
   const inputRef = useRef<any>();
+
+  // 최초 마운트 이후부터 문제 변경을 감지하여 다음 문제 보여주기
+  const mountRef = useRef(false);
+  useEffect(() => {
+    if (!mountRef.current) {
+      mountRef.current = true;
+    } else {
+      setReturnToWaiting(false);
+    }
+  }, [problemId]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,7 +90,13 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
           console.error(err);
         });
     };
-    fetchData();
+
+    const initializeData = async () => {
+      await setMultiples([]); // 문제 바뀔 때 이전 선지 초기화
+      fetchData();
+    };
+
+    initializeData();
   }, [problemId]); // quizId가 바뀌면 문제 데이터를 다시 불러옴
 
   useEffect(() => {
@@ -82,6 +105,28 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
       quizData.choices.forEach((item) => {
         setMultiples((prev) => [...prev, item.content]);
       });
+    }
+    // 문제 바뀔 때 이전 입력 답안 초기화
+    setShortAns('');
+    setSelectNum(0);
+  }, [quizData]);
+
+  useEffect(() => {
+    // 정답/오답 화면 표시 후 위에 깔리지 않도록 삭제
+    if (showCorrect) {
+      const timeoutId = setTimeout(() => setShowCorrect(false), 2500);
+      return () => clearTimeout(timeoutId);
+    }
+    if (showIncorrect) {
+      const timeoutId = setTimeout(() => setShowIncorrect(false), 2500);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [showCorrect, showIncorrect]);
+
+  useEffect(() => {
+    if (quizData?.number === 10) {
+      setShowKingKing(true);
+      // setTimeout(() => setShowKingKing(false), 10000);
     }
   }, [quizData]);
 
@@ -92,6 +137,10 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
 
   const nextProblem = () => {
     // 다음 문제로 이동
+    // 아직 다음 문제 안열렸으면 대기 상태로
+    if (submitAllowed) {
+      setReturnToWaiting(true);
+    }
   };
 
   const submitProblem = () => {
@@ -118,6 +167,15 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
         )
         .then((res) => {
           console.log(res);
+          if (res.data.result === 'true') {
+            setShowCorrect(true);
+            if (submitAllowed) {
+              // 정답인데 아직 문제가 닫히지 않은 경우 대기화면으로 보냄
+              setTimeout(() => setReturnToWaiting(true), 2500);
+            }
+          } else {
+            setShowIncorrect(true);
+          }
         })
         .catch((err) => {
           console.error(err);
@@ -186,11 +244,15 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
             inputRef={inputRef}
           />
         )}
-        <ButtonContainer>
+        <ButtonContainer disabled={!submitAllowed}>
           <button onClick={nextProblem}>다음문제</button>
           <button onClick={submitProblem}>제출하기</button>
         </ButtonContainer>
       </QuizContainer>
+      {showCorrect && <BgCorrect />}
+      {showIncorrect && <BgIncorrect />}
+      {showKingKing && <BgKingKing quizId={quizId} />}
+      {returnToWaiting && <BgWaiting />}
     </Wrapper>
   );
 };
@@ -271,9 +333,11 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
+  height: 100vh;
   position: relative;
-  padding-bottom: 40px;
+  padding-bottom: 60px;
   overflow: auto;
+  overflow-x: hidden;
 `;
 
 const ProgressContainer = styled.div`
@@ -501,7 +565,7 @@ const ShortAnswerContainer = styled.div`
   }
 `;
 
-const ButtonContainer = styled.div`
+const ButtonContainer = styled.div<{ disabled: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -529,4 +593,17 @@ const ButtonContainer = styled.div`
       margin-left: 8px;
     }
   }
+  ${(props) =>
+    props.disabled &&
+    `button:first-child {
+      &:hover {
+        cursor: default;
+      }
+    }
+    button:last-child {
+      background: ${props.theme.color.lightGrey};
+      &:hover {
+        cursor: default;
+    }
+  }`}
 `;

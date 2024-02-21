@@ -13,9 +13,10 @@ type Props = {
   quiz: QuizType[];
   setQuiz: React.Dispatch<React.SetStateAction<QuizType[]>>;
   selected: number;
+  educationId: number;
 };
 
-const QuizInfo = ({ quiz, setQuiz, selected }: Props) => {
+const QuizInfo = ({ quiz, setQuiz, selected, educationId }: Props) => {
   // 타입 가드
   const isMultiples = (quiz: Multiples | ShortQuizzes): quiz is Multiples => {
     return (quiz as Multiples)?.choices !== undefined;
@@ -170,7 +171,7 @@ const QuizInfo = ({ quiz, setQuiz, selected }: Props) => {
         url: process.env.REACT_APP_BASE_URL + '/v1/api/quiz/adds',
         data: formData,
         params: {
-          educationId: 1,
+          educationId: educationId,
         },
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('token'),
