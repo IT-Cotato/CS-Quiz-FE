@@ -19,13 +19,14 @@ const BgKingKing: React.FC<BgKingKingProps> = ({ quizId }) => {
 
   useEffect(() => {
     const handleKingKing = async () => {
-      const educationId = await fetchEducationId();
-      fetchKing(educationId);
+      const eduId = await fetchEducationId();
+      fetchKing(eduId);
     };
     handleKingKing();
   }, []);
 
-  const fetchEducationId = async () => {
+  const fetchEducationId = async (): Promise<number> => {
+    let fetchedEducationId: number = 0;
     await api
       .get('/v1/api/education/from', {
         params: {
@@ -33,16 +34,17 @@ const BgKingKing: React.FC<BgKingKingProps> = ({ quizId }) => {
         },
       })
       .then((res) => {
-        setEducationId(res.data.educationId);
+        fetchedEducationId = res.data.educationId;
+        setEducationId(fetchedEducationId);
         console.log(educationId);
       })
       .catch((err) => {
         console.log(err);
       });
-    return educationId;
+    return fetchedEducationId;
   };
 
-  const fetchKing = async (educationId: any) => {
+  const fetchKing = async (educationId: number) => {
     await api
       .get('/v1/api/education/result/kings', {
         params: {
@@ -66,11 +68,11 @@ const BgKingKing: React.FC<BgKingKingProps> = ({ quizId }) => {
       ) : (
         <p>킹킹 문제는 보너스! &nbsp;다 함께 풀어봐요~</p>
       )}
-      <div>
+      <div className="box">
         {kingMembers.map((member) => (
-          <>
+          <div key={member.memberId}>
             {member.memberName}({member.backFourNumber})
-          </>
+          </div>
         ))}
       </div>
     </Wrapper>
@@ -107,22 +109,24 @@ const Wrapper = styled.div`
     margin-bottom: 20px;
     text-align: center;
   }
-  div {
+  .box {
     background-color: #fff;
     width: 380px;
     margin-top: 20px;
     padding: 40px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     border-radius: 10px;
     color: #000;
     font-size: 1.6rem;
     font-weight: 600;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  }
+  div {
+    &:not(:last-child) {
+      margin-bottom: 8px;
+    }
   }
   animation: scale_up 1s ease-in-out;
   @keyframes scale_up {
