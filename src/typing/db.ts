@@ -125,10 +125,11 @@ export interface IApplyMember {
 }
 
 export interface IEnrollMember {
-  id: number;
-  name: string;
+  memberId: number;
+  memberName: string;
   position: string;
   generationNumber: number;
+  role: string;
 }
 
 export interface IMyPageInfo {
@@ -138,4 +139,9 @@ export interface IMyPageInfo {
   generationNumber: number;
   memberPosition: string;
   phoneNumber: string;
+}
+
+export interface IRole {
+  name: string;
+  color: string;
 }
