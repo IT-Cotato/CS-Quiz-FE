@@ -1,4 +1,4 @@
-import React, { ChangeEvent, MouseEvent, useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import ReactModal from 'react-modal';
 import { ReactComponent as CloseIcon } from '@assets/close_icon.svg';
@@ -50,37 +50,33 @@ const CSModal = ({ isOpen, onCloseModal, educatoin, generationId, fetchEducation
     setSubject(e.target.value);
   }, []);
 
-  const onClickAddButton = useCallback(
-    (e: MouseEvent<HTMLButtonElement>) => {
-      e.preventDefault();
-      if (!educatoin) {
-        api
-          .post('/v1/api/education/add', {
-            subject: subject,
-            sessionId: selectedSession?.sessionId,
-            educationNum: parseInt(educationNum),
-          })
-          .then(() => {
-            fetchEducations(generationId);
-            onCloseModal();
-          })
-          .catch((err) => console.error(err));
-      } else {
-        api
-          .patch('/v1/api/education', {
-            educationId: educatoin.educationId,
-            newSubject: subject,
-            newNumber: parseInt(educationNum),
-          })
-          .then(() => {
-            fetchEducations(generationId);
-            onCloseModal();
-          })
-          .catch((err) => console.error(err));
-      }
-    },
-    [educatoin, educationNum, subject, selectedSession],
-  );
+  const onClickAddButton = useCallback(() => {
+    if (!educatoin) {
+      api
+        .post('/v1/api/education/add', {
+          subject: subject,
+          sessionId: selectedSession?.sessionId,
+          educationNum: parseInt(educationNum),
+        })
+        .then(() => {
+          fetchEducations(generationId);
+          onCloseModal();
+        })
+        .catch((err) => console.error(err));
+    } else {
+      api
+        .patch('/v1/api/education', {
+          educationId: educatoin.educationId,
+          newSubject: subject,
+          newNumber: parseInt(educationNum),
+        })
+        .then(() => {
+          fetchEducations(generationId);
+          onCloseModal();
+        })
+        .catch((err) => console.error(err));
+    }
+  }, [educatoin, educationNum, subject, selectedSession]);
 
   return (
     <ReactModal
@@ -202,13 +198,6 @@ const ButtonContainer = styled.div`
   justify-content: end;
   width: 500px;
   margin: 32px auto;
-`;
-
-const DeleteButton = styled(Button)`
-  background: #eb5353;
-  border: none;
-  ${fontStyle};
-  color: #fff;
 `;
 
 const UploadButton = styled(Button)`
