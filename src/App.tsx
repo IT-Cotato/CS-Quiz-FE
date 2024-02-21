@@ -27,9 +27,10 @@ import Setting from '@pages/MyPage/setting/Setting';
 import ReadyState from '@components/ReadyState';
 import NotFound from '@components/NotFound';
 import HomeHeader from '@components/HomeHeader';
-import BgWaiting from '@pages/CS/solving/BgWaiting';
+import BgWaiting from '@pages/CS/solving/CSQuiz';
 import QuizScorer from '@pages/CS/manage/scorer/QuizScorer';
 import AllScorer from '@pages/CS/manage/scorer/AllScorer';
+import CSQuiz from '@pages/CS/solving/CSQuiz';
 
 function App() {
   const location = useLocation();
@@ -59,7 +60,9 @@ function App() {
             {location.pathname == '/' ? (
               <HomeHeader />
             ) : ['GENERAL', 'MEMBER', 'OLD_MEMBER', 'ADMIN', 'EDUCATION'].includes(data?.role) ? (
-              <MemberHeader />
+              location.pathname !== '/cs/solving' ? (
+                <MemberHeader />
+              ) : null
             ) : (
               <Header />
             )}
@@ -70,7 +73,7 @@ function App() {
               <Route path="/cs" element={<CSHome />} />
               <Route path="/cs/start" element={<CSMain />} />
               <Route path="/cs/upload" element={<CSUpload />} />
-              <Route path="/cs/solving" element={<BgWaiting />} />
+              <Route path="/cs/solving" element={<CSQuiz />} />
               <Route path="/cs/manage/*" element={<CSManage />} />
               <Route path="/cs/quizscorer" element={<QuizScorer />} />
               <Route path="/cs/allscorer" element={<AllScorer />} />

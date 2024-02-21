@@ -57,6 +57,25 @@ const Wrapper = styled.div<{ showHeader?: boolean }>`
   top: 0;
   background: #fff;
   z-index: 100 !important;
+  animation: ${(props) =>
+    props.showHeader ? 'slide_down 0.3s ease-in-out;' : 'slide_up 0.3s ease-in-out;'};
+  @keyframes slide_up {
+    0% {
+      transform: translateY(-100%);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+  @keyframes slide_down {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-100%);
+    }
+  }
+
   @media screen and (max-width: 960px) {
   }
 `;

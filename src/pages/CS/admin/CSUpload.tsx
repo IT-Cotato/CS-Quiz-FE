@@ -117,7 +117,12 @@ const CSUpload = () => {
             setSelected={setSelected}
           />
           <EditQuiz quiz={quiz} setQuiz={setQuiz} selected={selected} />
-          <QuizInfo quiz={quiz} selected={selected} setQuiz={setQuiz} />
+          <QuizInfo
+            quiz={quiz}
+            selected={selected}
+            setQuiz={setQuiz}
+            educationId={Number(educationId)}
+          />
         </Section>
       </Wrapper>
     </>

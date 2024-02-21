@@ -43,7 +43,7 @@ const Wrapper = styled.div`
       opacity: 0;
     }
   }
-  animation: fade_out 1s ease-in-out 1.2s;
+  animation: fade_out 1s ease-in-out 1.5s;
   animation-fill-mode: forwards;
 `;
 
