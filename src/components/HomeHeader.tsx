@@ -1,14 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import HomeDropDownMenu from './HomeDropDownMenu';
 import HamburgerMenu from './HamburgerMenu';
+import useSWR from 'swr';
+import fetcher from '@utils/fetcher';
 
 const HomeHeader = () => {
+  const { data, error } = useSWR('/v1/api/member/info', fetcher, {
+    revalidateOnFocus: false,
+    revalidateIfStale: false,
+    dedupingInterval: 6000000, // 10분동안은 데이터가 변경되지 않는 한 재요청이 발생하지 않음
+  });
+
   const navigate = useNavigate();
 
-  const role = localStorage.getItem('role');
-  const name = localStorage.getItem('name');
+  useEffect(() => {
+    console.log(data);
+  }, []);
+
+  const role = data?.role;
+  const name = data?.memberName;
 
   const NonMemberMenus = () => {
     return (
