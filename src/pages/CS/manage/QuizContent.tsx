@@ -11,11 +11,10 @@ import api from '@/api/api';
 interface Props {
   quiz: IQuizAdmin;
   educationId: string | null;
+  quizNineId?: number;
 }
 
-// 시작 막는 팝업창이랑 기다리는 팝업창
-
-const QuizContent = ({ quiz, educationId }: Props) => {
+const QuizContent = ({ quiz, educationId, quizNineId }: Props) => {
   const { mutate } = useSWRImmutable(
     `/v1/api/quiz/cs-admin/all?educationId=${educationId}`,
     fetcher,
@@ -31,6 +30,14 @@ const QuizContent = ({ quiz, educationId }: Props) => {
     let path = '';
     if (quiz.status === 'QUIZ_OFF') {
       path = '/v1/api/socket/access';
+
+      if (quiz.quizNumber === 10) {
+        api
+          .patch('/v1/api/socket/stop', {
+            quizId: quizNineId,
+          })
+          .catch((err) => console.error(err));
+      }
     } else if (quiz.status === 'QUIZ_ON') {
       path = '/v1/api/socket/deny';
     }
