@@ -119,8 +119,8 @@ export interface IKingMember {
 }
 
 export interface IApplyMember {
-  memberId: number;
-  memberName: string;
+  id: number;
+  name: string;
   backFourNumber: string;
 }
 
