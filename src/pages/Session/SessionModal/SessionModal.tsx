@@ -267,13 +267,6 @@ const Button = styled.button`
   border-radius: 5px;
 `;
 
-const DeleteButton = styled(Button)`
-  background: #eb5353;
-  border: 2px solid #c6c6c6;
-  ${fontStyle}
-  color: #fff;
-`;
-
 const UploadButton = styled(Button)`
   background: #477feb;
   border: none;
