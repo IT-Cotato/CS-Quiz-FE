@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import RoleApproveLayout, { Button, ButtonContainer } from '@pages/MyPage/RoleApproveLayout';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';

@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import RoleApproveLayout, { Box, Button, ButtonContainer } from '@pages/MyPage/RoleApproveLayout';
+import RoleApproveLayout, { Button, ButtonContainer } from '@pages/MyPage/RoleApproveLayout';
 import styled from 'styled-components';
 import fetcher from '@utils/fetcher';
 import { IEnrollMember } from '@/typing/db';
