@@ -65,9 +65,7 @@ const CSQuiz: React.FC<WaitingProps> = () => {
         },
       })
       .then((res) => {
-        console.log(res);
         const socketToken = res.data.socketToken;
-        console.log(socketToken);
         localStorage.setItem('socketToken', socketToken);
       })
       .catch((err) => {
@@ -133,6 +131,7 @@ const CSQuiz: React.FC<WaitingProps> = () => {
           setShowProblem(true);
           setAllowSubmit(true);
         } else if (message.command === 'exit') {
+          console.log('퀴즈 닫기');
           navigate('/cs');
         } else {
           console.log('exception error');
@@ -150,12 +149,11 @@ const CSQuiz: React.FC<WaitingProps> = () => {
         <Timer style={{ width: '68px' }} />
         <div>곧 문제가 시작됩니다. &nbsp;잠시만 기다려주세요!</div>
       </Waiting>
-      <BgWaiting />
-      <div className="problem">
-        {showProblem && (
+      {showProblem && (
+        <div className="problem">
           <CSProblem quizId={message.quizId} submitAllowed={allowSubmit} problemId={problemId} />
-        )}
-      </div>
+        </div>
+      )}
     </Wrapper>
   );
 };
