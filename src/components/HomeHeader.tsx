@@ -17,9 +17,9 @@ const HomeHeader = () => {
   const token = localStorage.getItem('token');
   const role = localStorage.getItem('role');
   const name = localStorage.getItem('name');
-
-  const role = data?.role;
-  const name = data?.memberName;
+  // 로그인 시 localStorage 작업 필요
+  // const role = data?.role;
+  // const name = data?.memberName;
 
   const NonMemberMenus = () => {
     return (
