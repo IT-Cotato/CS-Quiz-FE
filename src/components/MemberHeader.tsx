@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import logo from '@assets/logo.svg';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
+import HamburgerMenu from './HamburgerMenu';
 
 interface MemberHeaderProps {
   showHeader?: boolean;
@@ -37,6 +38,7 @@ const MemberHeader: React.FC<MemberHeaderProps> = ({ showHeader, setShowHeader }
         <img src="https://raw.githubusercontent.com/MinJaeSon/assets/f29298dfeed8daa40622f7d9568a0421f5183756/potato.svg" />
         <p onClick={() => navigate('mypage')}>{data?.memberName}</p>
       </MyInfo>
+      <HamburgerMenu color="#202020" top="16px" />
     </Wrapper>
   );
 };
@@ -82,6 +84,9 @@ const Wrapper = styled.div<{ showHeader?: boolean }>`
 
 const Logo = styled.img`
   width: 144px;
+  @media screen and (max-width: 1280px) {
+    width: 100px;
+  }
 `;
 
 const MenuSection = styled.div`
@@ -91,7 +96,11 @@ const MenuSection = styled.div`
   justify-content: space-between;
   /* width: 312px; */
   @media screen and (max-width: 1280px) {
+    /* display: none; */
     margin-right: 0px;
+  }
+  @media screen and (max-width: 768px) {
+    display: none;
   }
 `;
 
@@ -105,8 +114,11 @@ const MenuItem = styled(Link)`
   &:hover {
     color: #000;
   }
+  @media screen and (max-width: 1280px) {
+    font-size: 1rem;
+  }
   @media screen and (max-width: 960px) {
-    margin-right: 40px;
+    margin-right: 20px;
   }
 `;
 
@@ -131,5 +143,8 @@ const MyInfo = styled.div`
       text-underline-offset: 3px;
       text-decoration-thickness: 1.2px;
     }
+  }
+  @media screen and (max-width: 768px) {
+    display: none;
   }
 `;
