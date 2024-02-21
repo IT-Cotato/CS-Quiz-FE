@@ -31,10 +31,10 @@ const Request = () => {
       </ButtonContainer>
       {listMode === 'apply'
         ? applyList?.map((member) => (
-            <RequestContent key={member.id} mode="apply" member={member} />
+            <RequestContent key={member.id} mode={listMode} member={member} />
           ))
         : rejectList?.map((member) => (
-            <RequestContent key={member.id} mode="reject" member={member} />
+            <RequestContent key={member.id} mode={listMode} member={member} />
           ))}
     </RoleApproveLayout>
   );

@@ -16,19 +16,13 @@ const RequestContent = ({ mode, member }: Props) => {
   const [popupOpen, setPopupOpen] = useState(false);
   const [popupMode, setPopupMode] = useState('');
 
-  const onChangeGeneration = useCallback(
-    (selectedGeneration: IGeneration) => {
-      setGeneration(selectedGeneration);
-    },
-    [generation],
-  );
+  const onChangeGeneration = useCallback((selectedGeneration: IGeneration) => {
+    setGeneration(selectedGeneration);
+  }, []);
 
-  const onChangePostion = useCallback(
-    (selectedPosition: string) => {
-      setPosition(selectedPosition);
-    },
-    [position],
-  );
+  const onChangePostion = useCallback((selectedPosition: string) => {
+    setPosition(selectedPosition);
+  }, []);
 
   const onClickApproveButton = useCallback(() => {
     setPopupMode('approve');
