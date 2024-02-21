@@ -10,9 +10,10 @@ import cotato_icon from '@assets/cotato_icon.png';
 interface Props {
   session: ISession;
   handleModifyButton: (session: ISession) => void;
+  sessionCount?: number;
 }
 
-const SessionContent = ({ session, handleModifyButton }: Props) => {
+const SessionContent = ({ session, handleModifyButton, sessionCount }: Props) => {
   const { data: user } = useSWR('/v1/api/member/info', fetcher);
 
   const [isHover, setIsHover] = useState(false);
@@ -25,6 +26,15 @@ const SessionContent = ({ session, handleModifyButton }: Props) => {
     setIsHover(false);
   }, []);
 
+  const getSessionWeekStr = useCallback(() => {
+    if (session.sessionNumber === 0) {
+      return 'OT';
+    } else if (sessionCount && session.sessionNumber === sessionCount - 1) {
+      return '데모데이';
+    }
+    return `${session.sessionNumber}주차 세션`;
+  }, [session, sessionCount]);
+
   return (
     <Content>
       <SessionImage
@@ -35,9 +45,8 @@ const SessionContent = ({ session, handleModifyButton }: Props) => {
       />
       {isHover ? (
         <HoverContent onMouseEnter={onMouseEnterImage} onMouseLeave={onMouseLeaveImage}>
-          <p>{session.sessionNumber === 0 ? 'OT' : `${session.sessionNumber}주차 세션`}</p>
+          <p>{getSessionWeekStr()}</p>
           <p>{session.description}</p>
-
           {user?.role === 'ADMIN' && <ModifyIcon onClick={() => handleModifyButton(session)} />}
         </HoverContent>
       ) : (
@@ -71,7 +80,6 @@ interface SessionImageProps {
   ishover: string;
   photourl: string;
 }
-
 const SessionImage = styled.div<SessionImageProps>`
   z-index: 0;
   background-image: url(${(props) => (props.photourl ? props.photourl : cotato_icon)});

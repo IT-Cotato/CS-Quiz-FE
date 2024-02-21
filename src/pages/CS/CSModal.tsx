@@ -13,9 +13,17 @@ interface Props {
   educatoin?: IEducation;
   generationId?: number;
   fetchEducations: (generationId?: number) => void;
+  sessionCount?: number;
 }
 
-const CSModal = ({ isOpen, onCloseModal, educatoin, generationId, fetchEducations }: Props) => {
+const CSModal = ({
+  isOpen,
+  onCloseModal,
+  educatoin,
+  generationId,
+  fetchEducations,
+  sessionCount,
+}: Props) => {
   const [selectedSession, setSelectedSession] = useState<ICsOnSession>();
   const [educationNum, setEducationNum] = useState('');
   const [subject, setSubject] = useState('');
@@ -98,6 +106,7 @@ const CSModal = ({ isOpen, onCloseModal, educatoin, generationId, fetchEducation
             selectetdSession={selectedSession}
             onChangeSession={onChangeSession}
             generationId={generationId}
+            sessionCount={sessionCount}
           />
           <TextBox
             value={educationNum}

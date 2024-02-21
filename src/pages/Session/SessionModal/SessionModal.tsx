@@ -16,6 +16,7 @@ interface Props {
   lastWeek: number;
   generationId?: number;
   fetchSessions: (generationId?: number) => void;
+  sessionCount?: number;
 }
 
 const SessionModal = ({
@@ -25,6 +26,7 @@ const SessionModal = ({
   lastWeek,
   generationId,
   fetchSessions,
+  sessionCount,
 }: Props) => {
   const [title, setTitle] = useState('');
   const [image, setImage] = useState<Blob | null>(null);
@@ -35,12 +37,17 @@ const SessionModal = ({
 
   const [isPopUpOpen, setIsPopUpOpen] = useState(false);
 
-  const getTitle = useCallback((week: number) => {
-    if (week === 0) {
-      return 'OT';
-    }
-    return `${week}주차 세션`;
-  }, []);
+  const getTitle = useCallback(
+    (week: number) => {
+      if (week === 0) {
+        return 'OT';
+      } else if (sessionCount && week === sessionCount - 1) {
+        return '데모데이';
+      }
+      return `${week}주차 세션`;
+    },
+    [sessionCount],
+  );
 
   useEffect(() => {
     if (session) {
