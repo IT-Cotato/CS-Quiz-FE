@@ -73,7 +73,7 @@ const CSHome = () => {
             onChangeGeneration={onChangeGeneration}
             selectedGeneration={selectedGeneration}
           />
-          {user?.role === 'ADMIN' && (
+          {(user?.role === 'ADMIN' || user?.role === 'EDUCATION') && (
             <ButtonWrapper>
               <AddIcon onClick={onClickAddButton} />
             </ButtonWrapper>
