@@ -16,7 +16,6 @@ import BgCorrect from './BgCorrect';
 import BgIncorrect from './BgIncorrect';
 import BgWaiting from './BgWaiting';
 import BgKingKing from './BgKingKing';
-import { set } from 'date-fns';
 
 type Problem = {
   id: number; // 문제의 PK
@@ -123,13 +122,6 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
     }
   }, [showCorrect, showIncorrect]);
 
-  useEffect(() => {
-    // if (quizData?.number === 10) {
-    //   setShowKingKing(true);
-    //   setTimeout(() => setShowKingKing(false), 10000);
-    // }
-  }, [quizData]);
-
   // 주관식 문제 입력 이벤트
   const onChangeShortAns = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setShortAns(e.target.value);
@@ -139,7 +131,11 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
     // 다음 문제로 이동
     // 아직 다음 문제 안열렸으면 대기 상태로
     if (submitAllowed) {
-      setReturnToWaiting(true);
+      if ((quizData?.number as number) === 10) {
+        setReturnToWaiting(false);
+      } else {
+        setReturnToWaiting(true);
+      }
     }
   };
 
@@ -174,7 +170,11 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
               setTimeout(() => setReturnToWaiting(true), 2500);
             }
           } else {
-            setShowIncorrect(true);
+            if (selectNum === 0) {
+              alert('답안을 선택 후 제출해주세요.');
+            } else {
+              setShowIncorrect(true);
+            }
           }
         })
         .catch((err) => {
