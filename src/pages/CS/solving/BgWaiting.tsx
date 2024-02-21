@@ -25,6 +25,7 @@ const Wrapper = styled.div`
   padding-bottom: 40px;
   background-size: cover;
   position: absolute;
+  position: fixed;
   overflow: auto;
   top: 0;
   right: 0;
