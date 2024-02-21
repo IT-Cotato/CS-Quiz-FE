@@ -1,5 +1,5 @@
 import fetcher from '@utils/fetcher';
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import useSWR from 'swr';
 import localeKr from '@/assets/locale/locale_kr.json';
@@ -20,6 +20,10 @@ const CSRecord = () => {
     'https://velog.velcdn.com/images/ea_st_ring/post/5e6fc3c3-18af-4dc4-bdfa-98557c9b1d10/image.svg',
     'https://velog.velcdn.com/images/ea_st_ring/post/80026402-2707-4ff9-9503-223c6fbb7396/image.svg',
   ];
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <Wrapper>
