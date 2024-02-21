@@ -54,7 +54,7 @@ const Login = () => {
 
   if (data) {
     console.log(data);
-    nagivate('/');
+    window.location.href = '/';
   }
 
   return (
