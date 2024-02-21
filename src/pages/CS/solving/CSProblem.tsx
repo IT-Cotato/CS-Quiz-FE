@@ -43,7 +43,7 @@ interface CSProblemProps {
 const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId }) => {
   const { data, error, isLoading, mutate } = useSWR('/v1/api/member/info', fetcher);
   if (data) {
-    console.log(data);
+    // console.log(data);
   } else {
     console.log('data is undefined');
   }
@@ -62,9 +62,17 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
 
   const inputRef = useRef<any>();
 
+  const multipleRef = useRef<any>();
+  const shortRef = useRef<any>();
+  const mulYPos = multipleRef.current?.offsetTop;
+  const mulXPos = multipleRef.current?.offsetLeft + multipleRef.current?.offsetWidth;
+  const shortYPos = shortRef.current?.offsetTop;
+  const shortXPos = shortRef.current?.offsetLeft + shortRef.current?.offsetWidth;
+
   // 최초 마운트 이후부터 문제 변경을 감지하여 다음 문제 보여주기
   const mountRef = useRef(false);
   useEffect(() => {
+    console.log('shortXPos' + shortXPos);
     if (!mountRef.current) {
       mountRef.current = true;
     } else {
@@ -167,7 +175,11 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
             setShowCorrect(true);
             if (submitAllowed) {
               // 정답인데 아직 문제가 닫히지 않은 경우 대기화면으로 보냄
-              setTimeout(() => setReturnToWaiting(true), 2500);
+              if ((quizData?.number as number) !== 10) {
+                setTimeout(() => setReturnToWaiting(true), 2500);
+              } else {
+                setReturnToWaiting(false);
+              }
             }
           } else {
             if (selectNum === 0) {
@@ -199,7 +211,7 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
         <ProgressBar progress={(quizData?.number as number) * 10} />
       </ProgressContainer>
       <QuizContainer>
-        <QuestionContainer>
+        <QuestionContainer ifNoImg={!quizData?.image}>
           <p>문제 {quizData?.number}</p>
           <span>{quizData?.question}</span>
         </QuestionContainer>
@@ -212,7 +224,12 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
             />
           </ImageContainer>
         )}
-        <LightImgContainer>
+        <LightImgContainer
+          mulYPos={mulYPos}
+          mulXPos={mulXPos}
+          shortYPos={shortYPos}
+          shortXPos={shortXPos}
+        >
           {!submitAllowed && showExplaination && (
             <Explaination>
               불이 켜지면
@@ -235,17 +252,23 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
           )}
         </LightImgContainer>
         {quizData?.choices && (
-          <Choice selectNum={selectNum} setSelectNum={setSelectNum} contents={multiples} />
+          <Choice
+            selectNum={selectNum}
+            setSelectNum={setSelectNum}
+            contents={multiples}
+            multipleRef={multipleRef}
+          />
         )}
         {!quizData?.choices && (
           <ShortAnswer
             shortAns={shortAns}
             onChangeShortAns={onChangeShortAns}
             inputRef={inputRef}
+            shortRef={shortRef}
           />
         )}
         <ButtonContainer disabled={!submitAllowed}>
-          <button onClick={nextProblem}>다음문제</button>
+          {quizData?.number === 10 ? null : <button onClick={nextProblem}>다음문제</button>}
           <button onClick={submitProblem}>제출하기</button>
         </ButtonContainer>
       </QuizContainer>
@@ -263,11 +286,12 @@ interface choiceProps {
   selectNum: number; // 선택한 선지의 번호
   setSelectNum: React.Dispatch<React.SetStateAction<number>>;
   contents: string[]; // 객관식 선지의 내용 리스트
+  multipleRef: React.MutableRefObject<any>;
 }
 
-const Choice: React.FC<choiceProps> = ({ selectNum, setSelectNum, contents }) => {
+const Choice: React.FC<choiceProps> = ({ selectNum, setSelectNum, contents, multipleRef }) => {
   return (
-    <ChoiceContainer>
+    <ChoiceContainer ref={multipleRef}>
       <ChoiceBtn
         clicked={selectNum === 1}
         onClick={() => {
@@ -308,13 +332,19 @@ interface ShortAnsProps {
   shortAns: string;
   onChangeShortAns: React.ChangeEventHandler<HTMLInputElement>;
   inputRef: React.MutableRefObject<any>;
+  shortRef: React.MutableRefObject<any>;
 }
 
-const ShortAnswer: React.FC<ShortAnsProps> = ({ shortAns, onChangeShortAns, inputRef }) => {
+const ShortAnswer: React.FC<ShortAnsProps> = ({
+  shortAns,
+  onChangeShortAns,
+  inputRef,
+  shortRef,
+}) => {
   useEffect(() => inputRef.current.focus(), []); // 컴포넌트 마운트 즉시 포커싱
 
   return (
-    <ShortAnswerContainer>
+    <ShortAnswerContainer ref={shortRef}>
       <input
         type="text"
         id="shortAns"
@@ -340,6 +370,13 @@ const Wrapper = styled.div`
   padding-bottom: 60px;
   overflow: auto;
   overflow-x: hidden;
+  /* background-color: #fff;
+  background-size: cover;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 100; */
 `;
 
 const ProgressContainer = styled.div`
@@ -366,7 +403,7 @@ const QuizContainer = styled.div`
   align-items: center;
 `;
 
-const QuestionContainer = styled.div`
+const QuestionContainer = styled.div<{ ifNoImg: boolean }>`
   width: 920px;
   min-height: 88px;
   height: fit-content;
@@ -377,7 +414,7 @@ const QuestionContainer = styled.div`
   flex-direction: row;
   align-items: center;
   margin-top: 32px;
-  margin-bottom: 48px;
+  ${(props) => (props.ifNoImg ? `margin-bottom: 120px;` : `margin-bottom: 48px;`)};
   padding: 20px 80px !important;
   p {
     color: #477feb;
@@ -428,12 +465,30 @@ const ResizeIcon = styled.img`
   width: 20px;
 `;
 
-const LightImgContainer = styled.div`
+interface PosProps {
+  mulYPos: number;
+  mulXPos: number;
+  shortYPos: number;
+  shortXPos: number;
+}
+const LightImgContainer = styled.div<PosProps>`
   position: absolute;
   width: 80px;
-  height: 82px;
+  /* height: 82px;
   right: 300px;
-  bottom: 316px;
+  bottom: 316px; */
+  ${(props) =>
+    props.mulYPos &&
+    `
+    top: ${props.mulYPos - 96}px;
+    left: ${props.mulXPos - 88}px;
+  `}
+  ${(props) =>
+    props.shortYPos &&
+    `
+    top: ${props.shortYPos - 96}px;
+    left: ${props.shortXPos - 88}px;
+  `}
   display: flex;
   flex-direction: column;
   /* justify-content: center; */
@@ -453,13 +508,13 @@ const Explaination = styled.div`
   align-items: center;
   text-align: center;
   padding-bottom: 10px;
-  margin-bottom: 44px;
+  margin-bottom: 16px;
 `;
 
 const LightBulb = styled.img`
   width: 32px;
   height: 32px;
-  margin-top: 20px;
+  margin-top: 40px;
 `;
 
 const LightOn = styled.div`
@@ -467,6 +522,7 @@ const LightOn = styled.div`
   width: 80px;
   height: 100%;
   padding: 0 auto;
+  margin-top: 24px;
   img {
     position: absolute;
     @keyframes up {
