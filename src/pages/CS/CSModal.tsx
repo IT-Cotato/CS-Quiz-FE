@@ -50,12 +50,6 @@ const CSModal = ({ isOpen, onCloseModal, educatoin, generationId, fetchEducation
     setSubject(e.target.value);
   }, []);
 
-  const onClickDeleteButton = useCallback((e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    console.log('delete');
-    // 삭제 이후 모달을 끄는 동작 필요
-  }, []);
-
   const onClickAddButton = useCallback(
     (e: MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
@@ -123,11 +117,6 @@ const CSModal = ({ isOpen, onCloseModal, educatoin, generationId, fetchEducation
           />
         </BoxContainer>
         <ButtonContainer>
-          {educatoin && (
-            <DeleteButton type="button" onClick={onClickDeleteButton}>
-              교육 삭제
-            </DeleteButton>
-          )}
           <UploadButton type="button" onClick={onClickAddButton}>
             업로드
           </UploadButton>
