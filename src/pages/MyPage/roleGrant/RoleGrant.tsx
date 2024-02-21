@@ -48,7 +48,11 @@ const RoleGrant = () => {
         mutateActive();
         mutateOm();
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error(err);
+        mutateActive();
+        mutateOm();
+      });
   }, [addOm]);
 
   return (

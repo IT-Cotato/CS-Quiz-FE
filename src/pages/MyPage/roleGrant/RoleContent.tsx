@@ -76,7 +76,10 @@ const RoleContent = ({ mode, member, addOm, onChangeAddOm, onChangeRemoveOm }: P
           setRole(selectedRole);
           mutateActive();
         })
-        .catch((err) => console.error(err));
+        .catch((err) => {
+          console.error(err);
+          mutateActive();
+        });
     },
     [member],
   );
@@ -98,7 +101,11 @@ const RoleContent = ({ mode, member, addOm, onChangeAddOm, onChangeRemoveOm }: P
         mutateOm();
         mutateActive();
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error(err);
+        mutateOm();
+        mutateActive();
+      });
   }, [member]);
 
   return (
