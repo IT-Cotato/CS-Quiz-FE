@@ -58,7 +58,7 @@ const AnimatedText = () => {
     leftValue = charORef.current.offsetLeft;
     widthValue = charORef.current.offsetWidth;
   }
-  let correctionValue = [0, 0];
+  // let correctionValue = [0, 0];
 
   let correctionValue = [0, 0, 0];
 
