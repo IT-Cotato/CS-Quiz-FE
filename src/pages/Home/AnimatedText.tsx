@@ -58,15 +58,15 @@ const AnimatedText = () => {
     leftValue = charORef.current.offsetLeft;
     widthValue = charORef.current.offsetWidth;
   }
-  // let correctionValue = [0, 0];
 
   let correctionValue = [0, 0, 0];
 
   useEffect(() => {
     if (charORef.current) {
-      // 높은 해상도에 대한 보정치 처리 추후 보강 필요
+      // 높은 해상도에 대한 보정치 처리, 추후 보강 필요
       if (window.innerWidth > 1600) {
-        correctionValue = [12, 7, 9];
+        correctionValue = [12, 9, 9];
+        // 값이 커질수록 텍스트가 오른쪽으로 이동
       }
       setSpaces([
         0,

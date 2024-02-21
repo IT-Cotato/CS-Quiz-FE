@@ -2,12 +2,24 @@ import React, { useEffect, useRef, useState } from 'react';
 import { styled } from 'styled-components';
 import { ReactComponent as ArrowUp } from '@assets/arrow_up.svg';
 import { ReactComponent as ArrowDown } from '@assets/arrow_down.svg';
+import useSWRImmutable from 'swr/immutable';
+import fetcher from '@utils/fetcher';
+import { ICsOnSession, IEducation } from '@/typing/db';
 
-const sessionData = [1, 2, 3];
+interface Props {
+  selectetdSession?: ICsOnSession;
+  onChangeSession: (session: ICsOnSession) => void;
+  education?: IEducation;
+  generationId?: number;
+}
 
-const SessionSelect = () => {
+const SessionSelect = ({ selectetdSession, onChangeSession, education, generationId }: Props) => {
+  const { data: sessions } = useSWRImmutable<ICsOnSession[]>(
+    `/v1/api/session/cs-on?generationId=${generationId}`,
+    fetcher,
+  );
+
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedSessoin, setSelectedSession] = useState(-1);
 
   const sessionDropRef = useRef<HTMLDivElement>(null);
 
@@ -24,18 +36,22 @@ const SessionSelect = () => {
   return (
     <SessionSelectWrapper ref={sessionDropRef}>
       <SelectMenu
-        selected={selectedSessoin !== -1 ? 'selected' : 'unselected'}
+        selected={selectetdSession ? 'selected' : 'unselected'}
         isopen={isOpen ? 'open' : 'close'}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => !education && setIsOpen(!isOpen)}
       >
-        <p>{selectedSessoin === -1 ? '세션 주차를 선택하세요.' : `${selectedSessoin}주차 세션`}</p>
+        <p>
+          {selectetdSession
+            ? `${selectetdSession.sessionNumber}주차 세션`
+            : '세션 주차를 선택하세요'}
+        </p>
         {isOpen ? <ArrowUp /> : <ArrowDown />}
         {isOpen && (
           <SessoinList>
             <ul>
-              {sessionData.map((session, index) => (
-                <li key={index} onClick={() => setSelectedSession(session)}>
-                  {`${session}주차 세션`}
+              {sessions?.map((session, index) => (
+                <li key={index} onClick={() => onChangeSession(session)}>
+                  {`${session.sessionNumber}주차 세션`}
                 </li>
               ))}
             </ul>
@@ -92,6 +108,7 @@ const SessoinList = styled.div`
   top: 60px;
   left: 0;
   width: 100%;
+  min-height: 40px;
   flex-shrink: 0;
   border-radius: 10px;
   border: 1px solid #7b7b7b;

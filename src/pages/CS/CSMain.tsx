@@ -9,6 +9,7 @@ const CSMain = () => {
   const [params] = useSearchParams();
   const search = location.search;
   const generationId = params.get('generationId');
+  const generationNumber = params.get('generationNumber');
   const educationId = params.get('educationId');
   const educationNumber = params.get('educationNumber');
   const navigate = useNavigate();
@@ -26,8 +27,8 @@ const CSMain = () => {
       <TitleBox>
         <h3>COTATO</h3>
         <h1>CS QUIZ</h1>
-        <p>{`${generationId}기/ ${educationNumber}차 세션`}</p>
-        <span>AWS</span>
+        <p>{`${generationNumber}기/ ${educationNumber}차 세션`}</p>
+        <span>{subject}</span>
       </TitleBox>
       <NavBox>
         <StartButton>

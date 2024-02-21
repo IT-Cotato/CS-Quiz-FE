@@ -63,7 +63,7 @@ const Setting = () => {
           </ThemeButtonWrapper>
         </ButtonContainer>
       </MyPageWrapper>
-      <GenerationModal isOpen={modalOpen} onCloseModal={setModalOpen} />
+      <GenerationModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
     </FlexBox>
   );
 };

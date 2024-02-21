@@ -14,13 +14,12 @@ const HomeHeader = () => {
   });
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    console.log(data);
-  }, []);
-
-  const role = data?.role;
-  const name = data?.memberName;
+  const token = localStorage.getItem('token');
+  const role = localStorage.getItem('role');
+  const name = localStorage.getItem('name');
+  // 로그인 시 localStorage 작업 필요
+  // const role = data?.role;
+  // const name = data?.memberName;
 
   const NonMemberMenus = () => {
     return (
@@ -118,11 +117,17 @@ const HomeHeader = () => {
         </span>
       </div>
 
-      {role ? (
+      {token ? (
         <>
           {MemberMenus()}
           <Profile>
-            <p>{name}</p>
+            <p
+              onClick={() => {
+                navigate('/mypage');
+              }}
+            >
+              {name}
+            </p>
           </Profile>
         </>
       ) : (
@@ -204,6 +209,7 @@ const WindowUl = styled.ul`
   li:first-child {
     margin-right: 80px;
   }
+
   @media screen and (max-width: 960px) {
     li {
       font-size: 14px;
@@ -301,11 +307,13 @@ const Profile = styled.div`
   height: 36px;
   border-radius: 22px;
   background: linear-gradient(180deg, #6e6cfe 0%, rgba(189, 219, 255, 0.69) 100%);
+  cursor: pointer;
   p {
     color: black;
     font-size: 16px;
+    font-weight: 800;
   }
-  margin-top: -8px;
+  margin-top: -6px;
   @media screen and (max-width: 768px) {
     display: none;
   }

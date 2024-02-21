@@ -61,6 +61,9 @@ const Container = styled.div`
   text-align: center;
   margin-left: -100px;
   height: fit-content;
+  @media screen and (max-width: 960px) {
+    display: none;
+  }
 `;
 
 const Menu = styled.div<{ $isopen: string; $menu_len: number }>`

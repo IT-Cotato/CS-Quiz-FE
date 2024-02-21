@@ -15,9 +15,17 @@ interface Props {
   session?: ISession;
   lastWeek: number;
   generationId?: number;
+  fetchSessions: (generationId?: number) => void;
 }
 
-const SessionModal = ({ isOpen, onCloseModal, session, lastWeek, generationId }: Props) => {
+const SessionModal = ({
+  isOpen,
+  onCloseModal,
+  session,
+  lastWeek,
+  generationId,
+  fetchSessions,
+}: Props) => {
   const [title, setTitle] = useState('');
   const [image, setImage] = useState<Blob | null>(null);
   const [itIssue, setItIssue] = useState(true);
@@ -35,13 +43,6 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek, generationId }:
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
-
-  useEffect(() => {
     if (session) {
       setTitle(getTitle(session.sessionNumber));
       setDescription(session.description);
@@ -53,13 +54,18 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek, generationId }:
     }
   }, [session, lastWeek]);
 
-  const cleanInputState = useCallback(() => {
+  const handleAfterOpen = useCallback(() => {
+    document.body.style.overflow = 'hidden';
+  }, []);
+
+  const handelAfterClose = useCallback(() => {
     setTitle('');
     setImage(null);
     setItIssue(true);
     setCsEdu(true);
     setNetworking(false);
     setDescription('');
+    document.body.style.overflow = 'unset';
   }, []);
 
   const onChangeItNews = useCallback(() => {
@@ -85,28 +91,35 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek, generationId }:
   const onClickAddButton = useCallback(
     (e: MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
+
+      const formData = new FormData();
+      if (image) formData.append('sessionImage', image);
+      formData.append('description', description);
+      formData.append('ItIssue', itIssue ? 'IT_ON' : 'IT_OFF');
+      formData.append('Networking', networking ? 'NW_ON' : 'NW_OFF');
+      formData.append('CsEducation', csEdu ? 'CS_ON' : 'CS_OFF');
+
       if (!session) {
-        const formData = new FormData();
-        if (image) formData.append('sessionImage', image);
         if (generationId) formData.append('generationId', generationId.toString());
-        formData.append('description', description);
-        formData.append('ItIssue', itIssue ? 'IT_ON' : 'IT_OFF');
-        formData.append('Networking', networking ? 'NW_ON' : 'NW_OFF');
-        formData.append('CSEducation', csEdu ? 'CS_ON' : 'CS_OFF');
 
         api
-          .post('/v1/api/session/add', formData, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
+          .post('/v1/api/session/add', formData)
+          .then(() => {
+            fetchSessions(generationId);
+            onCloseModal();
           })
-          .then((res) => console.log(res))
           .catch((err) => console.log(err));
       } else {
-        //
-      }
+        formData.append('sessionId', session.sessionId.toString());
 
-      // 제출 이후 모달을 끄는 동작 필요
+        api
+          .patch('v1/api/session/update', formData)
+          .then(() => {
+            fetchSessions(generationId);
+            onCloseModal();
+          })
+          .catch((err) => console.error(err));
+      }
     },
     [session, image, generationId, itIssue, csEdu, networking, description],
   );
@@ -116,7 +129,12 @@ const SessionModal = ({ isOpen, onCloseModal, session, lastWeek, generationId }:
   }, []);
 
   return (
-    <ReactModal isOpen={isOpen} onAfterClose={cleanInputState} style={modalStyle}>
+    <ReactModal
+      isOpen={isOpen}
+      onAfterOpen={handleAfterOpen}
+      onAfterClose={handelAfterClose}
+      style={modalStyle}
+    >
       <ModalWrapper>
         <ModalCloseButton>
           <CloseIcon width="57" height="56" fill="#686868" onClick={onCloseModal} />
@@ -171,7 +189,7 @@ const modalStyle = {
   },
   content: {
     width: '740px',
-    height: '840px',
+    height: '800px',
     marginTop: '10%',
     top: '50%',
     left: '50%',

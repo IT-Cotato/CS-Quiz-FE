@@ -5,6 +5,7 @@ import login from '@assets/login_icon.svg';
 import joinus from '@assets/joinus_icon.svg';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import DropDownMenu from './DropDownMenu';
+import HamburgerMenu from './HamburgerMenu';
 
 const Header = () => {
   const [isTop, setIsTop] = useState(true);
@@ -48,6 +49,7 @@ const Header = () => {
         </LoginWrapper>
       </LoginSection>
       <DropDownMenu isTop={isTop.toString()} />
+      <HamburgerMenu color="#202020" top="16px" />
     </Wrapper>
   );
 };
@@ -72,6 +74,7 @@ const Wrapper = styled.div<{ $is_top: string }>`
   z-index: 100;
   background-color: #fff;
   @media screen and (max-width: 960px) {
+    padding: 0 20px;
   }
 `;
 
@@ -100,12 +103,15 @@ const MenuItem = styled(NavLink)`
   &:hover {
     color: #000;
   }
-  @media screen and (max-width: 960px) {
-    margin-right: 40px;
-  }
   &.active {
     color: #000;
     font-weight: 600;
+  }
+  @media screen and (max-width: 1280px) {
+    margin-right: 40px;
+  }
+  @media screen and (max-width: 768px) {
+    display: none;
   }
 `;
 
@@ -114,7 +120,10 @@ const LoginSection = styled.div`
   flex-direction: row;
   margin-left: 50px;
   @media screen and (max-width: 1280px) {
-    margin-right: 100px;
+    margin-right: 0px;
+  }
+  @media screen and (max-width: 768px) {
+    display: none;
   }
 `;
 
