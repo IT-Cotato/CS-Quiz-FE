@@ -55,6 +55,7 @@ const SessionModal = ({
   }, [session, lastWeek]);
 
   const handleAfterOpen = useCallback(() => {
+    window.scrollTo(0, 0);
     document.body.style.overflow = 'hidden';
   }, []);
 
