@@ -57,7 +57,13 @@ const CSMain = () => {
               <p>문제 업로드</p>
             </UploadButton>
             <ManageButton>
-              <p>문제풀이 관리</p>
+              <p
+                onClick={() => {
+                  navigate('/cs/manage' + search);
+                }}
+              >
+                문제풀이 관리
+              </p>
             </ManageButton>
           </>
         ) : null}
