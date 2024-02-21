@@ -43,6 +43,7 @@ const Wrapper = styled.div`
   max-width: 920px;
   width: 80%;
   min-height: 100vh;
+  padding-bottom: 132px;
 `;
 
 const Header = styled.h1`

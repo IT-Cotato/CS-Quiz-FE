@@ -5,13 +5,17 @@ import fetcher from '@utils/fetcher';
 import { IEnrollMember } from '@/typing/db';
 import RoleContent from '@pages/MyPage/roleGrant/RoleContent';
 import useSWRImmutable from 'swr/immutable';
+import api from '@/api/api';
 
 const RoleGrant = () => {
-  const { data: activeList } = useSWRImmutable<IEnrollMember[]>(
+  const { data: activeList, mutate: mutateActive } = useSWRImmutable<IEnrollMember[]>(
     '/v1/api/admin/active-members',
     fetcher,
   );
-  const { data: omList } = useSWRImmutable<IEnrollMember[]>('/v1/api/admin/old-members', fetcher);
+  const { data: omList, mutate: mutateOm } = useSWRImmutable<IEnrollMember[]>(
+    '/v1/api/admin/old-members',
+    fetcher,
+  );
 
   const [listMode, setListMode] = useState('active');
   const [addOm, setAddOm] = useState<IEnrollMember[]>([]);
@@ -33,6 +37,24 @@ const RoleGrant = () => {
     [addOm],
   );
 
+  const onClickOm = useCallback(() => {
+    const omMemberIds: number[] = [];
+    addOm.forEach((om) => omMemberIds.push(om.memberId));
+    api
+      .patch('/v1/api/admin/active-members/to-old-members', {
+        memberIds: omMemberIds,
+      })
+      .then(() => {
+        mutateActive();
+        mutateOm();
+      })
+      .catch((err) => {
+        console.error(err);
+        mutateActive();
+        mutateOm();
+      });
+  }, [addOm]);
+
   return (
     <RoleApproveLayout headerText="관리자 권한설정">
       <ButtonWrapper>
@@ -53,7 +75,7 @@ const RoleGrant = () => {
           </Button>
         </ButtonContainer>
         {listMode === 'active' && (
-          <OmButton active={addOm.length === 0 ? 'non-active' : 'active'}>
+          <OmButton active={addOm.length === 0 ? 'non-active' : 'active'} onClick={onClickOm}>
             <p>OM으로 전환하기</p>
           </OmButton>
         )}

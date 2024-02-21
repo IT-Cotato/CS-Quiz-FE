@@ -84,10 +84,6 @@ const SessionModal = ({
     setDescription(e.target.value);
   }, []);
 
-  const onClickDeleteButton = useCallback((e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-  }, []);
-
   const onClickAddButton = useCallback(
     (e: MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
@@ -166,11 +162,6 @@ const SessionModal = ({
           />
         </BoxContainer>
         <ButtonContainer>
-          {session && (
-            <DeleteButton type="button" onClick={onClickDeleteButton}>
-              세션 삭제
-            </DeleteButton>
-          )}
           <UploadButton type="button" onClick={onClickAddButton}>
             업로드
           </UploadButton>
@@ -274,13 +265,6 @@ const Button = styled.button`
   height: 40px;
   margin-left: 8px;
   border-radius: 5px;
-`;
-
-const DeleteButton = styled(Button)`
-  background: #eb5353;
-  border: 2px solid #c6c6c6;
-  ${fontStyle}
-  color: #fff;
 `;
 
 const UploadButton = styled(Button)`

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { css, styled } from 'styled-components';
 import ToggleButton from '@components/ToggleButton';
 import { ReactComponent as ArrowBack } from '@assets/arrow_back.svg';
@@ -7,6 +7,7 @@ import { IQuizAdmin } from '@/typing/db';
 import useSWRImmutable from 'swr/immutable';
 import fetcher from '@utils/fetcher';
 import api from '@/api/api';
+import WaitPopup from '@pages/CS/manage/WaitPopup';
 
 interface Props {
   quiz: IQuizAdmin;
@@ -19,6 +20,8 @@ const QuizContent = ({ quiz, educationId, quizNineId }: Props) => {
     `/v1/api/quiz/cs-admin/all?educationId=${educationId}`,
     fetcher,
   );
+
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -57,6 +60,7 @@ const QuizContent = ({ quiz, educationId, quizNineId }: Props) => {
     let path = '';
     if (quiz.start === 'QUIZ_OFF') {
       path = '/v1/api/socket/start';
+      setIsPopupOpen(true);
     } else if (quiz.start === 'QUIZ_ON') {
       path = '/v1/api/socket/stop';
     }
@@ -64,10 +68,12 @@ const QuizContent = ({ quiz, educationId, quizNineId }: Props) => {
     api
       .patch(path, { quizId: quiz.quizId })
       .then(() => {
+        setIsPopupOpen(false);
         mutate();
       })
       .catch((err) => {
         console.error(err);
+        setIsPopupOpen(false);
         mutate();
       });
 
@@ -75,23 +81,26 @@ const QuizContent = ({ quiz, educationId, quizNineId }: Props) => {
   }, [quiz.start]);
 
   return (
-    <ContentBox>
-      <TitleWrapper>
-        <QuizNumber>문제 {quiz.quizNumber}</QuizNumber>
-        <QuestionWrapper>
-          <p>{quiz.question}</p>
-          <FrontButton width={20} height={20} onClick={onClickQuestionButton} />
-        </QuestionWrapper>
-      </TitleWrapper>
-      <ToggleWrapper>
-        <p>접근</p>
-        <ToggleButton toggled={quiz.status === 'QUIZ_ON'} onClick={onClickApproach} />
-      </ToggleWrapper>
-      <ToggleWrapper>
-        <p>문제풀이 시작</p>
-        <ToggleButton toggled={quiz.start === 'QUIZ_ON'} onClick={onClickQuizStart} />
-      </ToggleWrapper>
-    </ContentBox>
+    <>
+      <ContentBox>
+        <TitleWrapper>
+          <QuizNumber>문제 {quiz.quizNumber}</QuizNumber>
+          <QuestionWrapper>
+            <p>{quiz.question}</p>
+            <FrontButton width={20} height={20} onClick={onClickQuestionButton} />
+          </QuestionWrapper>
+        </TitleWrapper>
+        <ToggleWrapper>
+          <p>접근</p>
+          <ToggleButton toggled={quiz.status === 'QUIZ_ON'} onClick={onClickApproach} />
+        </ToggleWrapper>
+        <ToggleWrapper>
+          <p>문제풀이 시작</p>
+          <ToggleButton toggled={quiz.start === 'QUIZ_ON'} onClick={onClickQuizStart} />
+        </ToggleWrapper>
+      </ContentBox>
+      <WaitPopup isOpen={isPopupOpen} />
+    </>
   );
 };
 

@@ -23,7 +23,7 @@ const RoleContent = ({ mode, member, addOm, onChangeAddOm, onChangeRemoveOm }: P
     fetcher,
   );
   const { mutate: mutateOm } = useSWRImmutable<IEnrollMember[]>(
-    '/v1/api/admin/old-member',
+    '/v1/api/admin/old-members',
     fetcher,
   );
 
@@ -76,29 +76,36 @@ const RoleContent = ({ mode, member, addOm, onChangeAddOm, onChangeRemoveOm }: P
           setRole(selectedRole);
           mutateActive();
         })
-        .catch((err) => console.error(err));
+        .catch((err) => {
+          console.error(err);
+          mutateActive();
+        });
     },
     [member],
   );
 
   const onClickAddOm = useCallback(() => {
     if (onChangeAddOm) onChangeAddOm(member);
-  }, []);
+  }, [addOm]);
 
   const onClickRemoveOm = useCallback(() => {
     if (onChangeRemoveOm) onChangeRemoveOm(member);
-  }, []);
+  }, [addOm]);
 
   const onClckRecoverMemberButton = useCallback(() => {
     api
       .patch('/v1/api/admin/old-members/role', {
-        member: member.memberId,
+        memberId: member.memberId,
       })
       .then(() => {
         mutateOm();
         mutateActive();
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error(err);
+        mutateOm();
+        mutateActive();
+      });
   }, [member]);
 
   return (
