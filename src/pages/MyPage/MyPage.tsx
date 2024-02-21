@@ -6,6 +6,7 @@ import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import Request from '@pages/MyPage/request/Request';
 import RoleGrant from '@pages/MyPage/roleGrant/RoleGrant';
+import CSRecord from '@pages/MyPage/CSRecord';
 
 const MyPage = () => {
   const { data: user, error } = useSWR('/v1/api/member/info', fetcher);
@@ -22,6 +23,7 @@ const MyPage = () => {
       <Route path="/setting" element={<Setting />} />
       <Route path="/request" element={<Request />} />
       <Route path="/role-grant" element={<RoleGrant />} />
+      <Route path="cs-record" element={<CSRecord />} />
     </Routes>
   );
 };
