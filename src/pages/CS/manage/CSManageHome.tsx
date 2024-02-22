@@ -38,9 +38,9 @@ const CSManageHome = () => {
 
   const onClickQuizButton = useCallback(() => {
     let path = '';
-    if (educationStatus.status === 'CLOSED' && confirm('교육을 시작하시겠습니까?')) {
+    if (educationStatus?.status === 'CLOSED' && confirm('교육을 시작하시겠습니까?')) {
       path = '/v1/api/socket/start/csquiz';
-    } else if (educationStatus.status === 'ONGOING' && confirm('교육을 종료하시겠습니까?')) {
+    } else if (educationStatus?.status === 'ONGOING' && confirm('교육을 종료하시겠습니까?')) {
       path = '/v1/api/socket/close/csquiz';
     }
 
