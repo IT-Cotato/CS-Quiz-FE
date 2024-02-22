@@ -72,37 +72,39 @@ const SessionHome = () => {
 
   return (
     <>
-      <SessionWrapper>
-        <SessionHeader>세션 기록</SessionHeader>
-        <SessionSetting>
-          <GenerationSelect
-            onChangeGeneration={onChangeGeneration}
-            selectedGeneration={selectedGeneration}
-          />
-          {user?.role === 'ADMIN' && (
-            <ButtonWrapper>
-              <AddIcon onClick={onClickAddButton} />
-            </ButtonWrapper>
-          )}
-        </SessionSetting>
-        <SessionContentsContainer>
-          {sessions?.length === 0 ? (
-            <SessionReady>
-              <SettingIcon />
-              <p>세션 준비중입니다.</p>
-            </SessionReady>
-          ) : (
-            sessions?.map((session) => (
-              <SessionContent
-                key={session.sessionId}
-                session={session}
-                handleModifyButton={handleModifyButton}
-                sessionCount={selectedGeneration?.sessionCount}
-              />
-            ))
-          )}
-        </SessionContentsContainer>
-      </SessionWrapper>
+      <FlexBox>
+        <SessionWrapper>
+          <SessionHeader>세션 기록</SessionHeader>
+          <SessionSetting>
+            <GenerationSelect
+              onChangeGeneration={onChangeGeneration}
+              selectedGeneration={selectedGeneration}
+            />
+            {user?.role === 'ADMIN' && (
+              <ButtonWrapper>
+                <AddIcon onClick={onClickAddButton} />
+              </ButtonWrapper>
+            )}
+          </SessionSetting>
+          <SessionContentsContainer>
+            {sessions?.length === 0 ? (
+              <SessionReady>
+                <SettingIcon />
+                <p>세션 준비중입니다.</p>
+              </SessionReady>
+            ) : (
+              sessions?.map((session) => (
+                <SessionContent
+                  key={session.sessionId}
+                  session={session}
+                  handleModifyButton={handleModifyButton}
+                  sessionCount={selectedGeneration?.sessionCount}
+                />
+              ))
+            )}
+          </SessionContentsContainer>
+        </SessionWrapper>
+      </FlexBox>
       <SessionModal
         isOpen={isSessionModalOpen}
         onCloseModal={onCloseModal}
@@ -118,13 +120,23 @@ const SessionHome = () => {
 
 export default SessionHome;
 
+const FlexBox = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+`;
+
 const SessionWrapper = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
-  width: 100%;
+  width: 70%;
   min-height: 100vh;
+
+  @media screen and (max-width: 768px) {
+    width: 300px;
+  }
 `;
 
 const SessionHeader = styled.h1`
@@ -136,13 +148,18 @@ const SessionHeader = styled.h1`
   font-style: normal;
   font-weight: 800;
   line-height: normal;
+
+  @media screen and (max-width: 768px) {
+    margin: 92px 0 64px;
+    font-size: 2rem;
+  }
 `;
 
 const SessionSetting = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 70%;
+  width: 100%;
   margin-bottom: 12px;
 `;
 
@@ -161,7 +178,7 @@ const SessionContentsContainer = styled.div`
   justify-content: space-between;
   flex-direction: row;
   align-content: start;
-  width: 70%;
+  width: 100%;
   min-height: 30vh;
   margin: 28px 0 120px;
 
@@ -176,7 +193,7 @@ const SessionReady = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
-  margin: 160px;
+  margin: 160px 0;
 
   p {
     color: #9a9a9a;

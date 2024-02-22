@@ -142,6 +142,11 @@ export const MyPageWrapper = styled.div`
   max-width: 920px;
   width: 80%;
   min-height: 100vh;
+
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    padding: 20px;
+  }
 `;
 
 const fontStyle = css`
@@ -155,6 +160,10 @@ const fontStyle = css`
 
 export const MyPageHeader = styled.div`
   margin: 120px 0 48px;
+
+  @media screen and (max-width: 768px) {
+    margin: 72px 0 40px;
+  }
 
   > h1 {
     ${fontStyle};
@@ -190,6 +199,10 @@ const Button = styled.button`
   border-radius: 8px;
   cursor: pointer;
 
+  @media screen and (max-width: 768px) {
+    padding: 4px 16px;
+  }
+
   > p {
     ${fontStyle};
     color: ${(props) => props.color} !important;
@@ -216,10 +229,18 @@ const InfoWrapper = styled.div`
   width: 100%;
   margin: 20px 0 20px;
 
+  @media screen and (max-width: 768px) {
+    margin: 12px 0 12px;
+  }
+
   > p {
     ${fontStyle};
     color: #787878;
     margin-bottom: 8px;
+
+    @media screen and (max-width: 768px) {
+      margin-bottom: 4px;
+    }
   }
 `;
 
@@ -234,6 +255,10 @@ const TextContainer = styled.div`
   background: #f3f7ff;
   border-radius: 12px;
 
+  @media screen and (max-width: 768px) {
+    padding: 8px 12px;
+  }
+
   > p {
     ${fontStyle};
   }
@@ -242,6 +267,11 @@ const TextContainer = styled.div`
 const IDWrapper = styled.div`
   display: flex;
   width: 100%;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+  }
 `;
 
 const ProfileImage = styled.div`
@@ -264,6 +294,10 @@ const ButtonContainer = styled.div`
   border-radius: 16px;
   background: #fff;
   box-shadow: 0px 4px 40px 0px rgba(0, 0, 0, 0.05);
+
+  @media screen and (max-width: 768px) {
+    padding: 16px 24px;
+  }
 
   > p {
     color: #1e1e1e;
