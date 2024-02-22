@@ -48,56 +48,60 @@ const MyInfo = () => {
         <MyDataHeader>
           <h3>내 정보</h3>
         </MyDataHeader>
-        <DataBox>
-          <IDWrapper>
-            <ProfileImage />
+        {user?.role !== 'GENERAL' && (
+          <DataBox>
+            <IDWrapper>
+              <ProfileImage />
+              <InfoWrapper>
+                <p>아이디</p>
+                <TextContainer>
+                  <p>{myInfo?.email}</p>
+                </TextContainer>
+              </InfoWrapper>
+            </IDWrapper>
             <InfoWrapper>
-              <p>아이디</p>
+              <p>비밀번호</p>
               <TextContainer>
-                <p>{myInfo?.email}</p>
+                <p>********</p>
+                <Button color="#000">
+                  <p>변경</p>
+                </Button>
               </TextContainer>
             </InfoWrapper>
-          </IDWrapper>
-          <InfoWrapper>
-            <p>비밀번호</p>
-            <TextContainer>
-              <p>********</p>
-              <Button color="#000">
-                <p>변경</p>
-              </Button>
-            </TextContainer>
-          </InfoWrapper>
-          <InfoWrapper>
-            <p>이름</p>
-            <TextContainer>
-              <p>{myInfo?.name}</p>
-            </TextContainer>
-          </InfoWrapper>
-          <InfoWrapper>
-            <p>합격기수</p>
-            <TextContainer>
-              <p>{myInfo?.generationNumber}기</p>
-            </TextContainer>
-          </InfoWrapper>
-          <InfoWrapper>
-            <p>포지션</p>
-            <TextContainer>
-              <p>{myInfo?.memberPosition}</p>
-            </TextContainer>
-          </InfoWrapper>
-          <InfoWrapper>
-            <p>전화번호</p>
-            <TextContainer>
-              <p>{myInfo?.phoneNumber}</p>
-            </TextContainer>
-          </InfoWrapper>
-        </DataBox>
-        <ButtonContainer>
-          <p>내가 풀어본 CS 문제풀이</p>
-          <Link to="cs-record">
-            <ButtonIcon />
-          </Link>
-        </ButtonContainer>
+            <InfoWrapper>
+              <p>이름</p>
+              <TextContainer>
+                <p>{myInfo?.name}</p>
+              </TextContainer>
+            </InfoWrapper>
+            <InfoWrapper>
+              <p>합격기수</p>
+              <TextContainer>
+                <p>{myInfo?.generationNumber}기</p>
+              </TextContainer>
+            </InfoWrapper>
+            <InfoWrapper>
+              <p>포지션</p>
+              <TextContainer>
+                <p>{myInfo?.memberPosition}</p>
+              </TextContainer>
+            </InfoWrapper>
+            <InfoWrapper>
+              <p>전화번호</p>
+              <TextContainer>
+                <p>{myInfo?.phoneNumber}</p>
+              </TextContainer>
+            </InfoWrapper>
+          </DataBox>
+        )}
+        {user?.role !== 'GENERAL' && (
+          <ButtonContainer>
+            <p>내가 풀어본 CS 문제풀이</p>
+            <Link to="cs-record">
+              <ButtonIcon />
+            </Link>
+          </ButtonContainer>
+        )}
         {user?.role === 'ADMIN' && (
           <ButtonContainer>
             <p>신입 감자 가입요청 확인/승인 </p>
