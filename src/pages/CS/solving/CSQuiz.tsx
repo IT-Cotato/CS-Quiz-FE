@@ -48,13 +48,15 @@ const CSQuiz: React.FC<WaitingProps> = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const initializeWebSocket = async () => {
-      await issueSocketToken(); // 토큰 발급이 완료된 후에 연결 요청하도록 함수 호출 타이밍 조절
-      connectWebSocket();
-      receiveMessage();
-    };
-    initializeWebSocket();
-  }, []);
+    initializeWebSocket(); // 문제 바뀔 때마다 WebSocket 갱신
+  }, [message.quizId]);
+
+  // webSocket 초기 연결 및 메시지 수신
+  const initializeWebSocket = async () => {
+    await issueSocketToken(); // 토큰 발급이 완료된 후에 연결 요청하도록 함수 호출 타이밍 조절
+    connectWebSocket();
+    receiveMessage();
+  };
 
   // WebSocket 접속을 위한 30초 토큰 발급
   const issueSocketToken = async () => {
