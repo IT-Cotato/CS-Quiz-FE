@@ -82,7 +82,7 @@ const CSRecord = () => {
       </MyInfoBox>
       <HallOfFameBox>
         <h1>득점자 명예의 전당</h1>
-        {hallOfFameData?.answerInfo.map((answerer: any, idx: number) => (
+        {hallOfFameData?.scorerInfo.map((answerer: any, idx: number) => (
           <HallOfFameListDiv key={idx}>
             <OrderImageDiv>
               <img src={medalImgSrcs[idx]} alt="gold-medal" />
@@ -99,7 +99,7 @@ const CSRecord = () => {
       </HallOfFameBox>
       <HallOfFameBox>
         <h1>정답자 명예의 전당</h1>
-        {hallOfFameData?.scorerInfo.map((answerer: any, idx: number) => (
+        {hallOfFameData?.answerInfo.map((answerer: any, idx: number) => (
           <HallOfFameListDiv key={idx}>
             <OrderImageDiv>
               <img src={medalImgSrcs[idx]} alt="gold-medal" />
