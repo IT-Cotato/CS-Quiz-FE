@@ -25,18 +25,18 @@ api.interceptors.response.use(
         response.data.status === 'UNAUTHORIZED' &&
         response.data.message === 'accessToken이 만료되었습니다.'
       ) {
-        const refreshResponse = await getRefreshToken();
-
-        if (response.status === 200) {
-          const newToken = refreshResponse.data.token;
-          localStorage.setItem('token', refreshResponse.data.token);
-          // 기존 request 처리
-          config.headers.Authorization = `Bearer ${newToken}`;
-          return axios(config);
-        } else {
-          localStorage.removeItem('token');
-          window.location.replace('/');
-        }
+        api
+          .post('/v1/api/auth/reissue')
+          .then((res) => {
+            localStorage.setItem('token', res.data.token);
+            // 기존 request 처리
+            config.headers.Authorization = `Bearer ${res.data.token}`;
+            return axios(config);
+          })
+          .catch(() => {
+            localStorage.clear();
+            window.location.replace('/');
+          });
       }
     }
     return Promise.reject(error);
