@@ -31,17 +31,15 @@ const CSMain = () => {
         <span>{subject}</span>
       </TitleBox>
       <NavBox>
-        <StartButton>
-          <p onClick={() => navigate('/cs/solving')}> 문제풀이 시작하기</p>
+        <StartButton onClick={() => navigate('/cs/solving')}>
+          <p> 문제풀이 시작하기</p>
         </StartButton>
-        <OtherButton>
-          <p
-            onClick={() => {
-              window.location.href = '/cs';
-            }}
-          >
-            이전세션 선택하기
-          </p>
+        <OtherButton
+          onClick={() => {
+            window.location.href = '/cs';
+          }}
+        >
+          <p>이전세션 선택하기</p>
         </OtherButton>
         {['ADMIN', 'EDUCATION'].includes(role as string) ? (
           <>
@@ -56,14 +54,12 @@ const CSMain = () => {
             >
               <p>문제 업로드</p>
             </UploadButton>
-            <ManageButton>
-              <p
-                onClick={() => {
-                  navigate('/cs/manage' + search);
-                }}
-              >
-                문제풀이 관리
-              </p>
+            <ManageButton
+              onClick={() => {
+                navigate('/cs/manage' + search);
+              }}
+            >
+              <p>문제풀이 관리</p>
             </ManageButton>
           </>
         ) : null}
