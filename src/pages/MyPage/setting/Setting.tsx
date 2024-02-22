@@ -90,6 +90,7 @@ const ButtonContainer = styled.div`
     flex-direction: column;
     align-items: center;
     margin: 0 0 20px;
+    padding: 12px;
   }
 
   > p {
