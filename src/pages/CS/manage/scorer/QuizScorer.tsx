@@ -6,19 +6,19 @@ import { IQuizAdminScorer, IQuizAdminSubmit } from '@/typing/db';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import AddAnswer from '@pages/CS/manage/scorer/AddAnswer';
-import useSWRImmutable from 'swr/immutable';
 
 const QuizScorer = () => {
   const [searchParams] = useSearchParams();
   const quizId = searchParams.get('quizId');
 
-  const { data: quiz } = useSWRImmutable<IQuizAdminScorer>(
+  const { data: quiz } = useSWR<IQuizAdminScorer>(
     `/v1/api/quiz/cs-admin?quizId=${quizId}`,
     fetcher,
   );
   const { data: record } = useSWR(`/v1/api/record/all?quizId=${quizId}`, fetcher, {
     dedupingInterval: 1000,
   });
+
   const [submits, setSubmits] = useState<IQuizAdminSubmit[]>();
   const [scorer, setScorer] = useState<IQuizAdminScorer>();
 
@@ -27,8 +27,8 @@ const QuizScorer = () => {
   }, []);
 
   useEffect(() => {
-    const newSubmitList: IQuizAdminSubmit[] = [...record.records];
-    newSubmitList.sort((left, right) => left.ticketNumber - right.ticketNumber);
+    const newSubmitList: IQuizAdminSubmit[] = record?.records;
+    newSubmitList?.sort((left, right) => left.ticketNumber - right.ticketNumber);
     setSubmits(newSubmitList);
     setScorer(record?.scorer);
   }, [record]);

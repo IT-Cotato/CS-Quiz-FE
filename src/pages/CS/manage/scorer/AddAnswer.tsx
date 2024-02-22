@@ -2,7 +2,7 @@ import React, { ChangeEvent, FormEvent, useCallback, useState } from 'react';
 import { styled } from 'styled-components';
 import { ReactComponent as AddIcon } from '@assets/add_circle.svg';
 import api from '@/api/api';
-import useSWRImmutable from 'swr/immutable';
+import useSWR from 'swr';
 import { IQuizAdminScorer } from '@/typing/db';
 import fetcher from '@utils/fetcher';
 
@@ -12,10 +12,13 @@ interface Props {
 }
 
 const AddAnswer = ({ quizId, quizType }: Props) => {
-  const { mutate } = useSWRImmutable<IQuizAdminScorer>(
+  const { mutate: mutateQuiz } = useSWR<IQuizAdminScorer>(
     `/v1/api/quiz/cs-admin?quizId=${quizId}`,
     fetcher,
   );
+  const { mutate: mutateRecord } = useSWR(`/v1/api/record/all?quizId=${quizId}`, fetcher, {
+    dedupingInterval: 1000,
+  });
 
   const [addAnswer, setAddAnswer] = useState('');
 
@@ -30,7 +33,6 @@ const AddAnswer = ({ quizId, quizType }: Props) => {
     (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      // 주관식인 경우만
       if (quizType === 'SHORT_QUIZ') {
         api
           .post(
@@ -51,11 +53,13 @@ const AddAnswer = ({ quizId, quizType }: Props) => {
                 quizId: quizId,
                 newAnswer: addAnswer,
               })
-              .then(() => {})
+              .then(() => {
+                mutateQuiz();
+                mutateRecord();
+              })
               .catch((err) => console.error(err));
 
             setAddAnswer('');
-            mutate();
           })
           .catch((err) => console.error(err));
       }
