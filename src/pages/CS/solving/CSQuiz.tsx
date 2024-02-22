@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import background from '@assets/bg_waiting.svg';
+import mobile from '@assets/bg_waiting_mobile.svg';
 import { ReactComponent as Timer } from '@assets/timer.svg';
 import api from '@/api/api';
 import CSProblem from './CSProblem';
@@ -207,5 +208,15 @@ const Waiting = styled.div`
     font-family: NanumSquareRound;
     font-size: 1.2rem;
     font-weight: 700;
+  }
+
+  @media screen and (max-width: 392px) {
+    background: url(${mobile});
+    div {
+      width: 360px;
+      height: 72px;
+      font-size: 1rem;
+      border-radius: 8px;
+    }
   }
 `;
