@@ -7,6 +7,7 @@ import { ReactComponent as CalendarIcon } from '@assets/calendar_icon.svg';
 import GenerationDayPicker from '@pages/MyPage/setting/GenerationDayPicker';
 import dayjs from 'dayjs';
 import api from '@/api/api';
+import { ToastContainer, toast } from 'react-toastify';
 
 interface Props {
   modalOpen: boolean;
@@ -60,10 +61,15 @@ const GenerationModal = ({ modalOpen, setModalOpen }: Props) => {
   }, [dates]);
 
   const onClickUploadButton = useCallback(() => {
+    if (!parseInt(generation) || !parseInt(sessionCount) || (dates && dates?.length < 2)) {
+      toast.error('입력 값을 확인해주세요.');
+      return;
+    }
+
     api
       .post('v1/api/generation/add', {
         generationNumber: parseInt(generation),
-        sessionCount: sessionCount,
+        sessionCount: parseInt(sessionCount),
         startDate: dates?.at(0),
         endDate: dates?.at(1),
       })
@@ -122,6 +128,7 @@ const GenerationModal = ({ modalOpen, setModalOpen }: Props) => {
           setDates={setDates}
         />
       </ModalWrapper>
+      <ToastContainer position="top-center" autoClose={2000} />
     </ReactModal>
   );
 };
@@ -220,11 +227,6 @@ const ButtonContainer = styled.div`
   justify-content: end;
   width: 500px;
   margin: 32px auto;
-`;
-
-const DeleteButton = styled(Button)`
-  background: #eb5353;
-  border: none;
 `;
 
 const UploadButton = styled(Button)`

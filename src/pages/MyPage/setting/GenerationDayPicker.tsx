@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { ko } from 'date-fns/locale';
@@ -23,6 +23,12 @@ const GenerationDayPicker = ({ isOpen, setIsOpen, dates, setDates }: Props) => {
     window.addEventListener('mousedown', handleClick);
     return () => window.removeEventListener('mousedown', handleClick);
   }, [calendarRef]);
+
+  useEffect(() => {
+    if (dates && dates.length === 2) {
+      setIsOpen(false);
+    }
+  }, [dates]);
 
   if (!isOpen) {
     return <></>;
