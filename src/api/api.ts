@@ -21,7 +21,10 @@ api.interceptors.response.use(
 
     // 토큰 만료
     if (response.status === 401) {
-      if (response.data.status === 'UNAUTHORIZED') {
+      if (
+        response.data.status === 'UNAUTHORIZED' &&
+        response.data.message === 'accessToken이 만료되었습니다.'
+      ) {
         const refreshResponse = await getRefreshToken();
 
         if (response.status === 200) {
