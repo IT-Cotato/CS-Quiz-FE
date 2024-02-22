@@ -89,7 +89,7 @@ const ButtonContainer = styled.div`
   @media screen and (max-width: 768px) {
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    margin: 0 0 20px;
   }
 
   > p {
