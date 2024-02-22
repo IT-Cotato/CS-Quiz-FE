@@ -6,14 +6,17 @@ import reportWebVitals from './reportWebVitals';
 import '@theme/font.css';
 import ReactModal from 'react-modal';
 import { BrowserRouter } from 'react-router-dom';
+import { CookiesProvider } from 'react-cookie';
 
 ReactModal.setAppElement('#root');
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>,
+  <CookiesProvider>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </CookiesProvider>,
 );
 
 // If you want to start measuring performance in your app, pass a function
