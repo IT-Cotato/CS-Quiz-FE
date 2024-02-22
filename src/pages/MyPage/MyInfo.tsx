@@ -58,7 +58,7 @@ const MyInfo = () => {
               <p>비밀번호</p>
               <TextContainer>
                 <p>********</p>
-                <Button color="#000">
+                <Button color="#000" to="/findpw">
                   <p>변경</p>
                 </Button>
               </TextContainer>
@@ -191,12 +191,13 @@ const MyDataHeader = styled.div`
   }
 `;
 
-const Button = styled.button`
+const Button = styled(Link)`
   padding: 8px 24px;
   box-sizing: border-box;
   background: #f3f3f3;
   border: none;
   border-radius: 8px;
+  text-decoration: none;
   cursor: pointer;
 
   @media screen and (max-width: 768px) {
