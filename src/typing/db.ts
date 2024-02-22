@@ -22,7 +22,7 @@ export interface ShortQuizzes {
 
 export interface IGeneration {
   generationId: number;
-  generationNumber: string;
+  generationNumber: number;
   sessionCount: number;
 }
 
