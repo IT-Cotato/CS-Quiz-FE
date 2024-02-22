@@ -15,7 +15,7 @@ const MemberHeader: React.FC<MemberHeaderProps> = ({ showHeader, setShowHeader }
   const { data, error } = useSWR('/v1/api/member/info', fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
-    dedupingInterval: 6000000, // 10분동안은 데이터가 변경되지 않는 한 재요청이 발생하지 않음
+    revalidateOnReconnect: false, // 10분동안은 데이터가 변경되지 않는 한 재요청이 발생하지 않음
   });
 
   const navigate = useNavigate();
