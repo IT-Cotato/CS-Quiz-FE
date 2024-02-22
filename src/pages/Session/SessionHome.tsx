@@ -162,6 +162,7 @@ const SessionContentsContainer = styled.div`
   flex-direction: row;
   align-content: start;
   width: 70%;
+  min-height: 30vh;
   margin: 28px 0 120px;
 
   @media only screen and (max-width: 957px) {
