@@ -1,13 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 import background from '@assets/bg_incorrect.svg';
-import { ReactComponent as X } from '@assets/x.svg';
+import mobile from '@assets/bg_incorrect_mobile.svg';
+import x from '@assets/x.svg';
 
 const BgIncorrect = () => {
   return (
     <Wrapper>
       <p>오답입니다!</p>
-      <X style={{ width: '200px' }} />
+      <X src={x} />
     </Wrapper>
   );
 };
@@ -54,4 +55,20 @@ const Wrapper = styled.div`
   animation:
     /* slide_down 1s ease-in-out, */ fade_out 1s ease-in-out 1.5s;
   animation-fill-mode: forwards;
+
+  @media screen and (max-width: 392px) {
+    background: url(${mobile});
+    padding-top: 200px;
+    p {
+      font-size: 2rem;
+    }
+  }
+`;
+
+const X = styled.img`
+  width: 200px;
+
+  @media screen and (max-width: 392px) {
+    width: 100px;
+  }
 `;

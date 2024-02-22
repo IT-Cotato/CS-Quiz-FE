@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import background from '@assets/bg_kingking.svg';
+import mobile from '@assets/bg_kingking_mobile.svg';
 import api from '@/api/api';
 
 type KingMembers = {
@@ -139,6 +140,15 @@ const Wrapper = styled.div`
     }
     100% {
       transform: scale(1);
+    }
+  }
+
+  @media screen and (max-width: 392px) {
+    background: url(${mobile});
+    /* padding-top: 180px; */
+    .box {
+      width: 300px;
+      font-size: 1.4rem;
     }
   }
 `;

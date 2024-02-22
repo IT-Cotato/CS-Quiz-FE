@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { ReactComponent as Timer } from '@assets/timer.svg';
 import background from '@assets/bg_waiting.svg';
+import mobile from '@assets/bg_waiting_mobile.svg';
 
 type Props = {
   quizNum?: number;
@@ -64,6 +65,10 @@ const Wrapper = styled.div`
       transform: translateY(-100%);
     }
   }
+
+  @media screen and (max-width: 392px) {
+    overflow-x: hidden;
+  }
 `;
 
 const Waiting = styled.div`
@@ -89,5 +94,15 @@ const Waiting = styled.div`
     font-family: NanumSquareRound;
     font-size: 1.2rem;
     font-weight: 700;
+  }
+
+  @media screen and (max-width: 392px) {
+    background: url(${mobile});
+    div {
+      width: 360px;
+      height: 72px;
+      font-size: 1rem;
+      border-radius: 8px;
+    }
   }
 `;

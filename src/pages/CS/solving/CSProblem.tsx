@@ -223,39 +223,43 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
         {quizData?.image && (
           <ImageContainer bigger={biggerImg}>
             <Image src={quizData?.image} alt={`문제${quizData?.number}의 이미지`} />
-            <ResizeIcon
-              src={biggerImg ? smaller : bigger}
-              onClick={() => setBiggerImg(!biggerImg)}
-            />
+            {window.innerWidth > 392 && (
+              <ResizeIcon
+                src={biggerImg ? smaller : bigger}
+                onClick={() => setBiggerImg(!biggerImg)}
+              />
+            )}
           </ImageContainer>
         )}
-        <LightImgContainer
-          mulYPos={mulYPos}
-          mulXPos={mulXPos}
-          shortYPos={shortYPos}
-          shortXPos={shortXPos}
-        >
-          {!submitAllowed && showExplaination && (
-            <Explaination>
-              불이 켜지면
-              <br />
-              제출!
-            </Explaination>
-          )}
-          <LightBulb
-            src={lightBulb}
-            onMouseEnter={() => setShowExplaination(true)}
-            onMouseLeave={() => setShowExplaination(false)}
-          />
-          {submitAllowed && (
-            <LightOn>
-              <img src={bubble1} alt="bubble 1" />
-              <img src={bubble2} alt="bubble 2" />
-              <img src={bubble3} alt="bubble 3" />
-              <img src={light} alt="light" />
-            </LightOn>
-          )}
-        </LightImgContainer>
+        {window.innerWidth > 392 && (
+          <LightImgContainer
+            mulYPos={mulYPos}
+            mulXPos={mulXPos}
+            shortYPos={shortYPos}
+            shortXPos={shortXPos}
+          >
+            {!submitAllowed && showExplaination && (
+              <Explaination>
+                불이 켜지면
+                <br />
+                제출!
+              </Explaination>
+            )}
+            <LightBulb
+              src={lightBulb}
+              onMouseEnter={() => setShowExplaination(true)}
+              onMouseLeave={() => setShowExplaination(false)}
+            />
+            {submitAllowed && (
+              <LightOn>
+                <img src={bubble1} alt="bubble 1" />
+                <img src={bubble2} alt="bubble 2" />
+                <img src={bubble3} alt="bubble 3" />
+                <img src={light} alt="light" />
+              </LightOn>
+            )}
+          </LightImgContainer>
+        )}
         {quizData?.choices && (
           <Choice
             selectNum={selectNum}
@@ -409,6 +413,11 @@ const QuizContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  @media screen and (max-width: 392px) {
+    width: 100%;
+    padding: 0 9px;
+  }
 `;
 
 const QuestionContainer = styled.div<{ ifNoImg: boolean }>`
@@ -421,22 +430,34 @@ const QuestionContainer = styled.div<{ ifNoImg: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
   margin-top: 32px;
   ${(props) => (props.ifNoImg ? `margin-bottom: 120px;` : `margin-bottom: 48px;`)};
-  padding: 20px 80px !important;
+  padding: 20px 60px !important;
   p {
     color: #477feb;
     font-family: Inter;
     font-size: 1.1rem;
     font-weight: 600;
-    margin: 0 20px 3px 0;
+    margin: 0 0 3px 0;
   }
   span {
     color: #000;
     font-family: NanumSquareRound;
     font-size: 1.1rem;
     font-weight: 600;
-    width: 680px;
+    width: 90%;
+  }
+
+  @media screen and (max-width: 392px) {
+    width: 100%;
+    padding: 20px !important;
+    p {
+      margin: 0 0 4px 0;
+    }
+    span {
+      width: 78%;
+    }
   }
 `;
 
@@ -457,6 +478,11 @@ const ImageContainer = styled.div<{ bigger: boolean }>`
         transform: scale(1);
         transition: transform 0.3s;
       `};
+
+  @media screen and (max-width: 392px) {
+    width: 332px;
+    height: 189px;
+  }
 `;
 
 const Image = styled.img`
@@ -595,12 +621,17 @@ const LightOn = styled.div`
 `;
 
 const ChoiceContainer = styled.div`
+  width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
   grid-row-gap: 12px;
   grid-column-gap: 16px;
   align-items: stretch !important;
+
+  @media screen and (max-width: 392px) {
+    grid-column-gap: 12px;
+  }
 `;
 
 const ChoiceBtn = styled.div<{ clicked: boolean }>`
@@ -619,6 +650,12 @@ const ChoiceBtn = styled.div<{ clicked: boolean }>`
     transition: transform 0.3s;
   }
   ${(props) => props.clicked && `background: #D2D2D2;`}
+
+  @media screen and (max-width: 392px) {
+    width: 180px;
+    min-height: 100px;
+    padding: 20px;
+  }
 `;
 
 const ShortAnswerContainer = styled.div`
@@ -635,6 +672,10 @@ const ShortAnswerContainer = styled.div`
     font-family: NanumSquareRound;
     font-size: 1rem;
     font-weight: 400;
+  }
+
+  @media screen and (max-width: 392px) {
+    padding: 20px;
   }
 `;
 
@@ -679,4 +720,22 @@ const ButtonContainer = styled.div<{ disabled: boolean }>`
         cursor: default;
     }
   }`}
+
+  @media screen and (max-width: 392px) {
+    width: 100%;
+    padding: 0 9px;
+    flex-direction: column;
+    position: absolute;
+    bottom: 40px;
+    button {
+      width: 100%;
+      height: 64px;
+      &:last-child {
+        margin-left: 0;
+      }
+      &:first-child {
+        margin-bottom: 8px;
+      }
+    }
+  }
 `;
