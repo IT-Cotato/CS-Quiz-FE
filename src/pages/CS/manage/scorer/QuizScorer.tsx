@@ -27,7 +27,9 @@ const QuizScorer = () => {
   }, []);
 
   useEffect(() => {
-    setSubmits(record?.records);
+    const newSubmitList: IQuizAdminSubmit[] = [...record.records];
+    newSubmitList.sort((left, right) => left.ticketNumber - right.ticketNumber);
+    setSubmits(newSubmitList);
     setScorer(record?.scorer);
   }, [record]);
 
