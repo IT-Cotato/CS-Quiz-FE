@@ -3,7 +3,7 @@ import { styled } from 'styled-components';
 import CSManageLayout from '@pages/CS/manage/CSManageLayout';
 import QuizContent from '@pages/CS/manage/QuizContent';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import useSWRImmutable from 'swr/immutable';
+import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import { IQuizAdmin } from '@/typing/db';
 import api from '@/api/api';
@@ -13,21 +13,26 @@ const CSManageHome = () => {
   const educationId = searchParams.get('educationId');
   const navigate = useNavigate();
 
-  const { data: quizData, mutate: quizMutate } = useSWRImmutable(
+  const { data: quizData, mutate: quizMutate } = useSWR(
     `/v1/api/quiz/cs-admin/all?educationId=${educationId}`,
     fetcher,
   );
-  const { data: quizStatus, mutate: statusMutate } = useSWRImmutable(
+  const { data: quizStatus, mutate: statusMutate } = useSWR(
     `/v1/api/education/status?educationId=${educationId}`,
     fetcher,
   );
   const [quizzes, setQuizzes] = useState<IQuizAdmin[]>();
+  const [quizNineStart, setQuizNineStart] = useState('');
 
   useEffect(() => {
     if (quizData) {
       const quizArr: IQuizAdmin[] = quizData.quizzes;
       quizArr.sort((left, right) => left.quizNumber - right.quizNumber);
       setQuizzes(quizArr);
+
+      if (quizData.quizzes.length === 10) {
+        setQuizNineStart(quizData.quizzes.find((quiz: IQuizAdmin) => quiz.quizNumber === 9).start);
+      }
     }
   }, [quizData]);
 
@@ -73,7 +78,7 @@ const CSManageHome = () => {
               key={quiz.quizId}
               quiz={quiz}
               educationId={educationId}
-              quizNineId={quizzes?.find((quiz) => quiz.quizNumber === 9)?.quizId}
+              quizNineStart={quizNineStart}
             />
           ))}
         </QuizContentsWrapper>
