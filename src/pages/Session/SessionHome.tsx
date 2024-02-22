@@ -30,22 +30,23 @@ const SessionHome = () => {
     }
   }, []);
 
+  const fetchSessions = useCallback((generationId?: number) => {
+    api
+      .get('/v1/api/session', {
+        params: {
+          generationId: generationId,
+        },
+      })
+      .then((res) => setSessions(res.data))
+      .catch((err) => console.error(err));
+  }, []);
+
   const onChangeGeneration = useCallback(
     (generation: IGeneration | undefined) => {
       setSelectedGeneration(generation);
 
       if (generation) {
-        api
-          .get('/v1/api/session', {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-            params: {
-              generationId: generation.generationId,
-            },
-          })
-          .then((res) => setSessions(res.data))
-          .catch((err) => console.error(err));
+        fetchSessions(generation.generationId);
       }
     },
     [selectedGeneration],
@@ -85,7 +86,7 @@ const SessionHome = () => {
           )}
         </SessionSetting>
         <SessionContentsContainer>
-          {!sessions ? (
+          {sessions?.length === 0 ? (
             <SessionReady>
               <SettingIcon />
               <p>세션 준비중입니다.</p>
@@ -107,6 +108,7 @@ const SessionHome = () => {
         session={modifySession}
         lastWeek={lastWeek}
         generationId={selectedGeneration?.generationId}
+        fetchSessions={fetchSessions}
       />
     </>
   );

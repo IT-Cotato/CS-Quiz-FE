@@ -1,86 +1,90 @@
-import React, { ChangeEvent, MouseEvent, useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import ReactModal from 'react-modal';
 import { ReactComponent as CloseIcon } from '@assets/close_icon.svg';
 import TextBox from '@components/TextBox';
-import { IEducation } from '@/typing/db';
+import { ICsOnSession, IEducation } from '@/typing/db';
 import SessionSelect from '@components/SessionSelect';
+import api from '@/api/api';
 
 interface Props {
   isOpen: boolean;
   onCloseModal: () => void;
   educatoin?: IEducation;
+  generationId?: number;
+  fetchEducations: (generationId?: number) => void;
 }
 
-const CSModal = ({ isOpen, onCloseModal, educatoin }: Props) => {
-  const [week, setWeek] = useState('');
-  const [educationNum, setEducationNum] = useState(0);
+const CSModal = ({ isOpen, onCloseModal, educatoin, generationId, fetchEducations }: Props) => {
+  const [selectedSession, setSelectedSession] = useState<ICsOnSession>();
+  const [educationNum, setEducationNum] = useState('');
   const [subject, setSubject] = useState('');
 
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
-
-  useEffect(() => {
     if (educatoin) {
-      setWeek(`${educatoin.educationNumber}주차 교육`);
-      setEducationNum(educatoin.educationNumber);
+      setSelectedSession({ sessionId: 0, sessionNumber: educatoin.sessionNumber });
+      setEducationNum(`${educatoin.educationNumber}주차 교육`);
       setSubject(educatoin.subject);
     }
   }, [educatoin]);
 
-  const cleanInputState = useCallback(() => {
-    setWeek('');
-    setEducationNum(0);
-    setSubject('');
+  const handleAfterOpen = useCallback(() => {
+    document.body.style.overflow = 'hidden';
   }, []);
 
-  // 로직을 쫌더 엄격하게 가야할듯
-  const onChangeWeek = useCallback(
-    (e: ChangeEvent<HTMLTextAreaElement>) => {
-      const num = parseInt(e.target.value);
+  const handleAfterClose = useCallback(() => {
+    setEducationNum('');
+    setSubject('');
+    document.body.style.overflow = 'unset';
+  }, []);
 
-      if (num && num !== educationNum) {
-        setEducationNum(num);
-        setWeek(`${num}주차 교육`);
-      } else {
-        setWeek(e.target.value);
-      }
-    },
-    [week],
-  );
+  const onChangeSession = useCallback((session: ICsOnSession) => {
+    setSelectedSession(session);
+  }, []);
+
+  const onChangeEducationNum = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
+    setEducationNum(e.target.value);
+  }, []);
 
   const onChangeSubject = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
     setSubject(e.target.value);
   }, []);
 
-  const onClickDeleteButton = useCallback((e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    console.log('delete');
-    // 삭제 이후 모달을 끄는 동작 필요
-  }, []);
-
-  const onClickAddButton = useCallback(
-    (e: MouseEvent<HTMLButtonElement>) => {
-      e.preventDefault();
-      if (!educatoin) {
-        // 업로드 요청
-        console.log('upload');
-      } else {
-        // 수정 요청
-        console.log('modify');
-      }
-
-      // 제출 이후 모달을 끄는 동작 필요
-    },
-    [educatoin, week, educationNum, subject],
-  );
+  const onClickAddButton = useCallback(() => {
+    if (!educatoin) {
+      api
+        .post('/v1/api/education/add', {
+          subject: subject,
+          sessionId: selectedSession?.sessionId,
+          educationNum: parseInt(educationNum),
+        })
+        .then(() => {
+          fetchEducations(generationId);
+          onCloseModal();
+        })
+        .catch((err) => console.error(err));
+    } else {
+      api
+        .patch('/v1/api/education', {
+          educationId: educatoin.educationId,
+          newSubject: subject,
+          newNumber: parseInt(educationNum),
+        })
+        .then(() => {
+          fetchEducations(generationId);
+          onCloseModal();
+        })
+        .catch((err) => console.error(err));
+    }
+  }, [educatoin, educationNum, subject, selectedSession]);
 
   return (
-    <ReactModal isOpen={isOpen} onAfterClose={cleanInputState} style={modalStyle}>
+    <ReactModal
+      isOpen={isOpen}
+      onAfterOpen={handleAfterOpen}
+      onAfterClose={handleAfterClose}
+      style={modalStyle}
+    >
       <ModalWrapper>
         <ModalCloseButton>
           <CloseIcon width="57" height="56" fill="#686868" onClick={onCloseModal} />
@@ -89,11 +93,16 @@ const CSModal = ({ isOpen, onCloseModal, educatoin }: Props) => {
           <h3>{!educatoin ? '교육 추가' : '교육 수정'}</h3>
         </Header>
         <BoxContainer>
-          <SessionSelect />
+          <SessionSelect
+            education={educatoin}
+            selectetdSession={selectedSession}
+            onChangeSession={onChangeSession}
+            generationId={generationId}
+          />
           <TextBox
-            value={week}
+            value={educationNum}
             placeholder="교육 주차를 입력하세요"
-            onChange={onChangeWeek}
+            onChange={onChangeEducationNum}
             height="60px"
           />
           <TextBox
@@ -104,11 +113,6 @@ const CSModal = ({ isOpen, onCloseModal, educatoin }: Props) => {
           />
         </BoxContainer>
         <ButtonContainer>
-          {educatoin && (
-            <DeleteButton type="button" onClick={onClickDeleteButton}>
-              교육 삭제
-            </DeleteButton>
-          )}
           <UploadButton type="button" onClick={onClickAddButton}>
             업로드
           </UploadButton>
@@ -194,13 +198,6 @@ const ButtonContainer = styled.div`
   justify-content: end;
   width: 500px;
   margin: 32px auto;
-`;
-
-const DeleteButton = styled(Button)`
-  background: #eb5353;
-  border: none;
-  ${fontStyle};
-  color: #fff;
 `;
 
 const UploadButton = styled(Button)`

@@ -5,6 +5,7 @@ import SessionEmoji from '@pages/Session/SessionEmoji';
 import { ReactComponent as ModifyIcon } from '@assets/modify_icon.svg';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
+import cotato_icon from '@assets/cotato_icon.png';
 
 interface Props {
   session: ISession;
@@ -73,7 +74,7 @@ interface SessionImageProps {
 
 const SessionImage = styled.div<SessionImageProps>`
   z-index: 0;
-  background-image: url(${(props) => props.photourl});
+  background-image: url(${(props) => (props.photourl ? props.photourl : cotato_icon)});
   background-size: 100% 332px;
   width: 100%;
   height: ${(props) => (props.ishover === 'true' ? '332px' : '280px')};

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 import bigger from '@assets/expand.svg';
 import smaller from '@assets/compress.svg';
-import { ReactComponent as LightBulb } from '@assets/light.svg';
+import lightBulb from '@assets/light.svg';
 import light from '@assets/light_on.svg';
 import bubble1 from '@assets/bubble_1.svg';
 import bubble2 from '@assets/bubble_2.svg';
@@ -16,7 +16,6 @@ import BgCorrect from './BgCorrect';
 import BgIncorrect from './BgIncorrect';
 import BgWaiting from './BgWaiting';
 import BgKingKing from './BgKingKing';
-import { set } from 'date-fns';
 
 type Problem = {
   id: number; // 문제의 PK
@@ -123,13 +122,6 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
     }
   }, [showCorrect, showIncorrect]);
 
-  useEffect(() => {
-    // if (quizData?.number === 10) {
-    //   setShowKingKing(true);
-    //   setTimeout(() => setShowKingKing(false), 10000);
-    // }
-  }, [quizData]);
-
   // 주관식 문제 입력 이벤트
   const onChangeShortAns = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setShortAns(e.target.value);
@@ -139,7 +131,11 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
     // 다음 문제로 이동
     // 아직 다음 문제 안열렸으면 대기 상태로
     if (submitAllowed) {
-      setReturnToWaiting(true);
+      if ((quizData?.number as number) === 10) {
+        setReturnToWaiting(false);
+      } else {
+        setReturnToWaiting(true);
+      }
     }
   };
 
@@ -174,7 +170,11 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
               setTimeout(() => setReturnToWaiting(true), 2500);
             }
           } else {
-            setShowIncorrect(true);
+            if (selectNum === 0) {
+              alert('답안을 선택 후 제출해주세요.');
+            } else {
+              setShowIncorrect(true);
+            }
           }
         })
         .catch((err) => {
@@ -221,7 +221,7 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
             </Explaination>
           )}
           <LightBulb
-            style={{ width: '28px' }}
+            src={lightBulb}
             onMouseEnter={() => setShowExplaination(true)}
             onMouseLeave={() => setShowExplaination(false)}
           />
@@ -435,7 +435,8 @@ const LightImgContainer = styled.div`
   right: 300px;
   bottom: 316px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  /* justify-content: center; */
   align-items: center;
 `;
 
@@ -455,10 +456,16 @@ const Explaination = styled.div`
   margin-bottom: 44px;
 `;
 
+const LightBulb = styled.img`
+  width: 32px;
+  height: 32px;
+  margin-top: 20px;
+`;
+
 const LightOn = styled.div`
   position: relative;
   width: 80px;
-  height: 82px;
+  height: 100%;
   padding: 0 auto;
   img {
     position: absolute;
@@ -483,7 +490,7 @@ const LightOn = styled.div`
     }
 
     &:nth-child(1) {
-      width: 44px;
+      width: 40px;
       left: 20px;
       bottom: 68px;
       animation:
@@ -491,7 +498,7 @@ const LightOn = styled.div`
         fadeOut 3s infinite ease;
     }
     &:nth-child(2) {
-      width: 4px;
+      width: 3px;
       left: 28px;
       bottom: 84px;
       animation:
@@ -499,7 +506,7 @@ const LightOn = styled.div`
         fadeOut 2.5s infinite ease 3s;
     }
     &:nth-child(3) {
-      width: 6px;
+      width: 4px;
       left: 44px;
       bottom: 88px;
       animation:

@@ -69,7 +69,12 @@ const CSManageHome = () => {
         </ButtonWrapper>
         <QuizContentsWrapper>
           {quizzes?.map((quiz) => (
-            <QuizContent key={quiz.quizId} quiz={quiz} educationId={educationId} />
+            <QuizContent
+              key={quiz.quizId}
+              quiz={quiz}
+              educationId={educationId}
+              quizNineId={quizzes?.find((quiz) => quiz.quizNumber === 9)?.quizId}
+            />
           ))}
         </QuizContentsWrapper>
       </ManageWrapper>

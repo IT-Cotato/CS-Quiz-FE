@@ -1,75 +1,40 @@
-import React, { useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import CSManageLayout from '../CSManageLayout';
 import { css, styled } from 'styled-components';
-
-/*
-최종 문제 풀 사람은 어떻게 계산되는 건가
-
-문제 번호가 마지막이 10번인거 보다 차라리 킹으로 처리되는게 더 좋은거 같기도
-그리고 getFinalist 함수 쓸꺼면 해당 회차 퀴즈의 문제 개수를 가져와야 함
-
-ScorerBox에서 이름이 우측으로 붙어서 쫌 짜침
-*/
-
-const scorerList = [
-  { quiz: 1, name: '조원영', phone: 1111 },
-  { quiz: 2, name: '조원영', phone: 2222 },
-  { quiz: 3, name: '조원영', phone: 3333 },
-  { quiz: 4, name: '조원영', phone: 4444 },
-  { quiz: 5, name: '조원영', phone: 5555 },
-  { quiz: 6, name: '조원영', phone: 6666 },
-  { quiz: 7, name: '조원영', phone: 7777 },
-  { quiz: 8, name: '조원영', phone: 8888 },
-  { quiz: 9, name: '조원영', phone: 9999 },
-  { quiz: 10, name: '조원영', phone: 1111 },
-];
+import useSWRImmutable from 'swr/immutable';
+import fetcher from '@utils/fetcher';
+import { IKingMember, IQuizAllScorer } from '@/typing/db';
 
 const AllScorer = () => {
   const [searchParams] = useSearchParams();
-  const generation = searchParams.get('generation');
-  const week = searchParams.get('week');
-  console.log(generation, week);
+  const educationId = searchParams.get('educationId');
 
-  const onclickSubmitButton = useCallback(() => {
-    console.log('submit click');
-  }, []);
+  const { data } = useSWRImmutable<IQuizAllScorer[]>(
+    `/v1/api/quiz/cs-admin/results?educationId=${educationId}`,
+    fetcher,
+  );
+  const { data: kingMembers } = useSWRImmutable<IKingMember[]>(
+    `/v1/api/education/result/kings?educationId=${educationId}`,
+    fetcher,
+  );
 
-  // 함수 너무 복잡(타입 정리 필요)
-  const getFinailists = useCallback((): { name?: string; phone?: string }[] => {
-    // 킹 문제 이전까지
-    if (scorerList.length < 10) {
-      return [];
-    }
+  const [scorers, setScorers] = useState<IQuizAllScorer[]>();
 
-    const scorerMap = new Map();
-    scorerList.forEach((element) => {
-      const key = element.name + ':' + element.phone.toString();
-      const count = scorerMap.has(key) ? scorerMap.get(key) : 0;
-      scorerMap.set(key, count + 1);
-    });
-
-    const countArray = Array.from(scorerMap).sort((left, right) => right[1] - left[1]);
-    const finalist: { name: string; phone: string }[] = [];
-    countArray.forEach((element) => {
-      if (element[1] < countArray[0][1]) {
-        return true;
-      }
-      finalist.push({ name: element[0].split(':')[0], phone: element[0].split(':')[1] });
-    });
-
-    return finalist;
-  }, [scorerList]);
+  useEffect(() => {
+    data?.sort((left, right) => left.quizNumber - right.quizNumber);
+    setScorers(data);
+  }, [data]);
 
   return (
     <CSManageLayout header="CS 문제 전체 득점자 확인">
       <AllScorerWrapper>
         <ScorerBox>
-          {scorerList.map((scorer) => (
-            <ScorerContent key={scorer.quiz}>
-              <p className="quiz-number">문제 {scorer.quiz}</p>
+          {scorers?.map((scorer) => (
+            <ScorerContent key={scorer.quizId}>
+              <p className="quiz-number">문제 {scorer.quizNumber}</p>
               <p className="scorer">
-                {scorer.name}({scorer.phone})
+                {scorer.scorerName}({scorer.backFourNumber})
               </p>
             </ScorerContent>
           ))}
@@ -77,15 +42,12 @@ const AllScorer = () => {
         <FinalistWrapper>
           <p>최종 문제 풀 사람</p>
           <FinalistBox>
-            {getFinailists().map((finalist, index) => (
-              <p key={index}>
-                {finalist.name}({finalist.phone})
+            {kingMembers?.map((king) => (
+              <p key={king.memberId}>
+                {king.memberName}({king.backFourNumber})
               </p>
             ))}
           </FinalistBox>
-          <ButtonWrapper>
-            <SubmitButton onClick={onclickSubmitButton}>전송</SubmitButton>
-          </ButtonWrapper>
         </FinalistWrapper>
       </AllScorerWrapper>
     </CSManageLayout>
@@ -151,6 +113,7 @@ const FinalistBox = styled.div`
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
+  height: 56px;
   border-radius: 8px;
   background: #fff;
   padding: 16px 20px 0;

@@ -68,6 +68,8 @@ const Content = styled.div`
   filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.07))
     drop-shadow(-4px -4px 4px rgba(0, 0, 0, 0.07));
   margin: 20px 4px;
+  padding: 20px;
+  box-sizing: border-box;
   cursor: pointer;
 `;
 

@@ -25,6 +25,11 @@ export interface IGeneration {
   generationNumber: string;
 }
 
+export interface ICsOnSession {
+  sessionId: number;
+  sessionNumber: number;
+}
+
 export interface ISession {
   sessionId: number;
   sessionNumber: number;
@@ -40,6 +45,7 @@ export interface IEducation {
   educationId: number;
   subject: string;
   educationNumber: number;
+  sessionNumber: number;
 }
 
 export interface Multiples {
@@ -98,15 +104,44 @@ export interface IQuizAdminScorer {
   backFourNumber: string;
 }
 
-export interface IGeneralUser {
+export interface IQuizAllScorer {
+  quizId: number;
+  quizNumber: number;
+  scorerId: number;
+  scorerName: string;
+  backFourNumber: string;
+}
+
+export interface IKingMember {
+  memberId: number;
+  memberName: string;
+  backFourNumber: string;
+}
+
+export interface IApplyMember {
   id: number;
   name: string;
   backFourNumber: string;
 }
 
 export interface IEnrollMember {
-  id: number;
-  name: string;
+  memberId: number;
+  memberName: string;
   position: string;
   generationNumber: number;
+  role: string;
+}
+
+export interface IMyPageInfo {
+  memberId: number;
+  email: string;
+  name: string;
+  generationNumber: number;
+  memberPosition: string;
+  phoneNumber: string;
+}
+
+export interface IRole {
+  name: string;
+  color: string;
 }

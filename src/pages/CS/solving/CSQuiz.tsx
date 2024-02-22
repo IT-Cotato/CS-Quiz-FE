@@ -6,6 +6,7 @@ import api from '@/api/api';
 import CSProblem from './CSProblem';
 import MemberHeader from '@components/MemberHeader';
 import BgWaiting from './BgWaiting';
+import { useNavigate } from 'react-router-dom';
 
 interface WaitingProps {
   directToNext?: boolean;
@@ -30,7 +31,6 @@ const CSQuiz: React.FC<WaitingProps> = () => {
   const [showProblem, setShowProblem] = useState<boolean>(false);
   const [allowSubmit, setAllowSubmit] = useState<boolean>(false);
   const [problemId, setProblemId] = useState<number>(0); // = quizId
-  const [showWaiting, setShowWaiting] = useState<boolean>(false);
 
   const [showHeader, setShowHeader] = useState<boolean>(true);
   const propsForMemberHeader = {
@@ -44,6 +44,8 @@ const CSQuiz: React.FC<WaitingProps> = () => {
       setShowHeader(false);
     }
   });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const initializeWebSocket = async () => {
@@ -104,7 +106,6 @@ const CSQuiz: React.FC<WaitingProps> = () => {
         ) {
           console.log('최초 접속- 대기 상태');
           // 대기 화면 보여주기
-          setShowWaiting(true);
           setShowProblem(false);
         } else if (
           message.status === 'QUIZ_ON' &&
@@ -131,6 +132,8 @@ const CSQuiz: React.FC<WaitingProps> = () => {
           // 전구 활성화, 정답 제출 허용
           setShowProblem(true);
           setAllowSubmit(true);
+        } else if (message.command === 'exit') {
+          navigate('/cs');
         } else {
           console.log('exception error');
         }
@@ -143,11 +146,11 @@ const CSQuiz: React.FC<WaitingProps> = () => {
   return (
     <Wrapper>
       {showHeader ? <MemberHeader {...propsForMemberHeader} /> : null}
-      {/* <Waiting>
+      <Waiting>
         <Timer style={{ width: '68px' }} />
         <div>곧 문제가 시작됩니다. &nbsp;잠시만 기다려주세요!</div>
-      </Waiting> */}
-      {showWaiting && <BgWaiting />}
+      </Waiting>
+      <BgWaiting />
       <div className="problem">
         {showProblem && (
           <CSProblem quizId={message.quizId} submitAllowed={allowSubmit} problemId={problemId} />
