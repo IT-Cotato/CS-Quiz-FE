@@ -22,6 +22,10 @@ const AllScorer = () => {
   const [scorers, setScorers] = useState<IQuizAllScorer[]>();
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     data?.sort((left, right) => left.quizNumber - right.quizNumber);
     setScorers(data);
   }, [data]);

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import RoleApproveLayout, { Button, ButtonContainer } from '@pages/MyPage/RoleApproveLayout';
 import styled from 'styled-components';
 import fetcher from '@utils/fetcher';
@@ -19,6 +19,10 @@ const RoleGrant = () => {
 
   const [listMode, setListMode] = useState('active');
   const [addOm, setAddOm] = useState<IEnrollMember[]>([]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const onChangeAddOm = useCallback(
     (member: IEnrollMember) => {

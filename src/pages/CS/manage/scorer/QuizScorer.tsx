@@ -23,6 +23,10 @@ const QuizScorer = () => {
   const [scorer, setScorer] = useState<IQuizAdminScorer>();
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     setSubmits(record?.records);
     setScorer(record?.scorer);
   }, [record]);
