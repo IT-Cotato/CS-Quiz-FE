@@ -93,6 +93,8 @@ export interface IQuizAdminScorer {
 }
 
 export interface IQuizAdminSubmit {
+  recordId: number;
+  ticketNumber: number;
   memberId: number;
   memberName: string;
   backFourNumber: string;
