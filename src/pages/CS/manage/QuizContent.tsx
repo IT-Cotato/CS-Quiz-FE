@@ -76,8 +76,6 @@ const QuizContent = ({ quiz, educationId, quizNineId }: Props) => {
         setIsPopupOpen(false);
         mutate();
       });
-
-    mutate();
   }, [quiz.start]);
 
   return (
