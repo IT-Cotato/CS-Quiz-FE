@@ -98,12 +98,10 @@ const ButtonWrapper = styled.div`
 `;
 
 const Button = styled.button<{ color: string }>`
-  width: 160px;
-  height: 36px;
   background: #feffff;
   border: none;
   border-radius: 5px;
-  padding: 8px 20px;
+  padding: 8px 32px;
   cursor: pointer;
 
   color: ${(props) => props.color};

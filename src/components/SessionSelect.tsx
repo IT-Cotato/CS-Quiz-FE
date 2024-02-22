@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { styled } from 'styled-components';
 import { ReactComponent as ArrowUp } from '@assets/arrow_up.svg';
 import { ReactComponent as ArrowDown } from '@assets/arrow_down.svg';
@@ -11,9 +11,16 @@ interface Props {
   onChangeSession: (session: ICsOnSession) => void;
   education?: IEducation;
   generationId?: number;
+  sessionCount?: number;
 }
 
-const SessionSelect = ({ selectetdSession, onChangeSession, education, generationId }: Props) => {
+const SessionSelect = ({
+  selectetdSession,
+  onChangeSession,
+  education,
+  generationId,
+  sessionCount,
+}: Props) => {
   const { data: sessions } = useSWRImmutable<ICsOnSession[]>(
     `/v1/api/session/cs-on?generationId=${generationId}`,
     fetcher,
@@ -33,6 +40,18 @@ const SessionSelect = ({ selectetdSession, onChangeSession, education, generatio
     return () => window.removeEventListener('mousedown', handleClick);
   }, [sessionDropRef]);
 
+  const getSessionWeekStr = useCallback(
+    (sessionNumber: number) => {
+      if (sessionNumber === 0) {
+        return 'OT';
+      } else if (sessionCount && sessionNumber === sessionCount - 1) {
+        return '데모데이';
+      }
+      return `${sessionNumber}주차 세션`;
+    },
+    [sessionCount],
+  );
+
   return (
     <SessionSelectWrapper ref={sessionDropRef}>
       <SelectMenu
@@ -42,7 +61,7 @@ const SessionSelect = ({ selectetdSession, onChangeSession, education, generatio
       >
         <p>
           {selectetdSession
-            ? `${selectetdSession.sessionNumber}주차 세션`
+            ? getSessionWeekStr(selectetdSession.sessionNumber)
             : '세션 주차를 선택하세요'}
         </p>
         {isOpen ? <ArrowUp /> : <ArrowDown />}
@@ -51,7 +70,7 @@ const SessionSelect = ({ selectetdSession, onChangeSession, education, generatio
             <ul>
               {sessions?.map((session, index) => (
                 <li key={index} onClick={() => onChangeSession(session)}>
-                  {`${session.sessionNumber}주차 세션`}
+                  {getSessionWeekStr(session.sessionNumber)}
                 </li>
               ))}
             </ul>

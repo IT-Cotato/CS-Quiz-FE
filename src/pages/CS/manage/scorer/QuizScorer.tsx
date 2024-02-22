@@ -38,8 +38,8 @@ const QuizScorer = () => {
           <HalfContainer width="55%">
             <p>제출 순 나열</p>
             <SubmitBox>
-              {submits?.map((submit) => (
-                <SubmitContent key={submit.memberId}>
+              {submits?.map((submit, index) => (
+                <SubmitContent key={index}>
                   <p>
                     {submit.memberName}({submit.backFourNumber})
                   </p>

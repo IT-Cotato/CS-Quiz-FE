@@ -11,7 +11,7 @@ const CSManage = () => {
 
   const navigate = useNavigate();
 
-  if (user?.role !== 'ADMIN') {
+  if (user?.role !== 'ADMIN' && user?.role !== 'EDUCATION') {
     navigate('/');
   }
 

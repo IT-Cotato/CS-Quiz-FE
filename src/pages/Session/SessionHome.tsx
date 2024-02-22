@@ -17,7 +17,7 @@ const SessionHome = () => {
   const [sessions, setSessions] = useState<undefined | ISession[]>();
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
   const [modifySession, setModifySession] = useState<undefined | ISession>();
-  const [lastWeek, setLastWeek] = useState(0);
+  const [lastWeek, setLastWeek] = useState(-1);
   const [selectedGeneration, setSelectedGeneration] = useState<IGeneration | undefined>();
 
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ const SessionHome = () => {
     } else {
       setLastWeek(-1);
     }
-  }, []);
+  }, [sessions]);
 
   const fetchSessions = useCallback((generationId?: number) => {
     api
@@ -97,6 +97,7 @@ const SessionHome = () => {
                 key={session.sessionId}
                 session={session}
                 handleModifyButton={handleModifyButton}
+                sessionCount={selectedGeneration?.sessionCount}
               />
             ))
           )}
@@ -109,6 +110,7 @@ const SessionHome = () => {
         lastWeek={lastWeek}
         generationId={selectedGeneration?.generationId}
         fetchSessions={fetchSessions}
+        sessionCount={selectedGeneration?.sessionCount}
       />
     </>
   );
@@ -160,6 +162,7 @@ const SessionContentsContainer = styled.div`
   flex-direction: row;
   align-content: start;
   width: 70%;
+  min-height: 30vh;
   margin: 28px 0 120px;
 
   @media only screen and (max-width: 957px) {
