@@ -17,7 +17,7 @@ const CSManageHome = () => {
     `/v1/api/quiz/cs-admin/all?educationId=${educationId}`,
     fetcher,
   );
-  const { data: quizStatus, mutate: statusMutate } = useSWR(
+  const { data: educationStatus, mutate: statusMutate } = useSWR(
     `/v1/api/education/status?educationId=${educationId}`,
     fetcher,
   );
@@ -38,9 +38,9 @@ const CSManageHome = () => {
 
   const onClickQuizButton = useCallback(() => {
     let path = '';
-    if (quizStatus.status === 'CLOSED' && confirm('교육을 시작하시겠습니까?')) {
+    if (educationStatus.status === 'CLOSED' && confirm('교육을 시작하시겠습니까?')) {
       path = '/v1/api/socket/start/csquiz';
-    } else if (quizStatus.status === 'ONGOING' && confirm('교육을 종료하시겠습니까?')) {
+    } else if (educationStatus.status === 'ONGOING' && confirm('교육을 종료하시겠습니까?')) {
       path = '/v1/api/socket/close/csquiz';
     }
 
@@ -55,7 +55,7 @@ const CSManageHome = () => {
         statusMutate();
         quizMutate();
       });
-  }, [quizStatus?.status]);
+  }, [educationStatus?.status]);
 
   const onClickCheckAllScorer = useCallback(() => {
     navigate(`allscorer?educationId=${educationId}`);
@@ -66,7 +66,7 @@ const CSManageHome = () => {
       <ManageWrapper>
         <ButtonWrapper>
           <Button color="#477FEB" onClick={onClickQuizButton}>
-            {quizStatus?.status === 'ONGOING' ? '교육 종료하기' : '교육 시작하기'}
+            {educationStatus?.status === 'ONGOING' ? '교육 종료하기' : '교육 시작하기'}
           </Button>
           <Button color="#000" onClick={onClickCheckAllScorer}>
             전체 득점자 확인
@@ -78,6 +78,8 @@ const CSManageHome = () => {
               key={quiz.quizId}
               quiz={quiz}
               educationId={educationId}
+              educationStatus={educationStatus.status}
+              quizStatus={quiz.status}
               quizNineStart={quizNineStart}
             />
           ))}

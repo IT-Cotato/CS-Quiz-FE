@@ -4,7 +4,7 @@ import ToggleButton from '@components/ToggleButton';
 import { ReactComponent as ArrowBack } from '@assets/arrow_back.svg';
 import { useNavigate } from 'react-router-dom';
 import { IQuizAdmin } from '@/typing/db';
-import useSWRImmutable from 'swr/immutable';
+import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import api from '@/api/api';
 import WaitPopup from '@pages/CS/manage/WaitPopup';
@@ -13,15 +13,13 @@ import { ToastContainer, toast } from 'react-toastify';
 interface Props {
   quiz: IQuizAdmin;
   educationId: string | null;
+  educationStatus?: string;
+  quizStatus: string;
   quizNineStart: string;
 }
 
-const QuizContent = ({ quiz, educationId, quizNineStart }: Props) => {
-  const { mutate } = useSWRImmutable(
-    `/v1/api/quiz/cs-admin/all?educationId=${educationId}`,
-    fetcher,
-  );
-  console.log(quizNineStart);
+const QuizContent = ({ quiz, educationId, educationStatus, quizStatus, quizNineStart }: Props) => {
+  const { mutate } = useSWR(`/v1/api/quiz/cs-admin/all?educationId=${educationId}`, fetcher);
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
@@ -32,6 +30,11 @@ const QuizContent = ({ quiz, educationId, quizNineStart }: Props) => {
   }, [quiz]);
 
   const onClickApproach = useCallback(() => {
+    if (educationStatus === 'CLOSED') {
+      toast.error('교육을 시작해주세요.');
+      return;
+    }
+
     if (quizNineStart === 'QUIZ_ON') {
       toast.error('9번 문제 풀이를 종료해주시요.');
       return;
@@ -53,9 +56,19 @@ const QuizContent = ({ quiz, educationId, quizNineStart }: Props) => {
         console.error(err);
         mutate();
       });
-  }, [quiz, quizNineStart]);
+  }, [quiz, educationStatus, quizNineStart]);
 
   const onClickQuizStart = useCallback(() => {
+    if (educationStatus === 'CLOSED') {
+      toast.error('교육을 시작해주세요.');
+      return;
+    }
+
+    if (quizStatus === 'QUIZ_OFF') {
+      toast.error('문제 접근을 허용해주세요.');
+      return;
+    }
+
     let path = '';
     if (quiz.start === 'QUIZ_OFF') {
       path = '/v1/api/socket/start';
@@ -75,7 +88,7 @@ const QuizContent = ({ quiz, educationId, quizNineStart }: Props) => {
         setIsPopupOpen(false);
         mutate();
       });
-  }, [quiz.start]);
+  }, [quiz.start, educationStatus, quizStatus]);
 
   return (
     <>
