@@ -78,7 +78,7 @@ const CSManageHome = () => {
               key={quiz.quizId}
               quiz={quiz}
               educationId={educationId}
-              educationStatus={educationStatus.status}
+              educationStatus={educationStatus?.status}
               quizStatus={quiz.status}
               quizNineStart={quizNineStart}
             />
