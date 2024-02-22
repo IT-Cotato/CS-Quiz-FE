@@ -8,6 +8,7 @@ import fetcher from '@utils/fetcher';
 import useSWRImmutable from 'swr/immutable';
 import { IMyPageInfo } from '@/typing/db';
 import api from '@/api/api';
+import { useCookies } from 'react-cookie';
 
 const MyInfo = () => {
   const { data: user } = useSWR('/v1/api/member/info', fetcher);
@@ -16,14 +17,25 @@ const MyInfo = () => {
     fetcher,
   );
 
+  const [, , removeCookie] = useCookies(['refreshToken']);
+
   const onClickLogout = useCallback(() => {
     api
-      .post('v1/api/auth/logout')
+      .post('v1/api/auth/logout', {
+        accessToken: localStorage.getItem('token'),
+      })
       .then(() => {
         localStorage.clear();
+        removeCookie('refreshToken');
         window.location.replace('/');
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error(err);
+        // 에러 발생해도 로그아웃 로직
+        localStorage.clear();
+        removeCookie('refreshToken');
+        window.location.replace('/');
+      });
   }, []);
 
   return (
