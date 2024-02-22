@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import fetcher from '@utils/fetcher';
 import { styled } from 'styled-components';
 import useSWR from 'swr';
@@ -10,6 +10,10 @@ import GenerationModal from '@pages/MyPage/setting/GenerationModal';
 const Setting = () => {
   const { data: user } = useSWR('/v1/api/member/info', fetcher);
   const [modalOpen, setModalOpen] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const onClickQuitButton = useCallback(() => {
     alert('탈퇴하지 마세요ㅠㅠㅠ');
