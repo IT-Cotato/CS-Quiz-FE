@@ -44,7 +44,7 @@ const ResetPW: React.FC<ResetPWProps> = ({
       if (isPassword && isPasswordCheck && !mismatchError && isEmail) {
         console.log(password);
         alert('비밀번호 변경이 완료되었습니다.');
-        navigate('/login');
+        navigate('/signin');
       } else {
         alert('입력값을 확인해주세요.');
         return;

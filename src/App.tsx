@@ -78,7 +78,7 @@ function App() {
               <Route path="/cs/quizscorer" element={<QuizScorer />} />
               <Route path="/cs/allscorer" element={<AllScorer />} />
               <Route path="/session" element={<SessionHome />} />
-              <Route path="/login" element={<Login />} />
+              <Route path="/signin" element={<Login />} />
               <Route path="/findid" element={<FindID />} />
               <Route path="/findpw" element={<FindPWProcess />} />
               <Route path="/joinus" element={<SignUp />} />

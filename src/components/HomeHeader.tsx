@@ -47,7 +47,7 @@ const HomeHeader = () => {
         </li>
         <li
           onClick={() => {
-            navigate('/login');
+            navigate('/signin');
           }}
         >
           로그인
