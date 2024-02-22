@@ -15,7 +15,7 @@ const BgWaiting = ({ quizNum, setShowKingKing }: Props) => {
       setShowKingKing(true);
       setTimeout(() => {
         setShowKingKing(false);
-      }, 5000);
+      }, 8000);
     }
   }, []);
 

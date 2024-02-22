@@ -182,7 +182,10 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
               }
             }
           } else {
-            if (selectNum === 0) {
+            if (
+              (quizData?.choices && selectNum === 0) ||
+              (quizData?.shortAnswers && shortAns === '')
+            ) {
               alert('답안을 선택 후 제출해주세요.');
             } else {
               setShowIncorrect(true);
@@ -192,8 +195,10 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
         .catch((err) => {
           console.error(err);
           console.log(quizId, data.memberId, input);
-          if (err.response.status === 400) {
+          if (err.response.data.message === 'cannot access this quiz') {
             alert('아직 제출 기한이 아닙니다.');
+          } else if (err.response.data.message === 'Already Correct') {
+            alert('이미 정답 처리되었습니다.');
           }
         });
     }
@@ -264,6 +269,7 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
             shortAns={shortAns}
             onChangeShortAns={onChangeShortAns}
             inputRef={inputRef}
+            problemId={problemId}
             shortRef={shortRef}
           />
         )}
@@ -333,6 +339,7 @@ interface ShortAnsProps {
   onChangeShortAns: React.ChangeEventHandler<HTMLInputElement>;
   inputRef: React.MutableRefObject<any>;
   shortRef: React.MutableRefObject<any>;
+  problemId: number;
 }
 
 const ShortAnswer: React.FC<ShortAnsProps> = ({
@@ -340,8 +347,9 @@ const ShortAnswer: React.FC<ShortAnsProps> = ({
   onChangeShortAns,
   inputRef,
   shortRef,
+  problemId,
 }) => {
-  useEffect(() => inputRef.current.focus(), []); // 컴포넌트 마운트 즉시 포커싱
+  useEffect(() => inputRef.current.focus(), [problemId]); // 컴포넌트 마운트 즉시 포커싱
 
   return (
     <ShortAnswerContainer ref={shortRef}>
