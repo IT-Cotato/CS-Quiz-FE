@@ -24,7 +24,7 @@ const Home = () => {
           width={'250px'}
         /> */}
         <Ellipse top={'-450px'} left={'-10%'} time={20} delay={0.2} width="600px" height="600px" />
-        <Ellipse top={'550px'} left={'20%'} time={10} delay={0.4} width="500px" height="500px" />
+        <Ellipse top={'550px'} left={'20%'} time={0} delay={0} width="500px" height="500px" />
         <Ellipse top={'200px'} left={'50%'} time={5} delay={1} width="100px" height="100px" />
         <Ellipse top={'470px'} left={'80%'} time={10} delay={0} width="100px" height="100px" />
         <Ellipse
@@ -49,6 +49,7 @@ const Wrapper = styled.div`
   width: 100vw;
   max-width: 100vw;
   height: 100vh;
+  max-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
