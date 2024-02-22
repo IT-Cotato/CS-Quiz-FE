@@ -47,7 +47,7 @@ const HomeHeader = () => {
         </li>
         <li
           onClick={() => {
-            navigate('/login');
+            navigate('/signin');
           }}
         >
           로그인
@@ -120,14 +120,12 @@ const HomeHeader = () => {
       {token ? (
         <>
           {MemberMenus()}
-          <Profile>
-            <p
-              onClick={() => {
-                navigate('/mypage');
-              }}
-            >
-              {name}
-            </p>
+          <Profile
+            onClick={() => {
+              navigate('/mypage');
+            }}
+          >
+            <p>{name}</p>
           </Profile>
         </>
       ) : (

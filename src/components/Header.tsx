@@ -33,10 +33,10 @@ const Header = () => {
           <img
             src={login}
             onClick={() => {
-              navigate('/login');
+              navigate('/signin');
             }}
           />
-          <LoginItem to="/login">로그인</LoginItem>
+          <LoginItem to="/signin">로그인</LoginItem>
         </LoginWrapper>
         <LoginWrapper>
           <img

@@ -54,7 +54,7 @@ const HamburgerMenu = ({ color, pixel, top }: Props) => {
         ) : (
           <>
             <li>
-              <MenuItem to="/login">로그인</MenuItem>
+              <MenuItem to="/signin">로그인</MenuItem>
             </li>
             <li>
               <MenuItem to="/joinus">Join us</MenuItem>

@@ -15,7 +15,7 @@ const CSMain = () => {
   const navigate = useNavigate();
 
   if (role === null) {
-    navigate('/login');
+    navigate('/signin');
   }
 
   return (

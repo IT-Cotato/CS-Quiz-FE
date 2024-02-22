@@ -65,7 +65,7 @@ const AnimatedText = () => {
     if (charORef.current) {
       // 높은 해상도에 대한 보정치 처리, 추후 보강 필요
       if (window.innerWidth > 1600) {
-        correctionValue = [12, 9, 9];
+        correctionValue = [15, 9, 9];
         // 값이 커질수록 텍스트가 오른쪽으로 이동
       }
       setSpaces([

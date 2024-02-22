@@ -12,7 +12,7 @@ import SignUp from '@pages/JoinUs/SignUp';
 import MyPage from '@pages/MyPage/MyPage';
 import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from '@theme/GlobalStyle';
-import { theme } from '@theme/theme';
+import { theme } from '@theme/Theme';
 import CSManage from '@pages/CS/manage/CSManage';
 import Footer from '@components/Footer';
 import FindID from '@pages/Login/FindID';
@@ -78,7 +78,7 @@ function App() {
               <Route path="/cs/quizscorer" element={<QuizScorer />} />
               <Route path="/cs/allscorer" element={<AllScorer />} />
               <Route path="/session" element={<SessionHome />} />
-              <Route path="/login" element={<Login />} />
+              <Route path="/signin" element={<Login />} />
               <Route path="/findid" element={<FindID />} />
               <Route path="/findpw" element={<FindPWProcess />} />
               <Route path="/joinus" element={<SignUp />} />

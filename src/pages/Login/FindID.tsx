@@ -51,7 +51,7 @@ const FindID = () => {
 
   const navigate = useNavigate();
   const navigateToLogin = () => {
-    navigate('/login');
+    navigate('/signin');
   };
 
   const onSubmit = useCallback(
