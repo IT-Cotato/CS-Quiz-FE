@@ -62,7 +62,7 @@ const QuizInfo = ({ quiz, setQuiz, selected, educationId }: Props) => {
       if (type === 'choice') {
         return {
           number,
-          question: '제목',
+          question: '',
           choices: [
             {
               number: 1,
@@ -91,7 +91,7 @@ const QuizInfo = ({ quiz, setQuiz, selected, educationId }: Props) => {
       } else {
         return {
           number,
-          question: '제목',
+          question: '',
           image: image,
           previewUrl: previewUrl || null,
           shortAnswers: [{ answer: '' }],
