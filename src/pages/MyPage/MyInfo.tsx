@@ -18,7 +18,9 @@ const MyInfo = () => {
 
   const onClickLogout = useCallback(() => {
     api
-      .post('v1/api/auth/logout')
+      .post('v1/api/auth/logout', {
+        accessToken: localStorage.getItem('token'),
+      })
       .then(() => {
         localStorage.clear();
         window.location.replace('/');
