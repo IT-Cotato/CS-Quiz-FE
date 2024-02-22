@@ -5,6 +5,7 @@ import api from '@/api/api';
 import useSWR from 'swr';
 import { IQuizAdminScorer } from '@/typing/db';
 import fetcher from '@utils/fetcher';
+import { ToastContainer, toast } from 'react-toastify';
 
 interface Props {
   quizId: string | null;
@@ -62,6 +63,8 @@ const AddAnswer = ({ quizId, quizType }: Props) => {
             setAddAnswer('');
           })
           .catch((err) => console.error(err));
+      } else {
+        toast.error('정답 추가는 주관식만 가능합니다.');
       }
     },
     [addAnswer],
@@ -85,6 +88,7 @@ const AddAnswer = ({ quizId, quizType }: Props) => {
           <p>답안추가</p>
         </AddAsnwerButton>
       </AddAnswerButtonBox>
+      <ToastContainer position="top-center" autoClose={2000} />
     </Form>
   );
 };
