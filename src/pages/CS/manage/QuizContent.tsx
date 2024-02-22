@@ -36,7 +36,7 @@ const QuizContent = ({ quiz, educationId, educationStatus, quizStatus, quizNineS
     }
 
     if (quizNineStart === 'QUIZ_ON') {
-      toast.error('9번 문제 풀이를 종료해주시요.');
+      toast.error('9번 문제풀이를 종료해주시요.');
       return;
     }
 
