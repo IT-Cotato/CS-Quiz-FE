@@ -34,20 +34,25 @@ const Login = () => {
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       setLoginError(false);
-      try {
-        const res = api
-          .post('/login', {
-            email: id,
-            password: password,
-          })
-          .then((res) => {
-            console.log(res.headers.accesstoken);
-            localStorage.setItem('token', res.headers.accesstoken);
-            mutate('/v1/api/member/info'); // 로그인 후에는 swr 요청을 수동으로 해준다
-          });
-      } catch (error) {
-        console.log(error);
-      }
+      api
+        .post('/login', {
+          email: id,
+          password: password,
+        })
+        .then((res) => {
+          console.log(res.headers.accesstoken);
+          localStorage.setItem('token', res.headers.accesstoken);
+          mutate('/v1/api/member/info'); // 로그인 후에는 swr 요청을 수동으로 해준다
+        })
+        .catch((error) => {
+          console.log(error);
+          setLoginError(true);
+          if (id === '' || password === '') {
+            alert('아이디 또는 비밀번호를 입력해주세요');
+          } else {
+            alert('아이디 또는 비밀번호가 일치하지 않습니다.');
+          }
+        });
     },
     [id, password],
   );
