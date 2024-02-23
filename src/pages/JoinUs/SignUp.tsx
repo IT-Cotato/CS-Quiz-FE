@@ -35,14 +35,14 @@ const SignUp = () => {
   const [isAuthorized, setIsAuthorized] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const onApply = () => {
-    if (isId && isPassword && !mismatchError && isName && isTel) {
-      setIsModalOpen(true);
-    } else {
-      alert('입력값을 확인해주세요.');
-      setIsModalOpen(false);
-    }
-  };
+  // const onApply = () => {
+  //   if (isId && isPassword && !mismatchError && isName && isTel && isAuthorized) {
+  //     setIsModalOpen(true);
+  //   } else {
+  //     alert('입력값을 확인해주세요.');
+  //     setIsModalOpen(false);
+  //   }
+  // };
 
   const onCancel = () => {
     if (confirm('가입을 취소합니다.')) {
@@ -165,19 +165,31 @@ const SignUp = () => {
       console.log(id, password, passwordCheck, name, tel);
       if (!mismatchError) {
         console.log('서버로 회원가입하기');
-        try {
-          api.post('/v1/api/auth/join', {
+        api
+          .post('/v1/api/auth/join', {
             email: id,
             password: password,
             name: name,
             phoneNumber: tel,
+          })
+          .then((res) => {
+            console.log(res);
+            if (isId && isPassword && !mismatchError && isName && isTel && isAuthorized) {
+              setIsModalOpen(true);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+            setIsModalOpen(false);
+            if (err.response.data.message === '존재하는 전화번호입니다.') {
+              alert('이미 가입된 전화번호입니다.');
+            } else {
+              alert('입력값을 확인해주세요.');
+            }
           });
-        } catch (err) {
-          console.log(err);
-        }
       }
     },
-    [id, password, passwordCheck, name, tel, mismatchError],
+    [id, password, passwordCheck, name, tel, mismatchError, authNum],
   );
 
   // if (data) {
@@ -262,8 +274,7 @@ const SignUp = () => {
         <ButtonSection>
           <Button
             type="submit"
-            onClick={onApply}
-            bgColor={isId && isPassword && !mismatchError && isName && isTel}
+            bgColor={isId && isPassword && !mismatchError && isName && isTel && isAuthorized}
           >
             가입신청
           </Button>
