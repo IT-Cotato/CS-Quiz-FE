@@ -22,6 +22,10 @@ const AllScorer = () => {
   const [scorers, setScorers] = useState<IQuizAllScorer[]>();
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     data?.sort((left, right) => left.quizNumber - right.quizNumber);
     setScorers(data);
   }, [data]);
@@ -101,7 +105,7 @@ const FinalistWrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  margin: 32px 0;
+  margin: 32px 0 132px;
 
   > p {
     ${fontStyle}
@@ -113,7 +117,7 @@ const FinalistBox = styled.div`
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  height: 56px;
+  min-height: 56px;
   border-radius: 8px;
   background: #fff;
   padding: 16px 20px 0;
@@ -123,25 +127,4 @@ const FinalistBox = styled.div`
     ${fontStyle}
     margin: 0 0 16px;
   }
-`;
-
-const ButtonWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
-`;
-
-const SubmitButton = styled.button`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 104px;
-  height: 44px;
-  border-radius: 5px;
-  border: none;
-  background: #477feb;
-  cursor: pointer;
-
-  ${fontStyle}
-  color: #FFF;
 `;

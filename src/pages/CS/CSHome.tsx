@@ -66,37 +66,39 @@ const CSHome = () => {
 
   return (
     <>
-      <CSWrapper>
-        <CSHeader>CS 문제풀이</CSHeader>
-        <CSSetting>
-          <GenerationSelect
-            onChangeGeneration={onChangeGeneration}
-            selectedGeneration={selectedGeneration}
-          />
-          {(user?.role === 'ADMIN' || user?.role === 'EDUCATION') && (
-            <ButtonWrapper>
-              <AddIcon onClick={onClickAddButton} />
-            </ButtonWrapper>
-          )}
-        </CSSetting>
-        <CSContentsContainer>
-          {educations?.length === 0 ? (
-            <CSReady>
-              <SettingIcon />
-              <p>CS 문제풀이 준비중입니다.</p>
-            </CSReady>
-          ) : (
-            educations?.map((education) => (
-              <CSContent
-                key={education.educationId}
-                education={education}
-                handleModifyButton={handleModifyButton}
-                generation={selectedGeneration}
-              />
-            ))
-          )}
-        </CSContentsContainer>
-      </CSWrapper>
+      <FlexBox>
+        <CSWrapper>
+          <CSHeader>CS 문제풀이</CSHeader>
+          <CSSetting>
+            <GenerationSelect
+              onChangeGeneration={onChangeGeneration}
+              selectedGeneration={selectedGeneration}
+            />
+            {(user?.role === 'ADMIN' || user?.role === 'EDUCATION') && (
+              <ButtonWrapper>
+                <AddIcon onClick={onClickAddButton} />
+              </ButtonWrapper>
+            )}
+          </CSSetting>
+          <CSContentsContainer>
+            {educations?.length === 0 ? (
+              <CSReady>
+                <SettingIcon />
+                <p>CS 문제풀이 준비중입니다.</p>
+              </CSReady>
+            ) : (
+              educations?.map((education) => (
+                <CSContent
+                  key={education.educationId}
+                  education={education}
+                  handleModifyButton={handleModifyButton}
+                  generation={selectedGeneration}
+                />
+              ))
+            )}
+          </CSContentsContainer>
+        </CSWrapper>
+      </FlexBox>
       <CSModal
         isOpen={isCSModalOpen}
         onCloseModal={onCloseModal}
@@ -111,13 +113,23 @@ const CSHome = () => {
 
 export default CSHome;
 
+const FlexBox = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+`;
+
 const CSWrapper = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
-  width: 100%;
+  width: 70%;
   min-height: 100vh;
+
+  @media screen and (max-width: 768px) {
+    width: 300px;
+  }
 `;
 
 const CSHeader = styled.h1`
@@ -129,13 +141,18 @@ const CSHeader = styled.h1`
   font-style: normal;
   font-weight: 800;
   line-height: normal;
+
+  @media screen and (max-width: 768px) {
+    margin: 92px 0 64px;
+    font-size: 2rem;
+  }
 `;
 
 const CSSetting = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 70%;
+  width: 100%;
   margin-bottom: 12px;
 `;
 
@@ -154,7 +171,7 @@ const CSContentsContainer = styled.div`
   justify-content: space-between;
   flex-direction: row;
   align-content: start;
-  width: 70%;
+  width: 100%;
   min-height: 30vh;
   margin: 28px 0 120px;
 
@@ -169,7 +186,7 @@ const CSReady = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
-  margin: 160px;
+  margin: 160px 0;
 
   p {
     color: #9a9a9a;

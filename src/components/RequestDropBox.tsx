@@ -5,6 +5,7 @@ import { styled } from 'styled-components';
 import { ReactComponent as ArrowDown } from '@assets/arrow_dwon_thin.svg';
 import { ReactComponent as ArrowUp } from '@assets/arrow_up_thin.svg';
 import useSWR from 'swr';
+import generationSort from '@utils/generationSort';
 
 interface Props {
   mode: string;
@@ -25,8 +26,10 @@ const RequestDropBox = ({
   onChangeGeneration,
   onChangePosition,
 }: Props) => {
+  const { data: generationData } = useSWR<IGeneration[]>('/v1/api/generation', fetcher);
+
+  const [generations, setGenerations] = useState<IGeneration[]>();
   const [isOpen, setIsOpen] = useState(false);
-  const { data: generations } = useSWR<IGeneration[]>('/v1/api/generation', fetcher);
 
   const dropRef = useRef<HTMLDivElement>(null);
 
@@ -39,6 +42,12 @@ const RequestDropBox = ({
     window.addEventListener('mousedown', handleClick);
     return () => window.removeEventListener('mousedown', handleClick);
   }, [dropRef]);
+
+  useEffect(() => {
+    if (generationData) {
+      setGenerations(generationSort(generationData));
+    }
+  }, [generationData]);
 
   const getSelectedValue = useCallback(() => {
     if (mode === 'generation') {

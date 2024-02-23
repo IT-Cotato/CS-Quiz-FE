@@ -86,6 +86,13 @@ const ButtonContainer = styled.div`
   background: #fff;
   box-shadow: 0px 4px 40px 0px rgba(0, 0, 0, 0.05);
 
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+    margin: 0 0 20px;
+    padding: 12px;
+  }
+
   > p {
     color: #1e1e1e;
     font-family: NanumSquareRound;

@@ -23,13 +23,10 @@ import CSProblem from '@pages/CS/solving/CSProblem';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import MemberHeader from '@components/MemberHeader';
-import Setting from '@pages/MyPage/setting/Setting';
 import ReadyState from '@components/ReadyState';
 import NotFound from '@components/NotFound';
 import HomeHeader from '@components/HomeHeader';
 import BgWaiting from '@pages/CS/solving/CSQuiz';
-import QuizScorer from '@pages/CS/manage/scorer/QuizScorer';
-import AllScorer from '@pages/CS/manage/scorer/AllScorer';
 import CSQuiz from '@pages/CS/solving/CSQuiz';
 
 function App() {
@@ -75,8 +72,6 @@ function App() {
               <Route path="/cs/upload" element={<CSUpload />} />
               <Route path="/cs/solving" element={<CSQuiz />} />
               <Route path="/cs/manage/*" element={<CSManage />} />
-              <Route path="/cs/quizscorer" element={<QuizScorer />} />
-              <Route path="/cs/allscorer" element={<AllScorer />} />
               <Route path="/session" element={<SessionHome />} />
               <Route path="/signin" element={<Login />} />
               <Route path="/findid" element={<FindID />} />

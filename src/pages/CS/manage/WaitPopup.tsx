@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { styled } from 'styled-components';
 
 interface Props {
@@ -6,30 +6,29 @@ interface Props {
 }
 
 const WaitPopup = ({ isOpen }: Props) => {
-  const popupRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
-        e.stopPropagation();
-      }
-    };
-    window.addEventListener('mousedown', handleClick);
-    return () => window.removeEventListener('mousedown', handleClick);
-  }, [popupRef]);
-
   if (!isOpen) {
     return <></>;
   }
 
   return (
-    <PopupContainer ref={popupRef}>
-      <p>문제 풀이를 시작하는중...</p>
-    </PopupContainer>
+    <Overlay>
+      <PopupContainer>
+        <p>문제 풀이를 시작하는중...</p>
+      </PopupContainer>
+    </Overlay>
   );
 };
 
 export default WaitPopup;
+
+const Overlay = styled.div`
+  z-index: 1;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+`;
 
 const PopupContainer = styled.div`
   position: fixed;

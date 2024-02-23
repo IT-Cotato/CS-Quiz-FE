@@ -4,22 +4,22 @@ import ToggleButton from '@components/ToggleButton';
 import { ReactComponent as ArrowBack } from '@assets/arrow_back.svg';
 import { useNavigate } from 'react-router-dom';
 import { IQuizAdmin } from '@/typing/db';
-import useSWRImmutable from 'swr/immutable';
+import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import api from '@/api/api';
 import WaitPopup from '@pages/CS/manage/WaitPopup';
+import { ToastContainer, toast } from 'react-toastify';
 
 interface Props {
   quiz: IQuizAdmin;
   educationId: string | null;
-  quizNineId?: number;
+  educationStatus?: string;
+  quizStatus: string;
+  quizNineStart: string;
 }
 
-const QuizContent = ({ quiz, educationId, quizNineId }: Props) => {
-  const { mutate } = useSWRImmutable(
-    `/v1/api/quiz/cs-admin/all?educationId=${educationId}`,
-    fetcher,
-  );
+const QuizContent = ({ quiz, educationId, educationStatus, quizStatus, quizNineStart }: Props) => {
+  const { mutate } = useSWR(`/v1/api/quiz/cs-admin/all?educationId=${educationId}`, fetcher);
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
@@ -30,17 +30,19 @@ const QuizContent = ({ quiz, educationId, quizNineId }: Props) => {
   }, [quiz]);
 
   const onClickApproach = useCallback(() => {
+    if (educationStatus === 'CLOSED') {
+      toast.error('교육을 시작해주세요.');
+      return;
+    }
+
+    if (quizNineStart === 'QUIZ_ON') {
+      toast.error('9번 문제풀이를 종료해주시요.');
+      return;
+    }
+
     let path = '';
     if (quiz.status === 'QUIZ_OFF') {
       path = '/v1/api/socket/access';
-
-      if (quiz.quizNumber === 10) {
-        api
-          .patch('/v1/api/socket/stop', {
-            quizId: quizNineId,
-          })
-          .catch((err) => console.error(err));
-      }
     } else if (quiz.status === 'QUIZ_ON') {
       path = '/v1/api/socket/deny';
     }
@@ -54,9 +56,19 @@ const QuizContent = ({ quiz, educationId, quizNineId }: Props) => {
         console.error(err);
         mutate();
       });
-  }, [quiz.status]);
+  }, [quiz, educationStatus, quizNineStart]);
 
   const onClickQuizStart = useCallback(() => {
+    if (educationStatus === 'CLOSED') {
+      toast.error('교육을 시작해주세요.');
+      return;
+    }
+
+    if (quizStatus === 'QUIZ_OFF') {
+      toast.error('문제 접근을 허용해주세요.');
+      return;
+    }
+
     let path = '';
     if (quiz.start === 'QUIZ_OFF') {
       path = '/v1/api/socket/start';
@@ -76,7 +88,7 @@ const QuizContent = ({ quiz, educationId, quizNineId }: Props) => {
         setIsPopupOpen(false);
         mutate();
       });
-  }, [quiz.start]);
+  }, [quiz.start, educationStatus, quizStatus]);
 
   return (
     <>
@@ -98,6 +110,7 @@ const QuizContent = ({ quiz, educationId, quizNineId }: Props) => {
         </ToggleWrapper>
       </ContentBox>
       <WaitPopup isOpen={isPopupOpen} />
+      <ToastContainer position="top-center" autoClose={2000} />
     </>
   );
 };

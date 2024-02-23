@@ -22,7 +22,7 @@ export interface ShortQuizzes {
 
 export interface IGeneration {
   generationId: number;
-  generationNumber: string;
+  generationNumber: number;
   sessionCount: number;
 }
 
@@ -93,6 +93,8 @@ export interface IQuizAdminScorer {
 }
 
 export interface IQuizAdminSubmit {
+  recordId: number;
+  ticketNumber: number;
   memberId: number;
   memberName: string;
   backFourNumber: string;

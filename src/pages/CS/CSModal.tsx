@@ -6,6 +6,7 @@ import TextBox from '@components/TextBox';
 import { ICsOnSession, IEducation } from '@/typing/db';
 import SessionSelect from '@components/SessionSelect';
 import api from '@/api/api';
+import { ToastContainer, toast } from 'react-toastify';
 
 interface Props {
   isOpen: boolean;
@@ -41,6 +42,7 @@ const CSModal = ({
   }, []);
 
   const handleAfterClose = useCallback(() => {
+    setSelectedSession(undefined);
     setEducationNum('');
     setSubject('');
     document.body.style.overflow = 'unset';
@@ -59,7 +61,9 @@ const CSModal = ({
   }, []);
 
   const onClickAddButton = useCallback(() => {
-    if (!educatoin) {
+    if (!subject || !selectedSession?.sessionId || !parseInt(educationNum)) {
+      toast.error('입력 값을 확인해주세요.');
+    } else if (!educatoin) {
       api
         .post('/v1/api/education/add', {
           subject: subject,
@@ -127,6 +131,7 @@ const CSModal = ({
           </UploadButton>
         </ButtonContainer>
       </ModalWrapper>
+      <ToastContainer position="top-center" autoClose={2000} />
     </ReactModal>
   );
 };

@@ -2,9 +2,10 @@ import React, { ChangeEvent, FormEvent, useCallback, useState } from 'react';
 import { styled } from 'styled-components';
 import { ReactComponent as AddIcon } from '@assets/add_circle.svg';
 import api from '@/api/api';
-import useSWRImmutable from 'swr/immutable';
+import useSWR from 'swr';
 import { IQuizAdminScorer } from '@/typing/db';
 import fetcher from '@utils/fetcher';
+import { ToastContainer, toast } from 'react-toastify';
 
 interface Props {
   quizId: string | null;
@@ -12,10 +13,13 @@ interface Props {
 }
 
 const AddAnswer = ({ quizId, quizType }: Props) => {
-  const { mutate } = useSWRImmutable<IQuizAdminScorer>(
+  const { mutate: mutateQuiz } = useSWR<IQuizAdminScorer>(
     `/v1/api/quiz/cs-admin?quizId=${quizId}`,
     fetcher,
   );
+  const { mutate: mutateRecord } = useSWR(`/v1/api/record/all?quizId=${quizId}`, fetcher, {
+    dedupingInterval: 1000,
+  });
 
   const [addAnswer, setAddAnswer] = useState('');
 
@@ -30,7 +34,6 @@ const AddAnswer = ({ quizId, quizType }: Props) => {
     (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      // 주관식인 경우만
       if (quizType === 'SHORT_QUIZ') {
         api
           .post(
@@ -51,13 +54,17 @@ const AddAnswer = ({ quizId, quizType }: Props) => {
                 quizId: quizId,
                 newAnswer: addAnswer,
               })
-              .then(() => {})
+              .then(() => {
+                mutateQuiz();
+                mutateRecord();
+              })
               .catch((err) => console.error(err));
 
             setAddAnswer('');
-            mutate();
           })
           .catch((err) => console.error(err));
+      } else {
+        toast.error('정답 추가는 주관식만 가능합니다.');
       }
     },
     [addAnswer],
@@ -81,6 +88,7 @@ const AddAnswer = ({ quizId, quizType }: Props) => {
           <p>답안추가</p>
         </AddAsnwerButton>
       </AddAnswerButtonBox>
+      <ToastContainer position="top-center" autoClose={2000} />
     </Form>
   );
 };

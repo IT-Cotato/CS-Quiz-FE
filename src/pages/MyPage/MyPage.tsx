@@ -9,11 +9,11 @@ import RoleGrant from '@pages/MyPage/roleGrant/RoleGrant';
 import CSRecord from '@pages/MyPage/CSRecord';
 
 const MyPage = () => {
-  const { data: user, error } = useSWR('/v1/api/member/info', fetcher);
+  const { error } = useSWR('/v1/api/member/info', fetcher);
 
   const navigate = useNavigate();
 
-  if (error || user?.role === 'GENERAL') {
+  if (error) {
     navigate('/');
   }
 

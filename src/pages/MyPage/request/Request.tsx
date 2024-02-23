@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import RoleApproveLayout, { Button, ButtonContainer } from '@pages/MyPage/RoleApproveLayout';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
@@ -10,6 +10,10 @@ const Request = () => {
   const { data: rejectList } = useSWR<IApplyMember[]>('/v1/api/admin/reject-applicants', fetcher);
 
   const [listMode, setListMode] = useState('apply');
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <RoleApproveLayout headerText="신입 감자 가입요청 확인/ 승인">

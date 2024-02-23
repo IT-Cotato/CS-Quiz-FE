@@ -5,6 +5,7 @@ import arrow_up_thin from '@assets/arrow_up_thin.svg';
 import fetcher from '@utils/fetcher';
 import { IGeneration } from '@/typing/db';
 import useSWRImmutable from 'swr/immutable';
+import generationSort from '@utils/generationSort';
 
 interface Props {
   /**
@@ -20,8 +21,10 @@ interface Props {
 }
 
 const GenerationSelect = ({ onChangeGeneration, selectedGeneration }: Props) => {
-  const [isOpen, setIsOpen] = useState(false);
   const { data: generationData } = useSWRImmutable<IGeneration[]>('/v1/api/generation', fetcher);
+
+  const [generations, setGenerations] = useState<IGeneration[]>();
+  const [isOpen, setIsOpen] = useState(false);
 
   const generationDropRef = useRef<HTMLDivElement>(null);
 
@@ -36,8 +39,14 @@ const GenerationSelect = ({ onChangeGeneration, selectedGeneration }: Props) => 
   }, [generationDropRef]);
 
   useEffect(() => {
-    onChangeGeneration(generationData?.at(-1));
+    if (generationData) {
+      setGenerations(generationSort(generationData));
+    }
   }, [generationData]);
+
+  useEffect(() => {
+    onChangeGeneration(generations?.at(-1));
+  }, [generations]);
 
   const onClickGeneration = useCallback((generation: IGeneration) => {
     onChangeGeneration(generation);
@@ -56,7 +65,7 @@ const GenerationSelect = ({ onChangeGeneration, selectedGeneration }: Props) => 
         {isOpen && (
           <GenerationList>
             <ul>
-              {generationData?.map((generation: IGeneration) => (
+              {generations?.map((generation: IGeneration) => (
                 <li key={generation.generationId} onClick={() => onClickGeneration(generation)}>
                   {`${generation.generationNumber}기`}
                 </li>

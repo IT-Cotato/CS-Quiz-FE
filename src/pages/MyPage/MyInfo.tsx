@@ -8,7 +8,6 @@ import fetcher from '@utils/fetcher';
 import useSWRImmutable from 'swr/immutable';
 import { IMyPageInfo } from '@/typing/db';
 import api from '@/api/api';
-import { useCookies } from 'react-cookie';
 
 const MyInfo = () => {
   const { data: user } = useSWR('/v1/api/member/info', fetcher);
@@ -17,8 +16,6 @@ const MyInfo = () => {
     fetcher,
   );
 
-  const [, , removeCookie] = useCookies(['refreshToken']);
-
   const onClickLogout = useCallback(() => {
     api
       .post('v1/api/auth/logout', {
@@ -26,14 +23,12 @@ const MyInfo = () => {
       })
       .then(() => {
         localStorage.clear();
-        removeCookie('refreshToken');
         window.location.replace('/');
       })
       .catch((err) => {
         console.error(err);
         // 에러 발생해도 로그아웃 로직
         localStorage.clear();
-        removeCookie('refreshToken');
         window.location.replace('/');
       });
   }, []);
@@ -48,56 +43,60 @@ const MyInfo = () => {
         <MyDataHeader>
           <h3>내 정보</h3>
         </MyDataHeader>
-        <DataBox>
-          <IDWrapper>
-            <ProfileImage />
+        {user?.role !== 'GENERAL' && (
+          <DataBox>
+            <IDWrapper>
+              <ProfileImage />
+              <InfoWrapper>
+                <p>아이디</p>
+                <TextContainer>
+                  <p>{myInfo?.email}</p>
+                </TextContainer>
+              </InfoWrapper>
+            </IDWrapper>
             <InfoWrapper>
-              <p>아이디</p>
+              <p>비밀번호</p>
               <TextContainer>
-                <p>{myInfo?.email}</p>
+                <p>********</p>
+                <Button color="#000" to="/findpw">
+                  <p>변경</p>
+                </Button>
               </TextContainer>
             </InfoWrapper>
-          </IDWrapper>
-          <InfoWrapper>
-            <p>비밀번호</p>
-            <TextContainer>
-              <p>********</p>
-              <Button color="#000">
-                <p>변경</p>
-              </Button>
-            </TextContainer>
-          </InfoWrapper>
-          <InfoWrapper>
-            <p>이름</p>
-            <TextContainer>
-              <p>{myInfo?.name}</p>
-            </TextContainer>
-          </InfoWrapper>
-          <InfoWrapper>
-            <p>합격기수</p>
-            <TextContainer>
-              <p>{myInfo?.generationNumber}기</p>
-            </TextContainer>
-          </InfoWrapper>
-          <InfoWrapper>
-            <p>포지션</p>
-            <TextContainer>
-              <p>{myInfo?.memberPosition}</p>
-            </TextContainer>
-          </InfoWrapper>
-          <InfoWrapper>
-            <p>전화번호</p>
-            <TextContainer>
-              <p>{myInfo?.phoneNumber}</p>
-            </TextContainer>
-          </InfoWrapper>
-        </DataBox>
-        <ButtonContainer>
-          <p>내가 풀어본 CS 문제풀이</p>
-          <Link to="cs-record">
-            <ButtonIcon />
-          </Link>
-        </ButtonContainer>
+            <InfoWrapper>
+              <p>이름</p>
+              <TextContainer>
+                <p>{myInfo?.name}</p>
+              </TextContainer>
+            </InfoWrapper>
+            <InfoWrapper>
+              <p>합격기수</p>
+              <TextContainer>
+                <p>{myInfo?.generationNumber}기</p>
+              </TextContainer>
+            </InfoWrapper>
+            <InfoWrapper>
+              <p>포지션</p>
+              <TextContainer>
+                <p>{myInfo?.memberPosition}</p>
+              </TextContainer>
+            </InfoWrapper>
+            <InfoWrapper>
+              <p>전화번호</p>
+              <TextContainer>
+                <p>{myInfo?.phoneNumber}</p>
+              </TextContainer>
+            </InfoWrapper>
+          </DataBox>
+        )}
+        {user?.role !== 'GENERAL' && (
+          <ButtonContainer>
+            <p>내가 풀어본 CS 문제풀이</p>
+            <Link to="cs-record">
+              <ButtonIcon />
+            </Link>
+          </ButtonContainer>
+        )}
         {user?.role === 'ADMIN' && (
           <ButtonContainer>
             <p>신입 감자 가입요청 확인/승인 </p>
@@ -143,6 +142,11 @@ export const MyPageWrapper = styled.div`
   max-width: 920px;
   width: 80%;
   min-height: 100vh;
+
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    padding: 20px;
+  }
 `;
 
 const fontStyle = css`
@@ -156,6 +160,10 @@ const fontStyle = css`
 
 export const MyPageHeader = styled.div`
   margin: 120px 0 48px;
+
+  @media screen and (max-width: 768px) {
+    margin: 72px 0 40px;
+  }
 
   > h1 {
     ${fontStyle};
@@ -183,13 +191,18 @@ const MyDataHeader = styled.div`
   }
 `;
 
-const Button = styled.button`
+const Button = styled(Link)`
   padding: 8px 24px;
   box-sizing: border-box;
   background: #f3f3f3;
   border: none;
   border-radius: 8px;
+  text-decoration: none;
   cursor: pointer;
+
+  @media screen and (max-width: 768px) {
+    padding: 4px 16px;
+  }
 
   > p {
     ${fontStyle};
@@ -217,10 +230,18 @@ const InfoWrapper = styled.div`
   width: 100%;
   margin: 20px 0 20px;
 
+  @media screen and (max-width: 768px) {
+    margin: 12px 0 12px;
+  }
+
   > p {
     ${fontStyle};
     color: #787878;
     margin-bottom: 8px;
+
+    @media screen and (max-width: 768px) {
+      margin-bottom: 4px;
+    }
   }
 `;
 
@@ -235,6 +256,10 @@ const TextContainer = styled.div`
   background: #f3f7ff;
   border-radius: 12px;
 
+  @media screen and (max-width: 768px) {
+    padding: 8px 12px;
+  }
+
   > p {
     ${fontStyle};
   }
@@ -243,6 +268,11 @@ const TextContainer = styled.div`
 const IDWrapper = styled.div`
   display: flex;
   width: 100%;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+  }
 `;
 
 const ProfileImage = styled.div`
@@ -265,6 +295,10 @@ const ButtonContainer = styled.div`
   border-radius: 16px;
   background: #fff;
   box-shadow: 0px 4px 40px 0px rgba(0, 0, 0, 0.05);
+
+  @media screen and (max-width: 768px) {
+    padding: 16px 24px;
+  }
 
   > p {
     color: #1e1e1e;
