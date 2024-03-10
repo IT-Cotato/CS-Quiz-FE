@@ -8,11 +8,6 @@ const api = axios.create({
   withCredentials: true,
 });
 
-export async function getRefreshToken() {
-  const response = await api.post('/v1/api/auth/reissue');
-  return response;
-}
-
 api.interceptors.response.use(
   (res) => res,
   // response 에러 처리
@@ -28,9 +23,9 @@ api.interceptors.response.use(
         api
           .post('/v1/api/auth/reissue')
           .then((res) => {
-            localStorage.setItem('token', res.data.token);
+            localStorage.setItem('token', res.data.accessToken);
             // 기존 request 처리
-            config.headers.Authorization = `Bearer ${res.data.token}`;
+            config.headers.Authorization = `Bearer ${res.data.accessToken}`;
             return axios(config);
           })
           .catch(() => {
