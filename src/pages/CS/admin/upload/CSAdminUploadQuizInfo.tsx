@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Multiples, ShortQuizzes } from '@/typing/db';
 import axios from 'axios';
 import { trackPromise } from 'react-promise-tracker';
-import { LoadingIndicator } from './LoadingIndicator';
+import { LoadingIndicator } from '../../../../components/LoadingIndicator';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -16,7 +16,7 @@ type Props = {
   educationId: number;
 };
 
-const QuizInfo = ({ quiz, setQuiz, selected, educationId }: Props) => {
+const CSAdminUploadQuizInfo = ({ quiz, setQuiz, selected, educationId }: Props) => {
   // 타입 가드
   const isMultiples = (quiz: Multiples | ShortQuizzes): quiz is Multiples => {
     return (quiz as Multiples)?.choices !== undefined;
@@ -178,8 +178,7 @@ const QuizInfo = ({ quiz, setQuiz, selected, educationId }: Props) => {
           ContentType: 'multipart/form-data',
         },
       })
-        .then((res) => {
-          console.log(res);
+        .then(() => {
           toast.success('성공적으로 저장되었습니다!');
         })
         .catch((error) => {
@@ -539,4 +538,4 @@ const ExitButton = styled.button`
   }
 `;
 
-export default QuizInfo;
+export default CSAdminUploadQuizInfo;

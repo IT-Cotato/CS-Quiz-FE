@@ -1,7 +1,11 @@
 import React, { useCallback } from 'react';
-import DndContainer from './DndContainer';
+import DndContainer from './CSAdminUploadDndContainer';
 import styled from 'styled-components';
 import { Multiples, ShortQuizzes } from '@/typing/db';
+
+//
+//
+//
 
 type QuizType = Multiples | ShortQuizzes;
 
@@ -12,69 +16,106 @@ type Props = {
   setSelected: React.Dispatch<React.SetStateAction<number>>;
 };
 
-const Slides = ({ quiz, setQuiz, selected, setSelected }: Props) => {
+//
+//
+//
+
+const CSAdminUploadSlides = ({ quiz, setQuiz, selected, setSelected }: Props) => {
+  /**
+   * add new quiz item
+   */
   const addQuiz = useCallback(() => {
-    if (quiz.length >= 10) {
-      window.alert('슬라이드는 최대 10개까지만 추가할 수 있습니다.');
-      return;
-    }
-    setQuiz((prev) => [
-      ...prev,
-      {
-        number: prev.length + 1,
-        question: '',
-        choices: [
-          {
-            number: 1,
-            content: '',
-            isAnswer: 'NO_ANSWER',
-          },
-          {
-            number: 2,
-            content: '',
-            isAnswer: 'NO_ANSWER',
-          },
-          {
-            number: 3,
-            content: '',
-            isAnswer: 'NO_ANSWER',
-          },
-          {
-            number: 4,
-            content: '',
-            isAnswer: 'NO_ANSWER',
-          },
-        ],
-        image: null,
-        previewUrl: null,
-      },
-    ]);
+    checkCanAddQuiz() &&
+      setQuiz((prev) => [
+        ...prev,
+        {
+          number: prev.length + 1,
+          question: '',
+          choices: [
+            {
+              number: 1,
+              content: '',
+              isAnswer: 'ANSWER',
+            },
+            {
+              number: 2,
+              content: '',
+              isAnswer: 'NO_ANSWER',
+            },
+            {
+              number: 3,
+              content: '',
+              isAnswer: 'NO_ANSWER',
+            },
+            {
+              number: 4,
+              content: '',
+              isAnswer: 'NO_ANSWER',
+            },
+          ],
+          image: null,
+          previewUrl: null,
+        },
+      ]);
   }, [quiz, selected]);
 
-  const deleteItem = useCallback(() => {
+  /**
+   *
+   */
+  const checkCanAddQuiz = () => {
+    if (quiz.length === 10) {
+      window.alert('슬라이드가 10개 이하이어야 합니다.');
+      return false;
+    }
+    return true;
+  };
+
+  /**
+   *
+   */
+  const checkCanDeleteQuiz = () => {
     if (quiz.length === 1) {
       window.alert('슬라이드가 1개 이상이어야 합니다.');
+      return false;
+    }
+    return true;
+  };
+
+  /**
+   *
+   */
+  const confirmDeleteQuiz = () => {
+    const result = window.confirm('정말 삭제하시겠습니까?');
+
+    if (!result) return;
+    return true;
+  };
+
+  /**
+   * delete selected quiz item
+   */
+  const deleteItem = useCallback(() => {
+    if (!checkCanDeleteQuiz()) {
       return;
     }
-    const result = window.confirm('정말 삭제하시겠습니까?');
-    if (!result) return;
-    // 이전 번호 선택
-    if (selected === 0) {
-      setSelected(0);
-    } else {
-      setSelected(selected - 1);
+    if (!confirmDeleteQuiz()) {
+      return;
     }
+    // select previous number
+    selected === 0 ? setSelected(0) : setSelected(selected - 1);
+
+    // delete selected quiz and renumber
     setQuiz((prev) => {
-      // selected인 quiz을 삭제 후, id를 재정렬
       const newPrev = [...prev];
       newPrev.splice(selected, 1);
-      // previewUrl undefined일 경우에 대한 예외처리
+
       if (newPrev[selected - 2]?.previewUrl) {
         URL.revokeObjectURL(newPrev[selected - 2].previewUrl || '');
       }
       return newPrev.map((quiz, index) => ({ ...quiz, number: index + 1 }));
     });
   }, [selected]);
+
   return (
     <Wrapper>
       {DndContainer(quiz, setQuiz, setSelected, selected)}
@@ -129,4 +170,4 @@ const Wrapper = styled.div`
   }
 `;
 
-export default Slides;
+export default CSAdminUploadSlides;

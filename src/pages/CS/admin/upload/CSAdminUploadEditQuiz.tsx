@@ -81,7 +81,6 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
       newPrev[selected].image = e.target.files[0];
       newPrev[selected].previewUrl = URL.createObjectURL(e.target.files[0]);
       setQuiz(newPrev);
-      console.log(newPrev);
     }
   }, []);
 

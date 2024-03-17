@@ -3,11 +3,19 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 import { Multiples, ShortQuizzes } from '@/typing/db';
 
+//
+//
+//
+
 type Item = {
   $isselected?: string;
 };
-
 type QuizType = Multiples | ShortQuizzes;
+
+//
+//
+//
+
 /**
  * 드래그 앤 드랍 컨테이너 컴포넌트
  * @param item : 문제를 담은 배열
@@ -16,12 +24,15 @@ type QuizType = Multiples | ShortQuizzes;
  * @param selected : 선택된 문제의 id
  * @returns
  */
-const DndContainer = (
+const CSAdminUploadDndContainer = (
   item: QuizType[],
   setItem: React.Dispatch<React.SetStateAction<QuizType[]>>,
   setSelected: React.Dispatch<React.SetStateAction<number>>,
   selected: number,
 ) => {
+  /**
+   *
+   */
   const handleDragEnd = useCallback(
     (result: any) => {
       if (!result.destination) {
@@ -100,4 +111,4 @@ const Item = styled.div<Item>`
   transition: 0.2s;
 `;
 
-export default DndContainer;
+export default CSAdminUploadDndContainer;

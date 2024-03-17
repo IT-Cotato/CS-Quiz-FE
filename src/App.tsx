@@ -1,11 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import './App.css';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Home from '@pages/Home/Home';
-import Projects from '@pages/Projects/Projects';
-import Team from '@pages/Team/Team';
-import CSHome from '@pages/CS/CSHome';
 import Login from '@pages/Login/Login';
 import SessionHome from '@pages/Session/SessionHome';
 import SignUp from '@pages/JoinUs/SignUp';
@@ -13,21 +10,16 @@ import MyPage from '@pages/MyPage/MyPage';
 import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from '@theme/GlobalStyle';
 import { theme } from '@theme/Theme';
-import CSManage from '@pages/CS/manage/CSManage';
 import Footer from '@components/Footer';
 import FindID from '@pages/Login/FindID';
 import FindPWProcess from '@pages/Login/FindPWProcess';
-import CSMain from '@pages/CS/CSMain';
-import CSUpload from '@pages/CS/admin/CSUpload';
-import CSProblem from '@pages/CS/solving/CSProblem';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import MemberHeader from '@components/MemberHeader';
 import ReadyState from '@components/ReadyState';
 import NotFound from '@components/NotFound';
 import HomeHeader from '@components/HomeHeader';
-import BgWaiting from '@pages/CS/solving/CSQuiz';
-import CSQuiz from '@pages/CS/solving/CSQuiz';
+import CSPage from '@pages/CS/CSPage';
 
 function App() {
   const location = useLocation();
@@ -67,11 +59,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/projects" element={<ReadyState />} />
               <Route path="/team" element={<ReadyState />} />
-              <Route path="/cs" element={<CSHome />} />
-              <Route path="/cs/start" element={<CSMain />} />
-              <Route path="/cs/upload" element={<CSUpload />} />
-              <Route path="/cs/solving" element={<CSQuiz />} />
-              <Route path="/cs/manage/*" element={<CSManage />} />
+              <Route path="/cs/*" element={<CSPage />} />
               <Route path="/session" element={<SessionHome />} />
               <Route path="/signin" element={<Login />} />
               <Route path="/findid" element={<FindID />} />
