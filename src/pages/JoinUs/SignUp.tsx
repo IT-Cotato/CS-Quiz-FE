@@ -279,7 +279,9 @@ const SignUp = () => {
             가입신청
           </Button>
           {isModalOpen && <SignUpModal />}
-          <Button onClick={onCancel}>가입취소</Button>
+          <Button type="button" onClick={onCancel}>
+            가입취소
+          </Button>
         </ButtonSection>
       </Form>
     </Wrapper>
@@ -411,7 +413,7 @@ const Button = styled.button<{ bgColor?: boolean }>`
   background: ${(props) => (props.bgColor ? '#85C88A' : '#D7E5CA')};
   color: #fff;
   &:hover {
-    cursor: pointer;
+    ${(props) => (props.bgColor ? 'cursor: pointer;' : 'cursor: default;')}
   }
 
   @media screen and (max-width: 392px) {
