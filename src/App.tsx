@@ -19,7 +19,7 @@ import MemberHeader from '@components/MemberHeader';
 import ReadyState from '@components/ReadyState';
 import NotFound from '@components/NotFound';
 import HomeHeader from '@components/HomeHeader';
-import CSPage from '@pages/CS';
+import CSPage from '@pages/CS/CSPage';
 
 function App() {
   const location = useLocation();
