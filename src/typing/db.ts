@@ -1,3 +1,10 @@
+export interface MemberData {
+  memberId: number;
+  memberName: string;
+  backFourNumber: number;
+  role: string;
+}
+
 export interface Multiples {
   number: number;
   question: string;
