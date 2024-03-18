@@ -1,21 +1,45 @@
-import fetchUserData from '@utils/fetchUserData';
-import React from 'react';
+import api from '@/api/api';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
+import { Tooltip } from 'react-tooltip';
 
-const CSMain = () => {
-  const { data: userData } = fetchUserData();
+const CSStart = () => {
+  const role = localStorage.getItem('role');
   const location = useLocation();
-  const subject = location?.state?.subject;
-  const [params] = useSearchParams();
-  const search = location.search;
-  const generationId = params.get('generationId');
-  const generationNumber = params.get('generationNumber');
-  const educationId = params.get('educationId');
-  const educationNumber = params.get('educationNumber');
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const subject = location?.state?.subject;
+  const search = location.search;
+  const generationNumber = params.get('generationNumber');
+  const educationNumber = params.get('educationNumber');
+  const educationId = params.get('educationId');
 
-  if (userData?.role === null) {
+  const [educationStatus, setEducationStatus] = useState<'BEFORE' | 'ONGOING' | 'FINISHED'>(
+    'BEFORE',
+  );
+
+  /**
+   * fetch education status ->
+   * `BEFORE` : 아직 시작되지 않음
+   * `ONGOING` : 진행중
+   * `FINISHED` : 종료됨
+   */
+  const fetchEducationStatus = async () => {
+    const response = await api
+      .get(`/v1/api/education/status?educationId=${educationId}`)
+      .then((res) => res.data.status);
+    setEducationStatus(response);
+  };
+
+  //
+  //
+  //
+  useEffect(() => {
+    fetchEducationStatus();
+  }, []);
+
+  if (role === null) {
     navigate('/signin');
   }
 
@@ -42,9 +66,17 @@ const CSMain = () => {
         >
           <p>이전세션 선택하기</p>
         </OtherButton>
-        {['ADMIN', 'EDUCATION'].includes(userData?.role as string) ? (
+        {['ADMIN', 'EDUCATION'].includes(role as string) ? (
           <>
+            <Tooltip
+              id="upload_button_tooltip"
+              style={{ position: 'absolute', zIndex: 1000 }}
+              place="top"
+              content="문제나 진행중이거나 종료되었습니다."
+            />
             <UploadButton
+              data-tooltip-id="upload_button_tooltip"
+              disabled={educationStatus !== 'BEFORE'}
               onClick={() => {
                 navigate('/cs/upload' + search, {
                   state: {
@@ -55,6 +87,7 @@ const CSMain = () => {
             >
               <p>문제 업로드</p>
             </UploadButton>
+
             <ManageButton
               onClick={() => {
                 navigate('/cs/manage' + search);
@@ -252,7 +285,7 @@ const NavBox = styled.div`
     z-index: 10;
   }
 
-  button + button {
+  button {
     margin-top: 24px;
   }
 
@@ -294,6 +327,11 @@ const UploadButton = styled.button`
   border: 2px solid #7da1f4 !important;
   background: #fff;
   height: 54px !important;
+  &:disabled {
+    background: #fff;
+    color: #e0e0e0;
+    border: #e4e4e4 !important;
+  }
 `;
 
 const ManageButton = styled.button`
@@ -308,4 +346,4 @@ const ManageButton = styled.button`
   height: 54px !important;
 `;
 
-export default CSMain;
+export default CSStart;
