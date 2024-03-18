@@ -15,7 +15,7 @@ api.interceptors.response.use(
     const { config, response } = error;
 
     // 토큰 만료
-    if (response.status === 401 && response.data.message === 'accessToken이 만료되었습니다.') {
+    if (response.status === 401 && response.data.message === 'Token Already Expired') {
       try {
         const response = await api.post('v1/api/auth/reissue');
         config.headers.Authorization = `Beraer ${response.data.accessToken}`;
