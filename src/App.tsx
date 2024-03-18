@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -13,32 +13,16 @@ import { theme } from '@theme/Theme';
 import Footer from '@components/Footer';
 import FindID from '@pages/Login/FindID';
 import FindPWProcess from '@pages/Login/FindPWProcess';
-import useSWR from 'swr';
-import fetcher from '@utils/fetcher';
 import MemberHeader from '@components/MemberHeader';
 import ReadyState from '@components/ReadyState';
 import NotFound from '@components/NotFound';
 import HomeHeader from '@components/HomeHeader';
 import CSPage from '@pages/CS/CSPage';
+import fetchUserData from '@utils/fetchUserData';
 
 function App() {
   const location = useLocation();
-
-  const { data, error } = useSWR('/v1/api/member/info', fetcher, {
-    onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
-      if (error.status === 400) return;
-      if (retryCount >= 10) return;
-    },
-  });
-  //location.pathname !== '/cs/solving'
-
-  if (data) {
-    localStorage.setItem('role', data.role);
-    localStorage.setItem('name', data.memberName);
-  } else {
-    localStorage.removeItem('role');
-    localStorage.removeItem('name');
-  }
+  const { data: userData } = fetchUserData();
 
   return (
     <div className="App">
@@ -48,7 +32,9 @@ function App() {
           <div className="contentWrapper">
             {location.pathname == '/' ? (
               <HomeHeader />
-            ) : ['GENERAL', 'MEMBER', 'OLD_MEMBER', 'ADMIN', 'EDUCATION'].includes(data?.role) ? (
+            ) : ['GENERAL', 'MEMBER', 'OLD_MEMBER', 'ADMIN', 'EDUCATION'].includes(
+                userData?.role,
+              ) ? (
               location.pathname !== '/cs/solving' ? (
                 <MemberHeader />
               ) : null

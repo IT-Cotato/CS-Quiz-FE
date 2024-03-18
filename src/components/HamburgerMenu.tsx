@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import fetchUserData from '@utils/fetchUserData';
 
 type Props = {
   color?: string;
@@ -11,7 +12,7 @@ type Props = {
 const HamburgerMenu = ({ color, pixel, top }: Props) => {
   const ref = React.useRef<HTMLDivElement>(null);
   const [open, setOpen] = React.useState(false);
-  const role = localStorage.getItem('role');
+  const { data: userData } = fetchUserData();
   return (
     <MobileMenus color={color} pixel={pixel} top={top}>
       <div
@@ -39,7 +40,7 @@ const HamburgerMenu = ({ color, pixel, top }: Props) => {
         <li>
           <MenuItem to="/team">팀 멤버</MenuItem>
         </li>
-        {role ? (
+        {userData?.role ? (
           <>
             <li>
               <MenuItem to="/cs">문제풀이</MenuItem>
