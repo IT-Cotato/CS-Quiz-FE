@@ -3,23 +3,12 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import HomeDropDownMenu from './HomeDropDownMenu';
 import HamburgerMenu from './HamburgerMenu';
-import useSWR from 'swr';
-import fetcher from '@utils/fetcher';
+import fetchUserData from '@utils/fetchUserData';
+import type { MemberData } from '@/typing/db';
 
 const HomeHeader = () => {
-  const { data, error } = useSWR('/v1/api/member/info', fetcher, {
-    revalidateOnFocus: false,
-    revalidateIfStale: false,
-    dedupingInterval: 6000000, // 10분동안은 데이터가 변경되지 않는 한 재요청이 발생하지 않음
-  });
-
+  const { data: userData }: Partial<{ data: MemberData }> = fetchUserData();
   const navigate = useNavigate();
-  const token = localStorage.getItem('token');
-  const role = localStorage.getItem('role');
-  const name = localStorage.getItem('name');
-  // 로그인 시 localStorage 작업 필요
-  // const role = data?.role;
-  // const name = data?.memberName;
 
   const NonMemberMenus = () => {
     return (
@@ -117,7 +106,7 @@ const HomeHeader = () => {
         </span>
       </div>
 
-      {token ? (
+      {userData ? (
         <>
           {MemberMenus()}
           <Profile
@@ -125,7 +114,7 @@ const HomeHeader = () => {
               navigate('/mypage');
             }}
           >
-            <p>{name}</p>
+            <p>{userData?.memberName}</p>
           </Profile>
         </>
       ) : (

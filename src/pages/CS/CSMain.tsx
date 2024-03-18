@@ -1,9 +1,10 @@
+import fetchUserData from '@utils/fetchUserData';
 import React from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 const CSMain = () => {
-  const role = localStorage.getItem('role');
+  const { data: userData } = fetchUserData();
   const location = useLocation();
   const subject = location?.state?.subject;
   const [params] = useSearchParams();
@@ -14,7 +15,7 @@ const CSMain = () => {
   const educationNumber = params.get('educationNumber');
   const navigate = useNavigate();
 
-  if (role === null) {
+  if (userData?.role === null) {
     navigate('/signin');
   }
 
@@ -41,7 +42,7 @@ const CSMain = () => {
         >
           <p>이전세션 선택하기</p>
         </OtherButton>
-        {['ADMIN', 'EDUCATION'].includes(role as string) ? (
+        {['ADMIN', 'EDUCATION'].includes(userData?.role as string) ? (
           <>
             <UploadButton
               onClick={() => {

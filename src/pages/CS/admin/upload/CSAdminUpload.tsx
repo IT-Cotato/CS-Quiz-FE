@@ -4,6 +4,7 @@ import { Multiples, ShortQuizzes } from '@/typing/db';
 import axios from 'axios';
 import CSAdminUploadLayout from './CSAdminUploadLayout';
 import CSAdminUploadContent from './CSAdminUploadContent';
+import fetchUserData from '@utils/fetchUserData';
 
 type QuizType = Multiples | ShortQuizzes;
 
@@ -41,6 +42,7 @@ const CSAdminUpload = () => {
       previewUrl: null,
     },
   ]);
+  const { data: userData } = fetchUserData();
   const [params] = useSearchParams();
   const educationId = Number(params.get('educationId'));
   const generationId = params.get('generationId') || '';
@@ -93,7 +95,7 @@ const CSAdminUpload = () => {
   // TODO: utilize role check function
   //
   setTimeout(() => {
-    if (!['ADMIN', 'EDUCATION'].includes(localStorage.getItem('role') as string)) {
+    if (!['ADMIN', 'EDUCATION'].includes(userData?.role as string)) {
       window.location.href = '/';
     }
   }, 500);
