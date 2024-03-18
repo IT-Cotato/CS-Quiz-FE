@@ -3,9 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { Tooltip } from 'react-tooltip';
+import fetchUserData from '@utils/fetchUserData';
 
 const CSStart = () => {
-  const role = localStorage.getItem('role');
+  const { data: userData } = fetchUserData();
   const location = useLocation();
   const navigate = useNavigate();
   const [params] = useSearchParams();
@@ -39,7 +40,7 @@ const CSStart = () => {
     fetchEducationStatus();
   }, []);
 
-  if (role === null) {
+  if (userData?.role === null) {
     navigate('/signin');
   }
 
@@ -66,13 +67,13 @@ const CSStart = () => {
         >
           <p>이전세션 선택하기</p>
         </OtherButton>
-        {['ADMIN', 'EDUCATION'].includes(role as string) ? (
+        {['ADMIN', 'EDUCATION'].includes(userData?.role as string) ? (
           <>
             <Tooltip
               id="upload_button_tooltip"
               style={{ position: 'absolute', zIndex: 1000 }}
               place="top"
-              content="문제나 진행중이거나 종료되었습니다."
+              content="문제가 진행중이거나 종료되었습니다."
             />
             <UploadButton
               data-tooltip-id="upload_button_tooltip"
