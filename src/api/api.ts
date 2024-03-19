@@ -18,7 +18,7 @@ api.interceptors.response.use(
     if (response.status === 401 && response.data.message === 'Token Already Expired') {
       try {
         const response = await api.post('/v1/api/auth/reissue');
-        config.headers.Authorization = `Beraer ${response.data.accessToken}`;
+        config.headers.Authorization = `Bearer ${response.data.accessToken}`;
         localStorage.setItem('token', response.data.accessToken);
         return api(config);
       } catch (err) {
