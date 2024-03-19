@@ -11,6 +11,7 @@ interface EmailAuthProps {
 
 const EmailAuth: React.FC<EmailAuthProps> = ({ goToNextStep, email, setEmail }) => {
   const [inputs, setInputs] = useState<number[]>(Array(6).fill(null));
+  const [tokenForRefreshPW, setTokenForRefreshPW] = useState<string>('');
   const inputRef = useRef<any>([]);
 
   // const [showFindPW, setShowFindPW] = useState(false);
@@ -43,7 +44,11 @@ const EmailAuth: React.FC<EmailAuthProps> = ({ goToNextStep, email, setEmail }) 
       .then((res) => {
         console.log(res);
         alert('인증이 완료되었습니다.');
-        localStorage.setItem('token', res.headers.accesstoken);
+        setTokenForRefreshPW(res.headers.accesstoken);
+      })
+      .catch((err) => {
+        console.log(err);
+        alert('인증번호가 일치하지 않습니다.');
       });
   };
 
