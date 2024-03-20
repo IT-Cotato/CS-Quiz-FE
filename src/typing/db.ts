@@ -2,7 +2,7 @@ export interface MemberData {
   memberId: number;
   memberName: string;
   backFourNumber: number;
-  role: string;
+  role: 'ADMIN' | 'EDUCATION' | 'GENERAL' | 'MEMBER' | 'OLD_MEMBER' | 'REFUSED';
 }
 
 export interface Multiples {
