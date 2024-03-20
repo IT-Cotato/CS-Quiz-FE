@@ -63,10 +63,10 @@ const AnimatedText = () => {
       setSpaces([
         0,
         0,
-        (defaultValue / 2000) * OFFSET,
-        (defaultValue / 1870) * OFFSET,
-        (defaultValue / 2000) * OFFSET - 190,
-        (defaultValue / 2000) * OFFSET - 192,
+        (defaultValue / 2000) * OFFSET - leftValue + 35,
+        (defaultValue / 1870) * OFFSET - leftValue + 42,
+        (defaultValue / 2000) * OFFSET - 190 - leftValue + 40,
+        (defaultValue / 2000) * OFFSET - 192 - leftValue + 40,
       ]);
     }
   }, [charORef.current]);
@@ -96,7 +96,7 @@ const AnimatedText = () => {
               left={char === 'C' ? spaces[0] : char === 'O' ? spaces[1] : spaces[2]}
               ref={idx === 1 ? charORef : null}
               style={{
-                fontFamily: 'Pretendard',
+                fontFamily: 'Pretendard-Bold',
               }}
             >
               {char}
@@ -105,7 +105,7 @@ const AnimatedText = () => {
             <span
               key={idx}
               style={{
-                fontFamily: 'Pretendard',
+                fontFamily: 'Pretendard-Bold',
               }}
               className={checkUpper(char) ? '' : 'animated-char'}
             >
@@ -123,7 +123,7 @@ const AnimatedText = () => {
               $anim_delay={ANIMATION_DELAY_TIME}
               top={topValue}
               style={{
-                fontFamily: 'Pretendard',
+                fontFamily: 'Pretendard-Bold',
               }}
               left={char === 'A' ? spaces[3] : char === 'T' ? spaces[4] : spaces[5]}
             >
@@ -133,7 +133,7 @@ const AnimatedText = () => {
             <span
               key={idx}
               style={{
-                fontFamily: 'Pretendard',
+                fontFamily: 'Pretendard-Bold',
               }}
               className={checkUpper(char) ? '' : 'animated-char'}
             >
