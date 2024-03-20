@@ -1,28 +1,43 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '@assets/logo.svg';
-import useSWR from 'swr';
-import fetcher from '@utils/fetcher';
 import HamburgerMenu from './HamburgerMenu';
+import fetchUserData from '@utils/fetchUserData';
+//
+//
+//
 
 interface MemberHeaderProps {
   showHeader?: boolean;
   setShowHeader?: (show: boolean) => void;
 }
 
-const MemberHeader: React.FC<MemberHeaderProps> = ({ showHeader, setShowHeader }) => {
-  const { data, error } = useSWR('/v1/api/member/info', fetcher, {
-    revalidateOnFocus: false,
-    revalidateIfStale: false,
-    revalidateOnReconnect: false, // 10분동안은 데이터가 변경되지 않는 한 재요청이 발생하지 않음
-  });
+//
+//
+//
 
+const MEMBER_ROLE_EMOJI_URL = {
+  OLD_MEMBER:
+    'https://velog.velcdn.com/images/ea_st_ring/post/74acb156-aa96-4cfa-8a79-2895315e4c0a/image.svg',
+  MEMBER:
+    'https://velog.velcdn.com/images/ea_st_ring/post/86f9975f-2c1c-467d-afe2-5bec019ce159/image.svg',
+  ADMIN:
+    'https://velog.velcdn.com/images/ea_st_ring/post/703c66cc-6518-4ea2-a80a-0be25bfd6d90/image.svg',
+  EDUCATION:
+    'https://velog.velcdn.com/images/ea_st_ring/post/703c66cc-6518-4ea2-a80a-0be25bfd6d90/image.svg',
+  GENERAL:
+    'https://velog.velcdn.com/images/ea_st_ring/post/a905da7e-e23e-40cd-a751-0d63067494f1/image.svg',
+  REFUSED: '',
+};
+
+//
+//
+//
+
+const MemberHeader: React.FC<MemberHeaderProps> = () => {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    console.log(data);
-  }, []);
+  const { data: userData } = fetchUserData();
 
   return (
     <Wrapper>
@@ -35,8 +50,8 @@ const MemberHeader: React.FC<MemberHeaderProps> = ({ showHeader, setShowHeader }
         <MenuItem to="/session">세션 기록</MenuItem>
       </MenuSection>
       <MyInfo>
-        <img src="https://raw.githubusercontent.com/MinJaeSon/assets/f29298dfeed8daa40622f7d9568a0421f5183756/potato.svg" />
-        <p onClick={() => navigate('mypage')}>{data?.memberName}</p>
+        <img src={MEMBER_ROLE_EMOJI_URL[userData.role] || ''} />
+        <p onClick={() => navigate('mypage')}>{userData?.memberName}</p>
       </MyInfo>
       <HamburgerMenu color="#202020" top="16px" />
     </Wrapper>
@@ -129,9 +144,10 @@ const MyInfo = styled.div`
   margin-right: 60px;
   width: fit-content;
   img {
-    width: 20px;
-    height: 20px;
-    margin-right: 8px;
+    width: 30px;
+    height: 30px;
+    margin-right: 4px;
+    margin-bottom: 4px;
   }
   p {
     font-size: 1.1rem;
