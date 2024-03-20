@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 
+//
+//
+//
+
+const OFFSET = 1920 / window.innerWidth;
+const MOBILE_SIZE = 768;
+
+//
+//
+//
+
 const AnimatedText = () => {
   const [line1, setLine1] = useState([
     'C',
@@ -36,7 +47,7 @@ const AnimatedText = () => {
     'r',
     '!',
   ]);
-  const [mobile, setMobile] = useState(window.innerWidth < 768 ? true : false);
+  const [mobile, setMobile] = useState(window.innerWidth < MOBILE_SIZE ? true : false);
   const [spaces, setSpaces] = useState<number[]>([]);
 
   const checkUpper = (char: string) => {
@@ -59,33 +70,32 @@ const AnimatedText = () => {
     widthValue = charORef.current.offsetWidth;
   }
 
-  let correctionValue = [0, 0, 0];
-
   useEffect(() => {
     if (charORef.current) {
+      const defaultValue = (-leftValue - widthValue) * window.innerWidth;
       // 높은 해상도에 대한 보정치 처리, 추후 보강 필요
-      if (window.innerWidth > 1600) {
-        correctionValue = [18, 9, 9];
-        // 값이 커질수록 텍스트가 오른쪽으로 이동
-      }
+      // 값이 커질수록 텍스트가 오른쪽으로 이동
       setSpaces([
         0,
         0,
-        -leftValue - widthValue * 1.3,
-        // -leftValue - widthValue * 1.3 - correctionValue[0],
-        -110,
-        -leftValue - widthValue - 205 - correctionValue[1],
-        -leftValue - widthValue - 205 - correctionValue[2],
+        (defaultValue / 2000) * OFFSET,
+        (defaultValue / 1870) * OFFSET,
+        (defaultValue / 2000) * OFFSET - 190,
+        (defaultValue / 2000) * OFFSET - 192,
       ]);
     }
   }, [charORef.current]);
 
   window.addEventListener('resize', () => {
-    if (window.innerWidth < 768) {
+    if (window.innerWidth < MOBILE_SIZE) {
       setMobile(true);
     } else {
       setMobile(false);
     }
+
+    return () => {
+      window.removeEventListener('resize', () => {});
+    };
   });
 
   return (
