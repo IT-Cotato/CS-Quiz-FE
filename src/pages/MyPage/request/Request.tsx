@@ -15,11 +15,6 @@ const Request = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  useEffect(() => {
-    applyList?.sort((left, right) => left.name.localeCompare(right.name));
-    rejectList?.sort((left, right) => left.name.localeCompare(right.name));
-  }, [applyList, rejectList]);
-
   return (
     <RoleApproveLayout headerText="신입 감자 가입요청 확인/ 승인">
       <ButtonContainer>
