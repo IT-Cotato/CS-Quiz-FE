@@ -1,11 +1,16 @@
 import useSWR from 'swr';
 import fetcher from './fetcher';
-
+import type { MemberData } from '@/typing/db';
 /**
  * fetch user's name, role, and etc
  * @returns {Object}
  */
-export default function fetchUserData() {
+
+interface FetchUserData {
+  data: MemberData;
+}
+
+export default function fetchUserData(): FetchUserData {
   const { data } = useSWR('/v1/api/member/info', fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
