@@ -6,19 +6,18 @@ import { Tooltip } from 'react-tooltip';
 import fetchUserData from '@utils/fetchUserData';
 
 const CSStart = () => {
-  const { data: userData } = fetchUserData();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [params] = useSearchParams();
-  const subject = location?.state?.subject;
-  const search = location.search;
-  const generationNumber = params.get('generationNumber');
-  const educationNumber = params.get('educationNumber');
-  const educationId = params.get('educationId');
-
   const [educationStatus, setEducationStatus] = useState<'BEFORE' | 'ONGOING' | 'FINISHED'>(
     'BEFORE',
   );
+  const { data: userData } = fetchUserData();
+  const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const generationNumber = params.get('generationNumber');
+  const educationNumber = params.get('educationNumber');
+  const educationId = params.get('educationId');
+  const location = useLocation();
+  const subject = location?.state?.subject;
+  const search = location.search;
 
   /**
    * fetch education status ->
@@ -33,9 +32,6 @@ const CSStart = () => {
     setEducationStatus(response);
   };
 
-  //
-  //
-  //
   useEffect(() => {
     fetchEducationStatus();
   }, []);
@@ -44,21 +40,79 @@ const CSStart = () => {
     navigate('/signin');
   }
 
-  return (
-    <Background>
-      <Puzzle1 src="https://velog.velcdn.com/images/ea_st_ring/post/a4439877-e883-4352-b80f-6c630361d544/image.svg" />
-      <Puzzle2 src="https://velog.velcdn.com/images/ea_st_ring/post/b26877af-3c64-4165-9562-4eda93180b5b/image.svg" />
-      <Sphere src="https://velog.velcdn.com/images/ea_st_ring/post/41451983-1133-44d4-820a-a1170ce25397/image.svg" />
-      <Sphere2 src="https://velog.velcdn.com/images/ea_st_ring/post/5bc443b9-cad4-4001-b05f-334e3429728c/image.svg" />
+  /**
+   *
+   */
+  const handleClickStartButton = () => {
+    navigate('/cs/solving');
+  };
+
+  /**
+   *
+   */
+  const handleClickUploadButton = () => {
+    navigate('/cs/upload' + search, {
+      state: {
+        subject: subject,
+      },
+    });
+  };
+
+  /**
+   *
+   */
+  const handleClickManageButton = () => {
+    navigate('/cs/manage' + search);
+  };
+
+  /**
+   *
+   */
+  const renderBackgroundFigures = () => {
+    return (
+      <>
+        <Puzzle1 src="https://velog.velcdn.com/images/ea_st_ring/post/a4439877-e883-4352-b80f-6c630361d544/image.svg" />
+        <Puzzle2 src="https://velog.velcdn.com/images/ea_st_ring/post/b26877af-3c64-4165-9562-4eda93180b5b/image.svg" />
+        <Sphere src="https://velog.velcdn.com/images/ea_st_ring/post/41451983-1133-44d4-820a-a1170ce25397/image.svg" />
+        <Sphere2 src="https://velog.velcdn.com/images/ea_st_ring/post/5bc443b9-cad4-4001-b05f-334e3429728c/image.svg" />
+      </>
+    );
+  };
+
+  /**
+   *
+   */
+  const renderTitleBox = () => {
+    return (
       <TitleBox>
         <h3>COTATO</h3>
         <h1>CS QUIZ</h1>
         <p>{`${generationNumber}기/ ${educationNumber}차 세션`}</p>
         <span>{subject}</span>
       </TitleBox>
+    );
+  };
+
+  /**
+   *
+   */
+  const renderButtons = () => {
+    return (
       <NavBox>
-        <StartButton onClick={() => navigate('/cs/solving')}>
-          <p> 문제풀이 시작하기</p>
+        {educationStatus !== 'ONGOING' && (
+          <Tooltip
+            id="start_button_tooltip"
+            style={{ position: 'absolute', zIndex: 1000 }}
+            place="top"
+            content="문제풀이 시작 전입니다."
+          />
+        )}
+        <StartButton
+          data-tooltip-id="start_button_tooltip"
+          disabled={educationStatus !== 'ONGOING'}
+          onClick={handleClickStartButton}
+        >
+          <p>문제풀이 시작하기</p>
         </StartButton>
         <OtherButton
           onClick={() => {
@@ -69,36 +123,36 @@ const CSStart = () => {
         </OtherButton>
         {['ADMIN', 'EDUCATION'].includes(userData?.role as string) ? (
           <>
-            <Tooltip
-              id="upload_button_tooltip"
-              style={{ position: 'absolute', zIndex: 1000 }}
-              place="top"
-              content="문제가 진행중이거나 종료되었습니다."
-            />
+            {educationStatus === 'ONGOING' && (
+              <Tooltip
+                id="upload_button_tooltip"
+                style={{ position: 'absolute', zIndex: 1000 }}
+                place="top"
+                content="현재 문제풀이가 진행중입니다."
+              />
+            )}
             <UploadButton
               data-tooltip-id="upload_button_tooltip"
-              disabled={educationStatus !== 'BEFORE'}
-              onClick={() => {
-                navigate('/cs/upload' + search, {
-                  state: {
-                    subject: subject,
-                  },
-                });
-              }}
+              disabled={educationStatus === 'ONGOING'}
+              onClick={handleClickUploadButton}
             >
               <p>문제 업로드</p>
             </UploadButton>
 
-            <ManageButton
-              onClick={() => {
-                navigate('/cs/manage' + search);
-              }}
-            >
+            <ManageButton onClick={handleClickManageButton}>
               <p>문제풀이 관리</p>
             </ManageButton>
           </>
         ) : null}
       </NavBox>
+    );
+  };
+
+  return (
+    <Background>
+      {renderBackgroundFigures()}
+      {renderTitleBox()}
+      {renderButtons()}
     </Background>
   );
 };
@@ -309,6 +363,11 @@ const StartButton = styled.button`
   border-radius: 20px;
   img {
     width: 26px;
+  }
+  &:disabled {
+    background: #8a8a8a;
+    color: #e0e0e0;
+    border: #e4e4e4 !important;
   }
 `;
 
