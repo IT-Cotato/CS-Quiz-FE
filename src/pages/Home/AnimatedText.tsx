@@ -61,15 +61,15 @@ const AnimatedText = () => {
       // 높은 해상도에 대한 보정치 처리, 추후 보강 필요
       // 값이 커질수록 텍스트가 오른쪽으로 이동
       if (leftValue < 50) {
-        leftValue += 5;
+        leftValue += 15;
       }
       setSpaces([
         0,
         0,
-        (defaultValue / 2000) * OFFSET - leftValue + 35,
-        (defaultValue / 1870) * OFFSET - leftValue + 42,
-        (defaultValue / 2000) * OFFSET - 190 - leftValue + 40,
-        (defaultValue / 2000) * OFFSET - 192 - leftValue + 38,
+        (defaultValue / 2000) * OFFSET - leftValue + 40,
+        (defaultValue / 1870) * OFFSET - leftValue + 50,
+        (defaultValue / 2000) * OFFSET - 190 - leftValue + 50,
+        (defaultValue / 2000) * OFFSET - 190 - leftValue + 50,
       ]);
     }
   }, [charORef.current]);
