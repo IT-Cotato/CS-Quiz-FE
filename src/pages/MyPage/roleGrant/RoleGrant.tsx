@@ -6,7 +6,7 @@ import { IEnrollMember } from '@/typing/db';
 import RoleContent from '@pages/MyPage/roleGrant/RoleContent';
 import useSWRImmutable from 'swr/immutable';
 import api from '@/api/api';
-import sortMember from '@utils/sortEnrollMembers';
+import sortEnrollMember from '@pages/MyPage/roleGrant/utils/sortEnrollMembers';
 
 const RoleGrant = () => {
   const { data: activeList, mutate: mutateActive } = useSWRImmutable<IEnrollMember[]>(
@@ -26,8 +26,8 @@ const RoleGrant = () => {
   }, []);
 
   useEffect(() => {
-    sortMember(activeList);
-    sortMember(omList);
+    sortEnrollMember(activeList);
+    sortEnrollMember(omList);
   }, [activeList, omList]);
 
   const onChangeAddOm = useCallback(

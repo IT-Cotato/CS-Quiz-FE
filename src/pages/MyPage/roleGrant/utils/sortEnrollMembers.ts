@@ -1,6 +1,11 @@
 import { IEnrollMember } from '@/typing/db';
 
-const sortMembers = (members?: IEnrollMember[]): IEnrollMember[] | undefined => {
+/**
+ * sort enrolled members by generation number and member name
+ * @param members
+ * @returns IEnrollMember[] | undefined
+ */
+const sortEnrollMembers = (members?: IEnrollMember[]): IEnrollMember[] | undefined => {
   members?.sort((left, right) => {
     if (left.generationNumber !== right.generationNumber) {
       return left.generationNumber - right.generationNumber;
@@ -10,4 +15,4 @@ const sortMembers = (members?: IEnrollMember[]): IEnrollMember[] | undefined => 
   return members;
 };
 
-export default sortMembers;
+export default sortEnrollMembers;
