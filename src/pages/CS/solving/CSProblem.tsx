@@ -72,13 +72,13 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
   const choiceRef = useRef<any>([]);
 
   const alignBtnHeights = () => {
-    let maxHeight = 0;
-    choiceRef.current.forEach((el: any) => {
+    let maxHeight = 68;
+    choiceRef?.current.forEach((el: any) => {
       if (el.offsetHeight > maxHeight) {
         maxHeight = el.offsetHeight;
       }
     });
-    choiceRef.current.forEach((el: any) => {
+    choiceRef?.current.forEach((el: any) => {
       el.style.height = `${maxHeight}px`;
     });
   };
