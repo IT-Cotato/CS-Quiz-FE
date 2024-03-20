@@ -1,49 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 
+//
+//
+//
+
+const OFFSET = 1920 / window.innerWidth;
+const MOBILE_SIZE = 768;
+const ANIMATION_DELAY_TIME = 3; // 최소 2
+const LINE1_TEXT_ARRAY = ['C', 'O', 'd', 'e', ' ', 'T', 'o', 'g', 'e', 't', 'h', 'e', 'r', ','];
+const LINE2_TEXT_ARRAY = [
+  'A',
+  'r',
+  'r',
+  'i',
+  'v',
+  'e',
+  ' ',
+  'T',
+  'O',
+  'g',
+  'e',
+  't',
+  'h',
+  'e',
+  'r',
+  '!',
+];
+
+//
+//
+//
+
 const AnimatedText = () => {
-  const [line1, setLine1] = useState([
-    'C',
-    'O',
-    'd',
-    'e',
-    ' ',
-    'T',
-    'o',
-    'g',
-    'e',
-    't',
-    'h',
-    'e',
-    'r',
-    ',',
-  ]);
-  const [line2, setLine2] = useState([
-    'A',
-    'r',
-    'r',
-    'i',
-    'v',
-    'e',
-    ' ',
-    'T',
-    'O',
-    'g',
-    'e',
-    't',
-    'h',
-    'e',
-    'r',
-    '!',
-  ]);
-  const [mobile, setMobile] = useState(window.innerWidth < 768 ? true : false);
+  const [mobile, setMobile] = useState(window.innerWidth < MOBILE_SIZE ? true : false);
   const [spaces, setSpaces] = useState<number[]>([]);
 
   const checkUpper = (char: string) => {
     return char === char.toUpperCase() && char.match(/[a-zA-Z]/);
   };
 
-  const animDelay = 3; // 최소 2
   const line1Ref = React.useRef<HTMLDivElement>(null);
   const line2Ref = React.useRef<HTMLDivElement>(null);
   const charORef = React.useRef<HTMLSpanElement>(null);
@@ -59,50 +55,51 @@ const AnimatedText = () => {
     widthValue = charORef.current.offsetWidth;
   }
 
-  let correctionValue = [0, 0, 0];
-
   useEffect(() => {
     if (charORef.current) {
-      console.log(leftValue, widthValue);
+      const defaultValue = (-leftValue - widthValue) * window.innerWidth;
       // 높은 해상도에 대한 보정치 처리, 추후 보강 필요
-      if (window.innerWidth > 1600) {
-        correctionValue = [18, 9, 9];
-        // 값이 커질수록 텍스트가 오른쪽으로 이동
+      // 값이 커질수록 텍스트가 오른쪽으로 이동
+      if (leftValue < 50) {
+        leftValue += 12;
       }
       setSpaces([
         0,
         0,
-        -leftValue - widthValue * 1.3,
-        // -leftValue - widthValue * 1.3 - correctionValue[0],
-        -110,
-        -leftValue - widthValue - 205 - correctionValue[1],
-        -leftValue - widthValue - 205 - correctionValue[2],
+        (defaultValue / 2000) * OFFSET - leftValue + 40,
+        (defaultValue / 1870) * OFFSET - leftValue + 50,
+        (defaultValue / 2000) * OFFSET - 190 - leftValue + 50,
+        (defaultValue / 2000) * OFFSET - 190 - leftValue + 50,
       ]);
     }
   }, [charORef.current]);
 
   window.addEventListener('resize', () => {
-    if (window.innerWidth < 768) {
+    if (window.innerWidth < MOBILE_SIZE) {
       setMobile(true);
     } else {
       setMobile(false);
     }
+
+    return () => {
+      window.removeEventListener('resize', () => {});
+    };
   });
 
   return (
-    <Box $anim_delay={animDelay}>
+    <Box $anim_delay={ANIMATION_DELAY_TIME}>
       <h5 className="subtitle">IT 연합동아리 코테이토</h5>
       <Line1 ref={line1Ref}>
-        {line1.map((char, idx) =>
+        {LINE1_TEXT_ARRAY.map((char, idx) =>
           checkUpper(char) ? (
             <UpperChar
               key={idx}
-              $anim_delay={animDelay}
+              $anim_delay={ANIMATION_DELAY_TIME}
               top={0}
               left={char === 'C' ? spaces[0] : char === 'O' ? spaces[1] : spaces[2]}
               ref={idx === 1 ? charORef : null}
               style={{
-                fontFamily: 'Pretendard',
+                fontFamily: 'Pretendard-Bold',
               }}
             >
               {char}
@@ -111,7 +108,7 @@ const AnimatedText = () => {
             <span
               key={idx}
               style={{
-                fontFamily: 'Pretendard',
+                fontFamily: 'Pretendard-Bold',
               }}
               className={checkUpper(char) ? '' : 'animated-char'}
             >
@@ -121,15 +118,15 @@ const AnimatedText = () => {
         )}
       </Line1>
       <br />
-      <Line2 $anim_delay={animDelay} ref={line2Ref}>
-        {line2.map((char, idx) =>
+      <Line2 $anim_delay={ANIMATION_DELAY_TIME} ref={line2Ref}>
+        {LINE2_TEXT_ARRAY.map((char, idx) =>
           checkUpper(char) ? (
             <UpperChar
               key={idx}
-              $anim_delay={animDelay}
+              $anim_delay={ANIMATION_DELAY_TIME}
               top={topValue}
               style={{
-                fontFamily: 'Pretendard',
+                fontFamily: 'Pretendard-Bold',
               }}
               left={char === 'A' ? spaces[3] : char === 'T' ? spaces[4] : spaces[5]}
             >
@@ -139,7 +136,7 @@ const AnimatedText = () => {
             <span
               key={idx}
               style={{
-                fontFamily: 'Pretendard',
+                fontFamily: 'Pretendard-Bold',
               }}
               className={checkUpper(char) ? '' : 'animated-char'}
             >
