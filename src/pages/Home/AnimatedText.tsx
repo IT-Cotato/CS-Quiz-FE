@@ -61,7 +61,7 @@ const AnimatedText = () => {
       // 높은 해상도에 대한 보정치 처리, 추후 보강 필요
       // 값이 커질수록 텍스트가 오른쪽으로 이동
       if (leftValue < 50) {
-        leftValue += 15;
+        leftValue += 12;
       }
       setSpaces([
         0,
