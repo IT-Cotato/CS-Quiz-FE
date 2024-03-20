@@ -95,11 +95,20 @@ const AnimatedText = () => {
               top={0}
               left={char === 'C' ? spaces[0] : char === 'O' ? spaces[1] : spaces[2]}
               ref={idx === 1 ? charORef : null}
+              style={{
+                fontFamily: 'Pretendard',
+              }}
             >
               {char}
             </UpperChar>
           ) : (
-            <span key={idx} className={checkUpper(char) ? '' : 'animated-char'}>
+            <span
+              key={idx}
+              style={{
+                fontFamily: 'Pretendard',
+              }}
+              className={checkUpper(char) ? '' : 'animated-char'}
+            >
               {char === ' ' ? <>&nbsp;</> : char}
             </span>
           ),
@@ -113,12 +122,21 @@ const AnimatedText = () => {
               key={idx}
               $anim_delay={ANIMATION_DELAY_TIME}
               top={topValue}
+              style={{
+                fontFamily: 'Pretendard',
+              }}
               left={char === 'A' ? spaces[3] : char === 'T' ? spaces[4] : spaces[5]}
             >
               {char}
             </UpperChar>
           ) : (
-            <span key={idx} className={checkUpper(char) ? '' : 'animated-char'}>
+            <span
+              key={idx}
+              style={{
+                fontFamily: 'Pretendard',
+              }}
+              className={checkUpper(char) ? '' : 'animated-char'}
+            >
               {char === ' ' ? <>&nbsp;</> : char}
             </span>
           ),
@@ -323,7 +341,6 @@ const MobileTitle = styled.h2`
   font-size: 50px;
   top: 300px;
   margin: 0;
-  font-family: Pretendard;
 `;
 const UpperChar = styled.span<{ top: number; left: number; $anim_delay: number }>`
   animation: ${(props) => delayPosition(props.top, props.left)} 3s
