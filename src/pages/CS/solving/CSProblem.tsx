@@ -16,6 +16,8 @@ import BgCorrect from './BgCorrect';
 import BgIncorrect from './BgIncorrect';
 import BgWaiting from './BgWaiting';
 import BgKingKing from './BgKingKing';
+import { set } from 'date-fns';
+import BgWinner from './BgWinner';
 
 type Problem = {
   id: number; // 문제의 PK
@@ -38,9 +40,17 @@ interface CSProblemProps {
   quizId: number | null;
   submitAllowed: boolean;
   problemId: number;
+  showKingKing: boolean;
+  setShowKingKing: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId }) => {
+const CSProblem: React.FC<CSProblemProps> = ({
+  quizId,
+  submitAllowed,
+  problemId,
+  showKingKing,
+  setShowKingKing,
+}) => {
   const { data, error, isLoading, mutate } = useSWR('/v1/api/member/info', fetcher);
   if (data) {
     // console.log(data);
@@ -58,7 +68,6 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
   const [showIncorrect, setShowIncorrect] = useState(false);
   const [showExplaination, setShowExplaination] = useState(false);
   const [returnToWaiting, setReturnToWaiting] = useState(false);
-  const [showKingKing, setShowKingKing] = useState(false);
 
   const inputRef = useRef<any>();
 
@@ -227,6 +236,13 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
     setShowHeader,
   };
 
+  if (showKingKing == true) {
+    setTimeout(() => {
+      setShowKingKing(false);
+      setReturnToWaiting(true);
+    }, 8000);
+  }
+
   return (
     <Wrapper>
       {showHeader ? <MemberHeader {...propsForMemberHeader} /> : null}
@@ -304,9 +320,7 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
       {showCorrect && <BgCorrect />}
       {showIncorrect && <BgIncorrect />}
       {showKingKing && <BgKingKing quizId={quizId} />}
-      {returnToWaiting && (
-        <BgWaiting quizNum={(quizData?.number as number) + 1} setShowKingKing={setShowKingKing} />
-      )}
+      {returnToWaiting && <BgWaiting quizNum={(quizData?.number as number) + 1} />}
     </Wrapper>
   );
 };

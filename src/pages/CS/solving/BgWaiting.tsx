@@ -9,16 +9,8 @@ type Props = {
   setShowKingKing?: (value: boolean) => void;
 };
 
-const BgWaiting = ({ quizNum, setShowKingKing }: Props) => {
+const BgWaiting = ({ quizNum }: Props) => {
   console.log('quizNum', quizNum);
-  useEffect(() => {
-    if (setShowKingKing && quizNum === 10) {
-      setShowKingKing(true);
-      setTimeout(() => {
-        setShowKingKing(false);
-      }, 8000);
-    }
-  }, []);
 
   return (
     <Wrapper>
