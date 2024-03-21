@@ -1,19 +1,19 @@
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import CSManage from './manage/CSManage';
 import CSStart from './CSStart';
 import CSUpload from './admin/upload/CSAdminUpload';
 import CSQuiz from './solving/CSQuiz';
 import CSHome from './CSHome';
-import useSWR from 'swr';
-import fetcher from '@utils/fetcher';
+import fetchUserData from '@utils/fetchUserData';
 
 const CSPage = () => {
-  const { data, error } = useSWR('/v1/api/member/info', fetcher);
-  if (!data || data === undefined) {
-    window.location.href = '/';
-  }
+  const { data } = fetchUserData();
+  const navigate = useNavigate();
 
+  if (data?.role === null) {
+    navigate('/');
+  }
   return (
     <Routes>
       <Route path="/" element={<CSHome />} />

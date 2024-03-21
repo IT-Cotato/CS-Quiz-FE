@@ -50,7 +50,7 @@ const MemberHeader: React.FC<MemberHeaderProps> = () => {
         <MenuItem to="/session">세션 기록</MenuItem>
       </MenuSection>
       <MyInfo>
-        <img src={MEMBER_ROLE_EMOJI_URL[userData.role] || ''} />
+        <img src={MEMBER_ROLE_EMOJI_URL[userData?.role] || ''} />
         <p onClick={() => navigate('mypage')}>{userData?.memberName}</p>
       </MyInfo>
       <HamburgerMenu color="#202020" top="16px" />
