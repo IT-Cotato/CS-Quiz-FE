@@ -66,11 +66,11 @@ const SignUp = () => {
 
   const onChangePassword = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,16}$/;
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&.])[A-Za-z\d@$!%*#?&.]{8,16}$/;
       const passwordCurrent = e.target.value;
       setPassword(passwordCurrent);
       if (!passwordRegex.test(passwordCurrent)) {
-        setPasswordMessage('8-16자 영문 대 소문자, 숫자를 사용하세요.');
+        setPasswordMessage('영문 대소문자, 숫자, 특수문자를 포함하여 8-16자로 입력하세요.');
         setIsPassword(false);
       } else {
         setPasswordMessage('');
@@ -237,7 +237,7 @@ const SignUp = () => {
             type="password"
             id="password"
             name="password"
-            placeholder="8-16자 영문 대 소문자, 숫자를 사용하세요."
+            placeholder="8-16자 영문 대소문자, 숫자, 특수문자를 사용하세요."
             value={password}
             onChange={onChangePassword}
           />
