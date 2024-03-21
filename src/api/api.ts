@@ -47,7 +47,7 @@ api.interceptors.response.use(
           return api(config);
         } catch (err) {
           localStorage.clear();
-          // window.location.replace('/');
+          window.location.replace('/');
         } finally {
           isRefreshing = false;
         }
