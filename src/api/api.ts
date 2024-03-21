@@ -2,10 +2,12 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_BASE_URL,
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem('token')}`,
-  },
   withCredentials: true,
+});
+
+api.interceptors.request.use((config) => {
+  config.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
+  return config;
 });
 
 api.interceptors.response.use(
