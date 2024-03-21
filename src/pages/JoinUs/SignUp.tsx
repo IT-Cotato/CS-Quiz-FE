@@ -3,9 +3,6 @@ import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import SignUpModal from '@components/SignUpModal';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import useSWR from 'swr';
-import fetcher from '@utils/fetcher';
 import api from '@/api/api';
 
 const SignUp = () => {
@@ -115,6 +112,9 @@ const SignUp = () => {
     email: id,
   };
   const onSendEmail = async () => {
+    if (isId) {
+      alert('인증 메일이 발송되었습니다.');
+    }
     await api
       .post('/v1/api/auth/verification', emailData, {
         params: {
@@ -123,7 +123,6 @@ const SignUp = () => {
       })
       .then((res) => {
         console.log(res);
-        alert('인증 이메일이 발송되었습니다.');
       })
       .catch((err) => {
         console.log(err);
