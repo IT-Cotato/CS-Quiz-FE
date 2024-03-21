@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_BASE_URL,
@@ -10,6 +10,15 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+interface RetryQueueItem {
+  resolve: (value?: any) => void;
+  reject: (error?: any) => void;
+  config: AxiosRequestConfig;
+}
+
+const refreshAndRetryQueue: RetryQueueItem[] = [];
+let isRefreshing = false;
+
 api.interceptors.response.use(
   (res) => res,
   // response 에러 처리
@@ -17,17 +26,38 @@ api.interceptors.response.use(
     const { config, response } = error;
 
     // 토큰 만료
-    if (response.status === 401 && response.data.message === 'Token Already Expired') {
-      try {
-        const response = await api.post('/v1/api/auth/reissue');
-        config.headers.Authorization = `Bearer ${response.data.accessToken}`;
-        localStorage.setItem('token', response.data.accessToken);
-        return api(config);
-      } catch (err) {
-        localStorage.clear();
-        // window.location.replace('/');
+    if (response.status === 401 && response.data.errorCode === 'TOKEN_EXPIRED') {
+      if (!isRefreshing) {
+        isRefreshing = true;
+
+        try {
+          const response = await api.post('/v1/api/auth/reissue');
+          config.headers.Authorization = `Bearer ${response.data.accessToken}`;
+          localStorage.setItem('token', response.data.accessToken);
+
+          // queue에 쌓인 요청들을 다시 보냄
+          refreshAndRetryQueue.forEach(({ config, resolve, reject }) => {
+            api
+              .request(config)
+              .then((response) => resolve(response))
+              .catch((err) => reject(err));
+          });
+          refreshAndRetryQueue.length = 0;
+
+          return api(config);
+        } catch (err) {
+          localStorage.clear();
+          // window.location.replace('/');
+        } finally {
+          isRefreshing = false;
+        }
       }
+
+      return new Promise<void>((resolve, reject) => {
+        refreshAndRetryQueue.push({ config, resolve, reject });
+      });
     }
+
     return Promise.reject(error);
   },
 );
