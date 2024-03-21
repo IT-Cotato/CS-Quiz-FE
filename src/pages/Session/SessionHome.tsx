@@ -173,18 +173,15 @@ const ButtonWrapper = styled.div`
 `;
 
 const SessionContentsContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  flex-direction: row;
-  align-content: start;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-rows: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  place-items: center;
+
   width: 100%;
   min-height: 30vh;
   margin: 28px 0 120px;
-
-  @media only screen and (max-width: 957px) {
-    justify-content: center;
-  }
 `;
 
 const SessionReady = styled.div`
