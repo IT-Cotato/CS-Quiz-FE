@@ -8,6 +8,9 @@ import CSProblem from './CSProblem';
 import MemberHeader from '@components/MemberHeader';
 import BgWaiting from './BgWaiting';
 import { useNavigate } from 'react-router-dom';
+import { set } from 'date-fns';
+import BgKingKing from './BgKingKing';
+import BgWinner from './BgWinner';
 
 interface WaitingProps {
   directToNext?: boolean;
@@ -30,6 +33,8 @@ const CSQuiz: React.FC<WaitingProps> = () => {
     command: '',
   });
   const [showProblem, setShowProblem] = useState<boolean>(false);
+  const [showKingKing, setShowKingKing] = useState<boolean>(false);
+  const [showWinner, setShowWinner] = useState<boolean>(false);
   const [allowSubmit, setAllowSubmit] = useState<boolean>(false);
   const [problemId, setProblemId] = useState<number>(0); // = quizId
 
@@ -136,6 +141,18 @@ const CSQuiz: React.FC<WaitingProps> = () => {
         } else if (message.command === 'exit') {
           console.log('퀴즈 닫기');
           navigate('/cs');
+        } else if (message.quizId > 0 && message.command === 'king') {
+          console.log('킹킹 문제 풀 사람 반환');
+          // 9번 문제 제출 -> 정답 여부 화면 띄웠다가 -> 대기화면 띄워주고 -
+          // > 메시지 받으면 킹킹 화면 띄우고 -> 몇 초 보여주고 대기화면 띄우기
+          // 9번 문제 다음 -> 대기화면 띄워주고 -> 메시지 받으면 킹킹 화면 띄우고 -
+          // > 몇 초 보여주고 다시 대기화면 띄우기
+          setShowKingKing(true);
+        } else if (message.quizId > 0 && message.command === 'winner') {
+          console.log('킹킹 문제 반환');
+          // 10번 문제 제출 -> 정답 여부 화면 띄웠다가 -> 다시 10번 문제로 -
+          // > 메시지 받으면 우승자 화면 띄우고 끝
+          setShowWinner(true);
         } else {
           console.log('exception error');
         }
@@ -154,9 +171,17 @@ const CSQuiz: React.FC<WaitingProps> = () => {
       </Waiting>
       {showProblem && (
         <div className="problem">
-          <CSProblem quizId={message.quizId} submitAllowed={allowSubmit} problemId={problemId} />
+          <CSProblem
+            quizId={message.quizId}
+            submitAllowed={allowSubmit}
+            problemId={problemId}
+            showKingKing={showKingKing}
+            setShowKingKing={setShowKingKing}
+          />
         </div>
       )}
+      {/* {showKingKing && <BgKingKing quizId={message.quizId} />} */}
+      {showWinner && <BgWinner quizId={message.quizId} />}
     </Wrapper>
   );
 };
