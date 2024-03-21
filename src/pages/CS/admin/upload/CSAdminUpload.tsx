@@ -45,8 +45,8 @@ const CSAdminUpload = () => {
   const { data: userData } = fetchUserData();
   const [params] = useSearchParams();
   const educationId = Number(params.get('educationId'));
-  const generationId = params.get('generationId') || '';
   const educationNumber = params.get('educationNumber') || '';
+  const generationNumber = params.get('generationNumber') || '';
 
   /**
    * fetch quiz list data if it exists
@@ -101,7 +101,7 @@ const CSAdminUpload = () => {
   }, 500);
 
   return (
-    <CSAdminUploadLayout generationId={generationId} educationNumber={educationNumber}>
+    <CSAdminUploadLayout generationNumber={generationNumber} educationNumber={educationNumber}>
       <CSAdminUploadContent
         quiz={quiz}
         setQuiz={setQuiz}
