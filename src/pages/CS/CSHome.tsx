@@ -80,7 +80,7 @@ const CSHome = () => {
               </ButtonWrapper>
             )}
           </CSSetting>
-          <CSContentsContainer>
+          <CSContentsContainer education={educations?.length.toString()}>
             {educations?.length === 0 ? (
               <CSReady>
                 <SettingIcon />
@@ -144,7 +144,7 @@ const CSHeader = styled.h1`
 
   @media screen and (max-width: 768px) {
     margin: 92px 0 64px;
-    font-size: 2rem;
+    font-size: 1.875rem;
   }
 `;
 
@@ -165,16 +165,26 @@ const ButtonWrapper = styled.div`
   }
 `;
 
-const CSContentsContainer = styled.div`
+interface CSContentContainerProps {
+  education?: string;
+}
+
+const CSContentsContainer = styled.div<CSContentContainerProps>`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  grid-template-rows: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-rows: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: ${(props) =>
+    props.education === '0' ? '1fr' : 'repeat(auto-fill, minmax(240px, 1fr))'};
   gap: 20px;
   place-items: center;
 
   width: 100%;
   min-height: 30vh;
   margin: 28px 0 120px;
+
+  @media screen and (max-width: 768px) {
+    grid-template-rows: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
 `;
 
 const CSReady = styled.div`

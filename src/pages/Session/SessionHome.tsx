@@ -86,7 +86,7 @@ const SessionHome = () => {
               </ButtonWrapper>
             )}
           </SessionSetting>
-          <SessionContentsContainer>
+          <SessionContentsContainer session={sessions?.length.toString()}>
             {sessions?.length === 0 ? (
               <SessionReady>
                 <SettingIcon />
@@ -135,7 +135,7 @@ const SessionWrapper = styled.div`
   min-height: 100vh;
 
   @media screen and (max-width: 768px) {
-    width: 300px;
+    width: 260px;
   }
 `;
 
@@ -151,7 +151,7 @@ const SessionHeader = styled.h1`
 
   @media screen and (max-width: 768px) {
     margin: 92px 0 64px;
-    font-size: 2rem;
+    font-size: 1.875rem;
   }
 `;
 
@@ -172,16 +172,26 @@ const ButtonWrapper = styled.div`
   }
 `;
 
-const SessionContentsContainer = styled.div`
+interface SessionContentsContainerProps {
+  session?: string;
+}
+
+const SessionContentsContainer = styled.div<SessionContentsContainerProps>`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  grid-template-rows: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-rows: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: ${(props) =>
+    props.session === '0' ? '1fr' : 'repeat(auto-fill, minmax(280px, 1fr))'};
   gap: 20px;
   place-items: center;
 
   width: 100%;
   min-height: 30vh;
   margin: 28px 0 120px;
+
+  @media screen and (max-width: 768px) {
+    grid-template-rows: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
 `;
 
 const SessionReady = styled.div`
