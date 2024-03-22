@@ -7,15 +7,9 @@ interface EmailAuthProps {
   goToNextStep: () => void;
   email: string;
   setEmail: React.Dispatch<React.SetStateAction<string>>;
-  setTokenForRefreshPW: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const EmailAuth: React.FC<EmailAuthProps> = ({
-  goToNextStep,
-  email,
-  setEmail,
-  setTokenForRefreshPW,
-}) => {
+const EmailAuth: React.FC<EmailAuthProps> = ({ goToNextStep, email, setEmail }) => {
   const [inputs, setInputs] = useState<number[]>(Array(6).fill(null));
   const inputRef = useRef<any>([]);
 
@@ -46,8 +40,9 @@ const EmailAuth: React.FC<EmailAuthProps> = ({
       })
       .then((res) => {
         console.log(res);
+        console.log(res.data.accessToken);
         alert('인증이 완료되었습니다.');
-        setTokenForRefreshPW(res.headers.accesstoken);
+        localStorage.setItem('tokenForUpdatePW', res.data.accessToken);
       })
       .catch((err) => {
         console.log(err);
@@ -68,7 +63,7 @@ const EmailAuth: React.FC<EmailAuthProps> = ({
     <Wrapper>
       <h3>승인 요청 이메일이 발송되었습니다.</h3>
       <p>
-        <span>Cotato@naver.com</span>(으)로 인증 이메일이 발송 되었습니다.
+        <span>{email}</span>(으)로 인증 이메일이 발송 되었습니다.
         <br />
         이메일에서 코드 6자리를 아래 박스에 입력해주세요.
       </p>

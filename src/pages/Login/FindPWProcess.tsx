@@ -11,7 +11,6 @@ const FindPWProcess = () => {
   const [isEmail, setIsEmail] = useState(false);
   const [isPassword, setIsPassword] = useState(false);
   const [isPasswordCheck, setIsPasswordCheck] = useState(false);
-  const [tokenForRefreshPW, setTokenForRefreshPW] = useState<string>('');
 
   const propsForFindPW = {
     goToNextStep,
@@ -27,7 +26,6 @@ const FindPWProcess = () => {
     goToNextStep,
     email,
     setEmail,
-    setTokenForRefreshPW,
   };
 
   const propsForResetPW = {
@@ -39,7 +37,6 @@ const FindPWProcess = () => {
     setIsPasswordCheck,
     isEmail,
     setIsEmail,
-    tokenForRefreshPW,
   };
 
   return (
