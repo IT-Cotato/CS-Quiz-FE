@@ -87,9 +87,7 @@ const ButtonContainer = styled.div`
   box-shadow: 0px 4px 40px 0px rgba(0, 0, 0, 0.05);
 
   @media screen and (max-width: 768px) {
-    flex-direction: column;
-    align-items: center;
-    margin: 0 0 20px;
+    margin: 0 0 28px;
     padding: 12px;
   }
 
@@ -100,6 +98,11 @@ const ButtonContainer = styled.div`
     font-weight: 400;
     line-height: 160%;
     margin: 0;
+
+    @media screen and (max-width: 768px) {
+      font-size: 16px;
+      margin-left: 12px;
+    }
   }
 `;
 
@@ -109,6 +112,10 @@ const Button = styled.button<{ background: string }>`
   background: ${(props) => props.background};
   padding: 8px 24px;
 
+  @media screen and (max-width: 768px) {
+    padding: 8px 20px;
+  }
+
   > p {
     color: #fff;
     font-family: NanumSquareRound;
@@ -116,6 +123,10 @@ const Button = styled.button<{ background: string }>`
     font-weight: 400;
     line-height: 160%;
     margin: 0;
+
+    @media screen and (max-width: 768px) {
+      font-size: 14px;
+    }
   }
 `;
 
@@ -139,6 +150,11 @@ const ThemeButton = styled.button<ThemeButtonProps>`
   border: 1px solid ${(props) => props.border};
   background: ${(props) => props.background};
 
+  @media screen and (max-width: 768px) {
+    width: 80px;
+    height: 40px;
+  }
+
   > p {
     color: ${(props) => props.color};
     font-family: Pretendard;
@@ -146,5 +162,9 @@ const ThemeButton = styled.button<ThemeButtonProps>`
     font-weight: 400;
     line-height: 160%;
     text-transform: capitalize;
+
+    @media screen and (max-width: 768px) {
+      font-size: 12px;
+    }
   }
 `;
