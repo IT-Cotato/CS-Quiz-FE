@@ -54,7 +54,9 @@ const GenerationSelect = ({ onChangeGeneration, selectedGeneration }: Props) => 
   return (
     <GenerationSelectWrapper ref={generationDropRef}>
       <SelectMenu isopen={isOpen ? 'open' : 'close'} onClick={() => setIsOpen(!isOpen)}>
-        <p>{`${selectedGeneration?.generationNumber}기`}</p>
+        <p>
+          {selectedGeneration?.generationNumber ? `${selectedGeneration?.generationNumber}기` : ''}
+        </p>
         {isOpen ? (
           <img src={arrow_up_thin} alt="arrow-up" />
         ) : (
