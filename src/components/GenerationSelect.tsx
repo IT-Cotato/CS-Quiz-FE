@@ -40,13 +40,11 @@ const GenerationSelect = ({ onChangeGeneration, selectedGeneration }: Props) => 
 
   useEffect(() => {
     if (generationData) {
-      setGenerations(generationSort(generationData));
+      const newGenerations = generationSort(generationData);
+      setGenerations(newGenerations);
+      onChangeGeneration(newGenerations.at(0));
     }
   }, [generationData]);
-
-  useEffect(() => {
-    onChangeGeneration(generations?.at(-1));
-  }, [generations]);
 
   const onClickGeneration = useCallback((generation: IGeneration) => {
     onChangeGeneration(generation);
