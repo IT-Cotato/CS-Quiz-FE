@@ -158,7 +158,7 @@ const QuestionWrapper = styled.div`
   height: 100%;
 
   > p {
-    width: 90%;
+    width: calc(100% - 48px);
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
