@@ -13,7 +13,6 @@ interface ResetPWProps {
   setMismatchError: React.Dispatch<React.SetStateAction<boolean>>;
   isEmail: boolean;
   setIsEmail: React.Dispatch<React.SetStateAction<boolean>>;
-  tokenForRefreshPW: string;
 }
 
 const ResetPW: React.FC<ResetPWProps> = ({
@@ -25,7 +24,6 @@ const ResetPW: React.FC<ResetPWProps> = ({
   setMismatchError,
   isEmail,
   setIsEmail,
-  tokenForRefreshPW,
 }) => {
   const [password, setPassword] = useState('');
   const [passwordCheck, setPasswordCheck] = useState('');
@@ -34,32 +32,9 @@ const ResetPW: React.FC<ResetPWProps> = ({
 
   const navigate = useNavigate();
 
-  // 비밀번호 변경 시 기존과 일치하는지 확인
-  const checkPassword = () => {
-    api
-      .post(
-        '/v1/api/member/check/password',
-        {
-          password: password,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${tokenForRefreshPW}`,
-          },
-        },
-      )
-      .then((res) => {
-        console.log(res);
-        alert('이전에 사용한 적이 없는 비밀번호를 입력하세요.');
-      })
-      .catch((err) => {
-        console.error(err);
-        updatePassword(); // 기존 비밀번호와 불일치 확인 후 새로운 비밀번호로 업데이트
-      });
-  };
-
   // 새로운 비밀번호로 업데이트
   const updatePassword = () => {
+    console.log('accessToken: ' + localStorage.getItem('tokenForUpdatePW'));
     api
       .patch(
         '/v1/api/member/update/password',
@@ -68,7 +43,7 @@ const ResetPW: React.FC<ResetPWProps> = ({
         },
         {
           headers: {
-            Authorization: `Bearer ${tokenForRefreshPW}`,
+            Authorization: `Bearer ${localStorage.getItem('tokenForUpdatePW')}`,
           },
         },
       )
@@ -79,6 +54,7 @@ const ResetPW: React.FC<ResetPWProps> = ({
       })
       .catch((err) => {
         console.error(err);
+        alert('이전에 사용한 적이 없는 비밀번호를 입력하세요.');
       });
   };
 
@@ -87,7 +63,7 @@ const ResetPW: React.FC<ResetPWProps> = ({
       e.preventDefault();
       if (isPassword && isPasswordCheck && !mismatchError && isEmail) {
         console.log('password: ' + password + '\n' + 'passwordCheck: ' + passwordCheck);
-        checkPassword();
+        updatePassword();
         return;
       } else {
         alert('입력값을 확인해주세요.');
