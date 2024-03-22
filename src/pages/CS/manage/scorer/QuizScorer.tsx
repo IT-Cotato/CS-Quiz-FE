@@ -119,6 +119,7 @@ const TitleWrapper = styled.div`
 
   .question {
     ${fontStyle}
+    width: calc(100% - 100px);
   }
 `;
 
