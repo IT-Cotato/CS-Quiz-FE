@@ -67,7 +67,9 @@ const SignUp = () => {
       const passwordCurrent = e.target.value;
       setPassword(passwordCurrent);
       if (!passwordRegex.test(passwordCurrent)) {
-        setPasswordMessage('영문 대소문자, 숫자, 특수문자를 포함하여 8-16자로 입력하세요.');
+        setPasswordMessage(
+          '영문 대소문자, 숫자, 특수문자(@$!%*#?&.)를 포함하여 8-16자로 입력하세요.',
+        );
         setIsPassword(false);
       } else {
         setPasswordMessage('');
@@ -236,7 +238,7 @@ const SignUp = () => {
             type="password"
             id="password"
             name="password"
-            placeholder="8-16자 영문 대소문자, 숫자, 특수문자(@$!%*#?&.)를 사용하세요."
+            placeholder="8-16자 영문 대소문자, 숫자, 특수문자를 사용하세요."
             value={password}
             onChange={onChangePassword}
           />
