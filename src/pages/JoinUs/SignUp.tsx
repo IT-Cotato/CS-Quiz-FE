@@ -236,7 +236,7 @@ const SignUp = () => {
             type="password"
             id="password"
             name="password"
-            placeholder="8-16자 영문 대 소문자, 숫자를 사용하세요."
+            placeholder="8-16자 영문 대소문자, 숫자, 특수문자(@$!%*#?&.)를 사용하세요."
             value={password}
             onChange={onChangePassword}
           />
