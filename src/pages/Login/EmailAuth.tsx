@@ -7,14 +7,17 @@ interface EmailAuthProps {
   goToNextStep: () => void;
   email: string;
   setEmail: React.Dispatch<React.SetStateAction<string>>;
+  setTokenForRefreshPW: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const EmailAuth: React.FC<EmailAuthProps> = ({ goToNextStep, email, setEmail }) => {
+const EmailAuth: React.FC<EmailAuthProps> = ({
+  goToNextStep,
+  email,
+  setEmail,
+  setTokenForRefreshPW,
+}) => {
   const [inputs, setInputs] = useState<number[]>(Array(6).fill(null));
-  const [tokenForRefreshPW, setTokenForRefreshPW] = useState<string>('');
   const inputRef = useRef<any>([]);
-
-  // const [showFindPW, setShowFindPW] = useState(false);
 
   // 컴포넌트 마운트시 inputRef.current[0].focus() 실행
   useEffect(() => {

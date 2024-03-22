@@ -2,6 +2,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import api from '@/api/api';
 
 interface ResetPWProps {
   isPassword: boolean;
@@ -12,6 +13,7 @@ interface ResetPWProps {
   setMismatchError: React.Dispatch<React.SetStateAction<boolean>>;
   isEmail: boolean;
   setIsEmail: React.Dispatch<React.SetStateAction<boolean>>;
+  tokenForRefreshPW: string;
 }
 
 const ResetPW: React.FC<ResetPWProps> = ({
@@ -23,31 +25,72 @@ const ResetPW: React.FC<ResetPWProps> = ({
   setMismatchError,
   isEmail,
   setIsEmail,
+  tokenForRefreshPW,
 }) => {
   const [password, setPassword] = useState('');
   const [passwordCheck, setPasswordCheck] = useState('');
-  // const [mismatchError, setMismatchError] = useState(false);
-
   const [passwordMessage, setPasswordMessage] = useState('');
   const [passwordCheckMessage, setPasswordCheckMessage] = useState('');
 
-  // const [isPassword, setIsPassword] = useState(false);
-  // const [isPasswordCheck, setIsPasswordCheck] = useState(false);
-
   const navigate = useNavigate();
+
+  // 비밀번호 변경 시 기존과 일치하는지 확인
+  const checkPassword = () => {
+    api
+      .post(
+        '/v1/api/member/check/password',
+        {
+          password: password,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${tokenForRefreshPW}`,
+          },
+        },
+      )
+      .then((res) => {
+        console.log(res);
+        alert('이전에 사용한 적이 없는 비밀번호를 입력하세요.');
+      })
+      .catch((err) => {
+        console.error(err);
+        updatePassword(); // 기존 비밀번호와 불일치 확인 후 새로운 비밀번호로 업데이트
+      });
+  };
+
+  // 새로운 비밀번호로 업데이트
+  const updatePassword = () => {
+    api
+      .patch(
+        '/v1/api/member/update/password',
+        {
+          password: password,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${tokenForRefreshPW}`,
+          },
+        },
+      )
+      .then((res) => {
+        console.log(res);
+        alert('비밀번호 변경이 완료되었습니다.');
+        navigate('/signin');
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
 
   const onSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      console.log('password: ' + password + '\n' + 'passwordCheck: ' + passwordCheck);
-      console.log(isPassword, isPasswordCheck, mismatchError, isEmail);
       if (isPassword && isPasswordCheck && !mismatchError && isEmail) {
-        console.log(password);
-        alert('비밀번호 변경이 완료되었습니다.');
-        navigate('/signin');
+        console.log('password: ' + password + '\n' + 'passwordCheck: ' + passwordCheck);
+        checkPassword();
+        return;
       } else {
         alert('입력값을 확인해주세요.');
-        return;
       }
     },
     [password, passwordCheck],
@@ -55,11 +98,13 @@ const ResetPW: React.FC<ResetPWProps> = ({
 
   const onChangePassword = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,16}$/;
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&.])[A-Za-z\d@$!%*#?&.]{8,16}$/;
       const passwordCurrent = e.target.value;
       setPassword(passwordCurrent);
       if (!passwordRegex.test(passwordCurrent)) {
-        setPasswordMessage('8-16자 영문 대 소문자, 숫자를 사용하세요.');
+        setPasswordMessage(
+          '영문 대소문자, 숫자, 특수문자(@$!%*#?&.)를 포함하여 8-16자로 입력하세요.',
+        );
         setIsPassword(false);
       } else {
         setPasswordMessage('');
@@ -94,7 +139,7 @@ const ResetPW: React.FC<ResetPWProps> = ({
             type="password"
             id="password"
             name="password"
-            placeholder="8-16자 영문 대 소문자, 숫자를 사용하세요."
+            placeholder="8-16자 영문 대소문자, 숫자, 특수문자를 사용하세요."
             value={password}
             onChange={onChangePassword}
           />
