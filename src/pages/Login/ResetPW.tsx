@@ -34,7 +34,6 @@ const ResetPW: React.FC<ResetPWProps> = ({
 
   // 새로운 비밀번호로 업데이트
   const updatePassword = () => {
-    console.log('accessToken: ' + localStorage.getItem('tokenForUpdatePW'));
     api
       .patch(
         '/v1/api/member/update/password',
@@ -51,6 +50,7 @@ const ResetPW: React.FC<ResetPWProps> = ({
         console.log(res);
         alert('비밀번호 변경이 완료되었습니다.');
         navigate('/signin');
+        localStorage.removeItem('tokenForUpdatePW');
       })
       .catch((err) => {
         console.error(err);
