@@ -120,4 +120,14 @@ const HoverContent = styled.div`
     cursor: pointer;
     fill: #477feb;
   }
+
+  @media screen and (max-width: 768px) {
+    width: 220px;
+    height: 220px;
+
+    > svg {
+      bottom: 12px;
+      right: 12px;
+    }
+  }
 `;
