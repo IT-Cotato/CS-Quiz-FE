@@ -8,7 +8,6 @@ import TextBox from '@components/TextBox';
 import PopUp from '@pages/Session/SessionModal/PopUp';
 import { ISession } from '@/typing/db';
 import api from '@/api/api';
-import { set } from 'date-fns';
 
 interface Props {
   isOpen: boolean;
