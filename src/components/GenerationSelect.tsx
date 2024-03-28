@@ -40,13 +40,11 @@ const GenerationSelect = ({ onChangeGeneration, selectedGeneration }: Props) => 
 
   useEffect(() => {
     if (generationData) {
-      setGenerations(generationSort(generationData));
+      const newGenerations = generationSort(generationData);
+      setGenerations(newGenerations);
+      onChangeGeneration(newGenerations.at(0));
     }
   }, [generationData]);
-
-  useEffect(() => {
-    onChangeGeneration(generations?.at(-1));
-  }, [generations]);
 
   const onClickGeneration = useCallback((generation: IGeneration) => {
     onChangeGeneration(generation);
@@ -56,7 +54,9 @@ const GenerationSelect = ({ onChangeGeneration, selectedGeneration }: Props) => 
   return (
     <GenerationSelectWrapper ref={generationDropRef}>
       <SelectMenu isopen={isOpen ? 'open' : 'close'} onClick={() => setIsOpen(!isOpen)}>
-        <p>{`${selectedGeneration?.generationNumber}기`}</p>
+        <p>
+          {selectedGeneration?.generationNumber ? `${selectedGeneration?.generationNumber}기` : ''}
+        </p>
         {isOpen ? (
           <img src={arrow_up_thin} alt="arrow-up" />
         ) : (

@@ -59,8 +59,8 @@ const Content = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 300px;
-  height: 300px;
+  width: 240px;
+  height: 240px;
   border-radius: 10px;
   background: #fff;
   background-image: url(${background});
@@ -71,6 +71,11 @@ const Content = styled.div`
   padding: 20px;
   box-sizing: border-box;
   cursor: pointer;
+
+  @media screen and (max-width: 768px) {
+    width: 220px;
+    height: 220px;
+  }
 `;
 
 const fontStyle = css`
@@ -91,15 +96,19 @@ const ContentWeek = styled.p`
 
 const ContentTitle = styled.p`
   ${fontStyle}
-  font-size: 36px;
+  font-size: 32px;
   font-weight: 600;
+
+  @media screen and (max-width: 768px) {
+    font-size: 28px;
+  }
 `;
 
 const HoverContent = styled.div`
   position: absolute;
   inset: 0;
-  width: 300px;
-  height: 300px;
+  width: 240px;
+  height: 240px;
   border-radius: 10px;
   background: transparent;
   opacity: 0.8;
@@ -110,5 +119,15 @@ const HoverContent = styled.div`
     right: 16px;
     cursor: pointer;
     fill: #477feb;
+  }
+
+  @media screen and (max-width: 768px) {
+    width: 220px;
+    height: 220px;
+
+    > svg {
+      bottom: 12px;
+      right: 12px;
+    }
   }
 `;
