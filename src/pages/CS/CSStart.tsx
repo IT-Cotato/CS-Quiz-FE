@@ -57,7 +57,9 @@ const CSStart = () => {
         <span>{subject}</span>
       </TitleBox>
       <NavBox>
-        <StartButton onClick={() => navigate('/cs/solving')}>
+        <StartButton
+          onClick={() => navigate('/cs/solving', { state: { educationId: educationId } })}
+        >
           <p> 문제풀이 시작하기</p>
         </StartButton>
         <OtherButton
