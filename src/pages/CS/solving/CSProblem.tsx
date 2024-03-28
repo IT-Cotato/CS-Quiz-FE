@@ -156,7 +156,7 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
       console.log('data is not loaded yet');
       return; // data가 undefined라면(아직 불러와지지 않았다면) 함수 종료
     } else {
-      if (submitAllowed && (selected.length === 0 || shortAns === '')) {
+      if (submitAllowed && ((quizData?.choices && selected.length === 0) || shortAns === '')) {
         alert('답안을 선택 후 제출해주세요.');
         return;
       } else {
