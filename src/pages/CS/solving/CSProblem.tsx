@@ -53,6 +53,7 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
   const [multiples, setMultiples] = useState<string[]>([]); // 객관식 선지의 내용 리스트
   const [biggerImg, setBiggerImg] = useState(false);
   const [selectNum, setSelectNum] = useState(0);
+  const [selected, setSelected] = useState<string[]>([]); // 최종적으로 선택한 선지번호 리스트
   const [shortAns, setShortAns] = useState('');
   const [showCorrect, setShowCorrect] = useState(false);
   const [showIncorrect, setShowIncorrect] = useState(false);
@@ -264,6 +265,8 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
           <Choice
             selectNum={selectNum}
             setSelectNum={setSelectNum}
+            selected={selected}
+            setSelected={setSelected}
             contents={multiples}
             multipleRef={multipleRef}
           />
@@ -295,41 +298,74 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
 interface choiceProps {
   selectNum: number; // 선택한 선지의 번호
   setSelectNum: React.Dispatch<React.SetStateAction<number>>;
+  selected: string[]; // 최종적으로 선택한 선지번호 리스트
+  setSelected: React.Dispatch<React.SetStateAction<string[]>>;
   contents: string[]; // 객관식 선지의 내용 리스트
   multipleRef: React.MutableRefObject<any>;
 }
 
-const Choice: React.FC<choiceProps> = ({ selectNum, setSelectNum, contents, multipleRef }) => {
+const Choice: React.FC<choiceProps> = ({
+  selectNum,
+  setSelectNum,
+  selected,
+  setSelected,
+  contents,
+  multipleRef,
+}) => {
   return (
     <ChoiceContainer ref={multipleRef}>
       <ChoiceBtn
-        clicked={selectNum === 1}
+        clicked={selected.includes('1')}
         onClick={() => {
           setSelectNum(1);
+          console.log(selectNum, selected);
+          if (selected.includes('1') === false) {
+            setSelected([...selected, '1']);
+          } else {
+            setSelected(selected.filter((item) => item !== '1'));
+          }
         }}
       >
         {contents[0]}
       </ChoiceBtn>
       <ChoiceBtn
-        clicked={selectNum === 2}
+        clicked={selected.includes('2')}
         onClick={() => {
           setSelectNum(2);
+          console.log(selectNum, selected);
+          if (selected.includes('2') === false) {
+            setSelected([...selected, '2']);
+          } else {
+            setSelected(selected.filter((item) => item !== '2'));
+          }
         }}
       >
         {contents[1]}
       </ChoiceBtn>
       <ChoiceBtn
-        clicked={selectNum === 3}
+        clicked={selected.includes('3')}
         onClick={() => {
           setSelectNum(3);
+          console.log(selectNum, selected);
+          if (selected.includes('3') === false) {
+            setSelected([...selected, '3']);
+          } else {
+            setSelected(selected.filter((item) => item !== '3'));
+          }
         }}
       >
         {contents[2]}
       </ChoiceBtn>
       <ChoiceBtn
-        clicked={selectNum === 4}
+        clicked={selected.includes('4')}
         onClick={() => {
           setSelectNum(4);
+          console.log(selectNum, selected);
+          if (selected.includes('4') === false) {
+            setSelected([...selected, '4']);
+          } else {
+            setSelected(selected.filter((item) => item !== '4'));
+          }
         }}
       >
         {contents[3]}
