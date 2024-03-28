@@ -8,6 +8,7 @@ import TextBox from '@components/TextBox';
 import PopUp from '@pages/Session/SessionModal/PopUp';
 import { ISession } from '@/typing/db';
 import api from '@/api/api';
+import { set } from 'date-fns';
 
 interface Props {
   isOpen: boolean;
@@ -36,6 +37,7 @@ const SessionModal = ({
   const [description, setDescription] = useState('');
 
   const [isPopUpOpen, setIsPopUpOpen] = useState(false);
+  const [isImageUpdated, setIsImageUpdated] = useState(false);
 
   const getTitle = useCallback(
     (week: number) => {
@@ -73,6 +75,7 @@ const SessionModal = ({
     setCsEdu(true);
     setNetworking(false);
     setDescription('');
+    setIsImageUpdated(false);
     document.body.style.overflow = 'unset';
   }, []);
 
@@ -114,6 +117,7 @@ const SessionModal = ({
           })
           .catch((err) => console.log(err));
       } else {
+        formData.append('isPhotoUpdated', isImageUpdated.toString());
         formData.append('sessionId', session.sessionId.toString());
 
         api
@@ -125,7 +129,7 @@ const SessionModal = ({
           .catch((err) => console.error(err));
       }
     },
-    [session, image, generationId, itIssue, csEdu, networking, description],
+    [session, image, generationId, itIssue, csEdu, networking, description, isImageUpdated],
   );
 
   const closePopUp = useCallback(() => {
@@ -152,6 +156,7 @@ const SessionModal = ({
             photoUrl={session?.photoUrl}
             setImage={setImage}
             setIsPopUpOpen={setIsPopUpOpen}
+            setIsImageUpdated={setIsImageUpdated}
           />
           <TextBox value={title} height="60px" readOnly={true} />
           <ToggleButtonBox>

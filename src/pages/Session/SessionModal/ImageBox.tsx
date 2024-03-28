@@ -9,9 +9,10 @@ interface Props {
   photoUrl?: string;
   setImage: React.Dispatch<React.SetStateAction<Blob | null>>;
   setIsPopUpOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsImageUpdated: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ImageBox = ({ image, photoUrl, setImage, setIsPopUpOpen }: Props) => {
+const ImageBox = ({ image, photoUrl, setImage, setIsPopUpOpen, setIsImageUpdated }: Props) => {
   const [imageUrl, setImageUrl] = useState<string | undefined>(photoUrl);
   const [dragOver, setDragOver] = useState(false);
   const [dragError, setDragError] = useState(false);
@@ -31,6 +32,7 @@ const ImageBox = ({ image, photoUrl, setImage, setIsPopUpOpen }: Props) => {
 
     setImage(null);
     setImageUrl(undefined);
+    setIsImageUpdated(true);
   }, [image, imageUrl]);
 
   const uploadImage = useCallback(
@@ -45,6 +47,7 @@ const ImageBox = ({ image, photoUrl, setImage, setIsPopUpOpen }: Props) => {
 
       setImage(file);
       setImageUrl(URL.createObjectURL(file));
+      setIsImageUpdated(true);
     },
     [image, imageUrl],
   );
