@@ -37,8 +37,8 @@ const Footer = () => {
       <InfoBox>
         <h3>Cotato 코테이토</h3>
         <Sub>
-          <p>E-mail. 00000000@naver.com</p>
-          <p>@copyright Cotato | 대학생 IT 연합 동아리 코테이토</p>
+          <p>E-mail. itcotato@gmail.com</p>
+          <p>@copyright Cotato | 대학생연합 IT동아리 코테이토</p>
           <p>Cotato 2023 HomePage v1.0</p>
         </Sub>
       </InfoBox>

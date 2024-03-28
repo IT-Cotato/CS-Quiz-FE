@@ -7,7 +7,7 @@ import api from '@/api/api';
 import CSProblem from './CSProblem';
 import MemberHeader from '@components/MemberHeader';
 import BgWaiting from './BgWaiting';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { set } from 'date-fns';
 import BgKingKing from './BgKingKing';
 import BgWinner from './BgWinner';
@@ -52,6 +52,8 @@ const CSQuiz: React.FC<WaitingProps> = () => {
   });
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const educationId = { ...location.state };
 
   useEffect(() => {
     initializeWebSocket(); // 문제 바뀔 때마다 WebSocket 갱신
@@ -85,7 +87,9 @@ const CSQuiz: React.FC<WaitingProps> = () => {
   const connectWebSocket = () => {
     webSocket.current = new WebSocket(
       process.env.REACT_APP_SOCKET_URL +
-        `/websocket/csquiz?Authorization=${localStorage.getItem('socketToken')}`,
+        `/websocket/csquiz?Authorization=${localStorage.getItem('socketToken')}&educationId=${
+          educationId.educationId
+        }`,
     );
     webSocket.current.onopen = () => {
       console.log('WebSocket connected');

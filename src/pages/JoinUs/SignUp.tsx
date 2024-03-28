@@ -53,7 +53,7 @@ const SignUp = () => {
     const emailCurrent = e.target.value;
     setId(emailCurrent);
     if (!emailRegex.test(emailCurrent)) {
-      setIdMessage('올바른 이메일 형식이 아닙니다!');
+      setIdMessage('올바른 이메일 형식이 아닙니다.');
       setIsId(false);
     } else {
       setIdMessage('');
@@ -99,10 +99,11 @@ const SignUp = () => {
   }, []);
 
   const onChangeTel = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    // const telRegex = /^01(?:0|1|[6-9])(?:\d{3}|\d{4})\d{4}$/;
-    setTel(e.target.value);
-    if (!e.target.value) {
-      setTelMessage('필수 입력 항목입니다!');
+    const telRegex = /^010\d{4}\d{4}$/;
+    const telCurrent = e.target.value;
+    setTel(telCurrent);
+    if (!telRegex.test(telCurrent)) {
+      setTelMessage('올바른 전화번호 형식이 아닙니다.');
       setIsTel(false);
     } else {
       setTelMessage('');
