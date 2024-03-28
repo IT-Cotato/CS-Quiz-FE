@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { IApplyMember, IGeneration } from '@/typing/db';
+import { IApplyMember, IEnrollMember, IGeneration } from '@/typing/db';
 import styled from 'styled-components';
 import { ReactComponent as CloseIcon } from '@assets/close_icon.svg';
 import { ReactComponent as ApproveIcon } from '@assets/approve_icon.svg';
@@ -7,6 +7,7 @@ import { ReactComponent as RejectIcon } from '@assets/reject_icon.svg';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import api from '@/api/api';
+import useSWRImmutable from 'swr/immutable';
 
 interface Props {
   mode: string;
@@ -19,8 +20,12 @@ interface Props {
 
 const RequestPopup = ({ mode, member, generation, position, isOpen, setIsOpen }: Props) => {
   const { mutate: mutateApply } = useSWR<IApplyMember[]>('/v1/api/admin/applicants', fetcher);
-  const { mutate: mutateReject } = useSWR<IApplyMember[]>(
+  const { mutate: mutateReject } = useSWRImmutable<IApplyMember[]>(
     '/v1/api/admin/reject-applicants',
+    fetcher,
+  );
+  const { mutate: mutateActive } = useSWRImmutable<IEnrollMember[]>(
+    '/v1/api/admin/active-members',
     fetcher,
   );
 
@@ -56,6 +61,7 @@ const RequestPopup = ({ mode, member, generation, position, isOpen, setIsOpen }:
         })
         .then(() => {
           mutateApply();
+          mutateActive();
           setIsOpen(false);
         })
         .catch((err) => console.error(err));
@@ -67,6 +73,7 @@ const RequestPopup = ({ mode, member, generation, position, isOpen, setIsOpen }:
         .then(() => {
           mutateApply();
           mutateReject();
+          mutateActive();
           setIsOpen(false);
         })
         .catch((err) => console.error(err));

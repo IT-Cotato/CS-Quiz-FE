@@ -6,7 +6,9 @@ import { IApplyMember } from '@/typing/db';
 import RequestContent from '@pages/MyPage/request/RequestContent';
 
 const Request = () => {
-  const { data: applyList } = useSWR<IApplyMember[]>('/v1/api/admin/applicants', fetcher);
+  const { data: applyList } = useSWR<IApplyMember[]>('/v1/api/admin/applicants', fetcher, {
+    refreshInterval: 5000,
+  });
   const { data: rejectList } = useSWR<IApplyMember[]>('/v1/api/admin/reject-applicants', fetcher);
 
   const [listMode, setListMode] = useState('apply');
