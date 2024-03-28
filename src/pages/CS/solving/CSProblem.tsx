@@ -144,6 +144,7 @@ const CSProblem: React.FC<CSProblemProps> = ({
     // 문제 바뀔 때 이전 입력 답안 초기화
     setShortAns('');
     setSelectNum(0);
+    setSelected([]);
   }, [quizData]);
 
   useEffect(() => {
@@ -183,8 +184,8 @@ const CSProblem: React.FC<CSProblemProps> = ({
       console.log('data is not loaded yet');
       return; // data가 undefined라면(아직 불러와지지 않았다면) 함수 종료
     } else {
-      if (submitAllowed && ((quizData?.choices && selected.length === 0) || shortAns === '')) {
-        alert('답안을 선택 후 제출해주세요.');
+      if (submitAllowed && (quizData?.choices ? selected.length === 0 : shortAns === '')) {
+        alert(selected + '답안을 입력 후 제출해주세요.');
         return;
       } else {
         api
