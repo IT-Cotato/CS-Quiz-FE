@@ -1,4 +1,4 @@
-import React, { ChangeEvent, MouseEvent, useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, MouseEvent, useCallback, useState } from 'react';
 import ReactModal from 'react-modal';
 import { css, styled } from 'styled-components';
 import { ReactComponent as CloseIcon } from '@assets/close_icon.svg';
@@ -50,7 +50,7 @@ const SessionModal = ({
     [sessionCount],
   );
 
-  useEffect(() => {
+  const handleAfterOpen = useCallback(() => {
     if (session) {
       setTitle(getTitle(session.sessionNumber));
       setDescription(session.description);
@@ -60,12 +60,10 @@ const SessionModal = ({
     } else {
       setTitle(getTitle(lastWeek + 1));
     }
-  }, [session, lastWeek]);
 
-  const handleAfterOpen = useCallback(() => {
     window.scrollTo(0, 0);
     document.body.style.overflow = 'hidden';
-  }, []);
+  }, [session, lastWeek]);
 
   const handelAfterClose = useCallback(() => {
     setTitle('');
