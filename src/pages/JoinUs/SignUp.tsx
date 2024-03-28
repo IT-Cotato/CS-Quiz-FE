@@ -3,9 +3,6 @@ import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import SignUpModal from '@components/SignUpModal';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import useSWR from 'swr';
-import fetcher from '@utils/fetcher';
 import api from '@/api/api';
 
 const SignUp = () => {
@@ -66,11 +63,13 @@ const SignUp = () => {
 
   const onChangePassword = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,16}$/;
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&.])[A-Za-z\d@$!%*#?&.]{8,16}$/;
       const passwordCurrent = e.target.value;
       setPassword(passwordCurrent);
       if (!passwordRegex.test(passwordCurrent)) {
-        setPasswordMessage('8-16자 영문 대 소문자, 숫자를 사용하세요.');
+        setPasswordMessage(
+          '영문 대소문자, 숫자, 특수문자(@$!%*#?&.)를 포함하여 8-16자로 입력하세요.',
+        );
         setIsPassword(false);
       } else {
         setPasswordMessage('');
@@ -116,6 +115,9 @@ const SignUp = () => {
     email: id,
   };
   const onSendEmail = async () => {
+    if (isId) {
+      alert('인증 메일이 발송되었습니다.');
+    }
     await api
       .post('/v1/api/auth/verification', emailData, {
         params: {
@@ -124,7 +126,6 @@ const SignUp = () => {
       })
       .then((res) => {
         console.log(res);
-        alert('인증 이메일이 발송되었습니다.');
       })
       .catch((err) => {
         console.log(err);
@@ -238,7 +239,7 @@ const SignUp = () => {
             type="password"
             id="password"
             name="password"
-            placeholder="8-16자 영문 대 소문자, 숫자를 사용하세요."
+            placeholder="8-16자 영문 대소문자, 숫자, 특수문자를 사용하세요."
             value={password}
             onChange={onChangePassword}
           />

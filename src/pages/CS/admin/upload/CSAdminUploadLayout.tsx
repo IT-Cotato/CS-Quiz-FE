@@ -4,13 +4,13 @@ import { ReactComponent as ArrowBack } from '@/assets/arrow_back.svg';
 
 interface CSAdminUploadLayoutProps {
   children: React.ReactNode;
-  generationId: string;
+  generationNumber: string;
   educationNumber: string;
 }
 
 const CSAdminUploadLayout: React.FC<CSAdminUploadLayoutProps> = ({
   children,
-  generationId,
+  generationNumber,
   educationNumber,
 }) => {
   return (
@@ -25,7 +25,7 @@ const CSAdminUploadLayout: React.FC<CSAdminUploadLayoutProps> = ({
           }}
         />
         <h1>CS 문제업로드</h1>
-        <p>{`${generationId}기 / ${educationNumber}차 세션`}</p>
+        <p>{`${generationNumber}기 / ${educationNumber}차 세션`}</p>
       </TitleBox>
       {children}
     </Wrapper>

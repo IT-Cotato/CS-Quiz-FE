@@ -158,6 +158,10 @@ const QuestionWrapper = styled.div`
   height: 100%;
 
   > p {
+    width: calc(100% - 48px);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     ${fontStyle}
     font-size: 20px;
   }

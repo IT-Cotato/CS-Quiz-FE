@@ -6,23 +6,31 @@ import { IEnrollMember } from '@/typing/db';
 import RoleContent from '@pages/MyPage/roleGrant/RoleContent';
 import useSWRImmutable from 'swr/immutable';
 import api from '@/api/api';
+import sortEnrollMember from '@pages/MyPage/roleGrant/utils/sortEnrollMembers';
 
 const RoleGrant = () => {
-  const { data: activeList, mutate: mutateActive } = useSWRImmutable<IEnrollMember[]>(
+  const { data: activeListData, mutate: mutateActive } = useSWRImmutable<IEnrollMember[]>(
     '/v1/api/admin/active-members',
     fetcher,
   );
-  const { data: omList, mutate: mutateOm } = useSWRImmutable<IEnrollMember[]>(
+  const { data: omListData, mutate: mutateOm } = useSWRImmutable<IEnrollMember[]>(
     '/v1/api/admin/old-members',
     fetcher,
   );
 
+  const [activeList, setActiveList] = useState<IEnrollMember[]>([]);
+  const [omList, setOmList] = useState<IEnrollMember[]>([]);
   const [listMode, setListMode] = useState('active');
   const [addOm, setAddOm] = useState<IEnrollMember[]>([]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  useEffect(() => {
+    setActiveList(sortEnrollMember(activeListData) || []);
+    setOmList(sortEnrollMember(omListData) || []);
+  }, [activeList, omList]);
 
   const onChangeAddOm = useCallback(
     (member: IEnrollMember) => {

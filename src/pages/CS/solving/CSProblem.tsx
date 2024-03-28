@@ -16,6 +16,8 @@ import BgCorrect from './BgCorrect';
 import BgIncorrect from './BgIncorrect';
 import BgWaiting from './BgWaiting';
 import BgKingKing from './BgKingKing';
+import { set } from 'date-fns';
+import BgWinner from './BgWinner';
 
 type Problem = {
   id: number; // 문제의 PK
@@ -38,9 +40,17 @@ interface CSProblemProps {
   quizId: number | null;
   submitAllowed: boolean;
   problemId: number;
+  showKingKing: boolean;
+  setShowKingKing: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId }) => {
+const CSProblem: React.FC<CSProblemProps> = ({
+  quizId,
+  submitAllowed,
+  problemId,
+  showKingKing,
+  setShowKingKing,
+}) => {
   const { data, error, isLoading, mutate } = useSWR('/v1/api/member/info', fetcher);
   if (data) {
     // console.log(data);
@@ -58,7 +68,6 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
   const [showIncorrect, setShowIncorrect] = useState(false);
   const [showExplaination, setShowExplaination] = useState(false);
   const [returnToWaiting, setReturnToWaiting] = useState(false);
-  const [showKingKing, setShowKingKing] = useState(false);
 
   const inputRef = useRef<any>();
 
@@ -68,6 +77,24 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
   const mulXPos = multipleRef.current?.offsetLeft + multipleRef.current?.offsetWidth;
   const shortYPos = shortRef.current?.offsetTop;
   const shortXPos = shortRef.current?.offsetLeft + shortRef.current?.offsetWidth;
+
+  const choiceRef = useRef<any>([]);
+
+  const alignBtnHeights = () => {
+    let maxHeight = 68;
+    choiceRef?.current.forEach((el: any) => {
+      if (el.offsetHeight > maxHeight) {
+        maxHeight = el.offsetHeight;
+      }
+    });
+    choiceRef?.current.forEach((el: any) => {
+      el.style.height = `${maxHeight}px`;
+    });
+  };
+
+  useEffect(() => {
+    alignBtnHeights();
+  }, [quizData]);
 
   // 최초 마운트 이후부터 문제 변경을 감지하여 다음 문제 보여주기
   const mountRef = useRef(false);
@@ -209,6 +236,13 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
     setShowHeader,
   };
 
+  if (showKingKing == true) {
+    setTimeout(() => {
+      setShowKingKing(false);
+      setReturnToWaiting(true);
+    }, 8000);
+  }
+
   return (
     <Wrapper>
       {showHeader ? <MemberHeader {...propsForMemberHeader} /> : null}
@@ -266,6 +300,7 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
             setSelectNum={setSelectNum}
             contents={multiples}
             multipleRef={multipleRef}
+            choiceRef={choiceRef}
           />
         )}
         {!quizData?.choices && (
@@ -285,9 +320,7 @@ const CSProblem: React.FC<CSProblemProps> = ({ quizId, submitAllowed, problemId 
       {showCorrect && <BgCorrect />}
       {showIncorrect && <BgIncorrect />}
       {showKingKing && <BgKingKing quizId={quizId} />}
-      {returnToWaiting && (
-        <BgWaiting quizNum={(quizData?.number as number) + 1} setShowKingKing={setShowKingKing} />
-      )}
+      {returnToWaiting && <BgWaiting quizNum={(quizData?.number as number) + 1} />}
     </Wrapper>
   );
 };
@@ -297,9 +330,16 @@ interface choiceProps {
   setSelectNum: React.Dispatch<React.SetStateAction<number>>;
   contents: string[]; // 객관식 선지의 내용 리스트
   multipleRef: React.MutableRefObject<any>;
+  choiceRef: React.MutableRefObject<any>;
 }
 
-const Choice: React.FC<choiceProps> = ({ selectNum, setSelectNum, contents, multipleRef }) => {
+const Choice: React.FC<choiceProps> = ({
+  selectNum,
+  setSelectNum,
+  contents,
+  multipleRef,
+  choiceRef,
+}) => {
   return (
     <ChoiceContainer ref={multipleRef}>
       <ChoiceBtn
@@ -307,6 +347,7 @@ const Choice: React.FC<choiceProps> = ({ selectNum, setSelectNum, contents, mult
         onClick={() => {
           setSelectNum(1);
         }}
+        ref={(el) => (choiceRef.current[0] = el)}
       >
         {contents[0]}
       </ChoiceBtn>
@@ -315,6 +356,7 @@ const Choice: React.FC<choiceProps> = ({ selectNum, setSelectNum, contents, mult
         onClick={() => {
           setSelectNum(2);
         }}
+        ref={(el) => (choiceRef.current[1] = el)}
       >
         {contents[1]}
       </ChoiceBtn>
@@ -323,6 +365,7 @@ const Choice: React.FC<choiceProps> = ({ selectNum, setSelectNum, contents, mult
         onClick={() => {
           setSelectNum(3);
         }}
+        ref={(el) => (choiceRef.current[2] = el)}
       >
         {contents[2]}
       </ChoiceBtn>
@@ -331,6 +374,7 @@ const Choice: React.FC<choiceProps> = ({ selectNum, setSelectNum, contents, mult
         onClick={() => {
           setSelectNum(4);
         }}
+        ref={(el) => (choiceRef.current[3] = el)}
       >
         {contents[3]}
       </ChoiceBtn>

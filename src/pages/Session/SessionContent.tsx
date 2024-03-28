@@ -40,7 +40,6 @@ const SessionContent = ({ session, handleModifyButton, sessionCount }: Props) =>
       <SessionImage
         onMouseEnter={onMouseEnterImage}
         onMouseLeave={onMouseLeaveImage}
-        ishover={isHover.toString()}
         photourl={session.photoUrl}
       />
       {isHover ? (
@@ -70,27 +69,35 @@ const Content = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 300px;
-  height: 332px;
+  width: 260px;
+  height: 280px;
   margin: 24px 4px;
   border-radius: 10px;
+
+  @media screen and (max-width: 768px) {
+    width: 240px;
+    height: 260px;
+  }
 `;
 
 interface SessionImageProps {
-  ishover: string;
   photourl: string;
 }
 const SessionImage = styled.div<SessionImageProps>`
   z-index: 0;
   background-image: url(${(props) => (props.photourl ? props.photourl : cotato_icon)});
-  background-size: 100% 332px;
+  background-size: 100% 280px;
   width: 100%;
-  height: ${(props) => (props.ishover === 'true' ? '332px' : '280px')};
+  height: 280px;
   border-radius: 10px;
+
+  @media screen and (max-width: 768px) {
+    background-size: 100% 260px;
+  }
 `;
 
 const Title = styled.div`
-  height: 60px;
+  height: 52px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -118,12 +125,16 @@ const HoverContent = styled.div`
   position: absolute;
   inset: 0;
   width: 100%;
-  height: 332px;
+  height: 280px;
   border-radius: 10px;
   background-color: #000;
   opacity: 0.8;
   padding: 20px 24px;
   box-sizing: border-box;
+
+  @media screen and (max-width: 768px) {
+    height: 260px;
+  }
 
   > p {
     margin-top: 16px;
