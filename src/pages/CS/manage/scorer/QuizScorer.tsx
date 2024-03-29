@@ -106,10 +106,6 @@ const TitleWrapper = styled.div`
   background: #fff;
   border-radius: 8px;
 
-  > p {
-    margin: 16px 0;
-  }
-
   .quiz-number {
     ${fontStyle}
     text-align: center;
@@ -120,6 +116,7 @@ const TitleWrapper = styled.div`
   .question {
     ${fontStyle}
     width: calc(100% - 100px);
+    margin: 16px 8px;
   }
 `;
 
