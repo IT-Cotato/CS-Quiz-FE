@@ -106,10 +106,6 @@ const TitleWrapper = styled.div`
   background: #fff;
   border-radius: 8px;
 
-  > p {
-    margin: 16px 0;
-  }
-
   .quiz-number {
     ${fontStyle}
     text-align: center;
@@ -120,6 +116,7 @@ const TitleWrapper = styled.div`
   .question {
     ${fontStyle}
     width: calc(100% - 100px);
+    margin: 16px 8px;
   }
 `;
 
@@ -151,9 +148,10 @@ const Box = styled.div`
 
 const SubmitBox = styled(Box)`
   width: 90%;
-  min-height: 70vh;
+  height: 70vh;
   flex-direction: column;
   align-items: center;
+  overflow-y: scroll;
 `;
 
 const SubmitContent = styled.div`
@@ -164,11 +162,8 @@ const SubmitContent = styled.div`
   padding: 0 12px;
   border-bottom: 1px solid rgba(28, 28, 28, 0.3);
 
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-
   > p {
+    min-width: 80px;
     ${fontStyle};
   }
 `;
@@ -185,9 +180,15 @@ const ScorerBox = styled(Box)`
 `;
 
 const SubmitResult = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  max-width: calc(100% - 80px);
+  overflow-wrap: break-word;
+
   > p {
     ${fontStyle};
     color: #85c88a;
+    max-width: 100%;
   }
 `;
 
