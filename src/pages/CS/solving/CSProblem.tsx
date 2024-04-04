@@ -79,17 +79,17 @@ const CSProblem: React.FC<CSProblemProps> = ({
   const shortYPos = shortRef.current?.offsetTop;
   const shortXPos = shortRef.current?.offsetLeft + shortRef.current?.offsetWidth;
 
-  const choiceRef = useRef<any>([]);
+  const choiceRef = useRef<any | null>([]);
 
   const alignBtnHeights = () => {
     let maxHeight = 68;
     choiceRef?.current.forEach((el: any) => {
-      if (el.offsetHeight > maxHeight) {
+      if (el && el.offsetHeight > maxHeight) {
         maxHeight = el.offsetHeight;
       }
     });
     choiceRef?.current.forEach((el: any) => {
-      el.style.height = `${maxHeight}px`;
+      if (el) el.style.height = `${maxHeight}px`;
     });
   };
 
