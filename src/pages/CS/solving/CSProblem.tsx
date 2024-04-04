@@ -251,8 +251,10 @@ const CSProblem: React.FC<CSProblemProps> = ({
       </ProgressContainer>
       <QuizContainer>
         <QuestionContainer ifNoImg={!quizData?.image}>
-          <p>문제 {quizData?.number}</p>
-          <span>{quizData?.question}</span>
+          <h5>문제 {quizData?.number}</h5>
+          <span>
+            {quizData?.question.split('\r\n').map((sentence) => <p key={sentence}>{sentence}</p>)}
+          </span>
         </QuestionContainer>
         {quizData?.image && (
           <ImageContainer bigger={biggerImg}>
@@ -508,7 +510,7 @@ const QuestionContainer = styled.div<{ ifNoImg: boolean }>`
   margin-top: 32px;
   ${(props) => (props.ifNoImg ? `margin-bottom: 120px;` : `margin-bottom: 48px;`)};
   padding: 20px 60px !important;
-  p {
+  h5 {
     color: #477feb;
     font-family: Inter;
     font-size: 1.1rem;
@@ -521,6 +523,9 @@ const QuestionContainer = styled.div<{ ifNoImg: boolean }>`
     font-size: 1.1rem;
     font-weight: 600;
     width: 90%;
+  }
+  p {
+    margin: 4px 0;
   }
 
   @media screen and (max-width: 392px) {
