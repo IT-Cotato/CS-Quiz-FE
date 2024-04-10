@@ -5,6 +5,7 @@ import axios from 'axios';
 import CSAdminUploadLayout from './CSAdminUploadLayout';
 import CSAdminUploadContent from './CSAdminUploadContent';
 import fetchUserData from '@utils/fetchUserData';
+import api from '@/api/api';
 
 type QuizType = Multiples | ShortQuizzes;
 
@@ -52,7 +53,7 @@ const CSAdminUpload = () => {
    * fetch quiz list data if it exists
    */
   const fetchQuizData = async () => {
-    await axios
+    await api
       .get(process.env.REACT_APP_BASE_URL + '/v1/api/quiz/all', {
         params: {
           educationId: educationId,
