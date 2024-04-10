@@ -36,6 +36,7 @@ const CSAdminUploadQuizInfo = ({ quiz, setQuiz, selected, educationId }: Props) 
           newPrev[selected] = changeType(
             type,
             copySelected.number,
+            copySelected.question,
             copySelected.image,
             copySelected.previewUrl || null,
           );
@@ -43,6 +44,7 @@ const CSAdminUploadQuizInfo = ({ quiz, setQuiz, selected, educationId }: Props) 
           newPrev[selected] = changeType(
             type,
             copySelected.number,
+            copySelected.question,
             copySelected.image,
             copySelected.previewUrl || null,
           );
@@ -57,12 +59,18 @@ const CSAdminUploadQuizInfo = ({ quiz, setQuiz, selected, educationId }: Props) 
    * quiz_type을 안전하게 변경하기 위한 함수
    */
   const changeType = useCallback(
-    (type: string, number: number, image: File | null, previewUrl: string | null) => {
+    (
+      type: string,
+      number: number,
+      question: string | null,
+      image: File | null,
+      previewUrl: string | null,
+    ) => {
       // 들어온 type이 choice일 경우, choice를 제외한 나머지를 복사
       if (type === 'choice') {
         return {
           number,
-          question: '',
+          question: question || '',
           choices: [
             {
               number: 1,
@@ -91,7 +99,7 @@ const CSAdminUploadQuizInfo = ({ quiz, setQuiz, selected, educationId }: Props) 
       } else {
         return {
           number,
-          question: '',
+          question: question || '',
           image: image,
           previewUrl: previewUrl || null,
           shortAnswers: [{ answer: '' }],
