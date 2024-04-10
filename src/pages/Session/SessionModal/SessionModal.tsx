@@ -99,9 +99,9 @@ const SessionModal = ({
       const formData = new FormData();
       if (image) formData.append('sessionImage', image);
       formData.append('description', description);
-      formData.append('ItIssue', itIssue ? 'IT_ON' : 'IT_OFF');
-      formData.append('Networking', networking ? 'NW_ON' : 'NW_OFF');
-      formData.append('CsEducation', csEdu ? 'CS_ON' : 'CS_OFF');
+      formData.append('itIssue', itIssue ? 'IT_ON' : 'IT_OFF');
+      formData.append('networking', networking ? 'NW_ON' : 'NW_OFF');
+      formData.append('csEducation', csEdu ? 'CS_ON' : 'CS_OFF');
 
       if (!session) {
         if (generationId) formData.append('generationId', generationId.toString());
