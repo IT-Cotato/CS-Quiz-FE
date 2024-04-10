@@ -158,6 +158,21 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
     [selected],
   );
 
+  /**
+   * 이미지 삭제 버튼 핸들러
+   */
+  const handleDeleteButtonOnClick = useCallback(() => {
+    const confirm = window.confirm('이미지를 삭제하시겠습니까?');
+    if (confirm) {
+      setQuiz((prev) => {
+        const newPrev = [...prev];
+        newPrev[selected].image = null;
+        newPrev[selected].previewUrl = null;
+        return [...newPrev];
+      });
+    }
+  }, [selected]);
+
   // 컴포넌트 언마운트 시 preview_url을 제거
   useEffect(() => {
     return () => {
@@ -188,7 +203,11 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
             // fileInputRef.current?.click();
           }}
         >
-          {quiz[selected]?.previewUrl ? null : (
+          {quiz[selected]?.previewUrl ? (
+            <DeleteButton onClick={handleDeleteButtonOnClick}>
+              <img src="https://velog.velcdn.com/images/ea_st_ring/post/d5f4409f-39c9-43bd-bb35-c6d4fa8774be/image.svg" />
+            </DeleteButton>
+          ) : (
             <>
               <input
                 type="file"
@@ -196,9 +215,7 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
                 style={{ display: 'none' }}
                 onChange={handleFileChange}
               />
-              {quiz[selected]?.previewUrl ? (
-                <img src="https://velog.velcdn.com/images/ea_st_ring/post/5bc62320-dd59-497f-9741-79945c54de6a/image.svg" />
-              ) : null}
+              <img src="https://velog.velcdn.com/images/ea_st_ring/post/5bc62320-dd59-497f-9741-79945c54de6a/image.svg" />
               <p>컴퓨터에서 이미지를 드래그 및 가져오기</p>
             </>
           )}
@@ -483,6 +500,19 @@ const Short = styled.div`
     button {
       width: 100%;
     }
+  }
+`;
+
+const DeleteButton = styled.div`
+  width: 32px;
+  height: 32px;
+  position: relative;
+  top: -130px;
+  right: -240px;
+  cursor: pointer;
+  img {
+    width: 100%;
+    height: 100%;
   }
 `;
 
