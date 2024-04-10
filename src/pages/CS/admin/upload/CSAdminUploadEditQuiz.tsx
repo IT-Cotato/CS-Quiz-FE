@@ -317,8 +317,8 @@ const MakeQuestionDiv = styled.div`
 `;
 
 const UploadDiv = styled.div<any>`
-  width: 346px;
-  height: 220px;
+  width: 528px;
+  height: 301px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -349,8 +349,8 @@ const UploadDiv = styled.div<any>`
     z-index: 10;
   }
   @media screen and (max-width: 768px) {
-    width: 100%;
-    height: 350px;
+    width: 332px;
+    height: 189px;
     background-color: white;
     border: none;
   }
