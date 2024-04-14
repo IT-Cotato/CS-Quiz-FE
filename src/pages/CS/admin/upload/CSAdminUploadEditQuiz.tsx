@@ -203,7 +203,7 @@ const EditQuiz = ({ quiz, selected, setQuiz }: Props) => {
             // fileInputRef.current?.click();
           }}
         >
-          {quiz[selected]?.previewUrl ? (
+          {quiz[selected]?.previewUrl || quiz[selected]?.image ? (
             <DeleteButton onClick={handleDeleteButtonOnClick}>
               <img src="https://velog.velcdn.com/images/ea_st_ring/post/d5f4409f-39c9-43bd-bb35-c6d4fa8774be/image.svg" />
             </DeleteButton>
