@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import './App.css';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -7,9 +7,7 @@ import Login from '@pages/Login/Login';
 import SessionHome from '@pages/Session/SessionHome';
 import SignUp from '@pages/JoinUs/SignUp';
 import MyPage from '@pages/MyPage/MyPage';
-import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from '@theme/GlobalStyle';
-import { theme } from '@theme/Theme';
 import Footer from '@components/Footer';
 import FindID from '@pages/Login/FindID';
 import FindPWProcess from '@pages/Login/FindPWProcess';
@@ -19,14 +17,15 @@ import NotFound from '@components/NotFound';
 import HomeHeader from '@components/HomeHeader';
 import CSPage from '@pages/CS/CSPage';
 import fetchUserData from '@utils/fetchUserData';
+import { ThemeProvider } from 'styled-components';
+import { LegacyTheme } from '@theme/theme';
 
 function App() {
   const location = useLocation();
   const { data: userData } = fetchUserData();
-
   return (
     <div className="App">
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={LegacyTheme}>
         <GlobalStyle />
         <div className="wrapper">
           <div className="contentWrapper">
