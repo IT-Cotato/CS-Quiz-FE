@@ -29,7 +29,7 @@ api.interceptors.response.use(
     const { config, response } = error;
 
     // 토큰 만료
-    if (response.status === 401 && response.data.errorCode === 'TOKEN_EXPIRED') {
+    if (response.code === 'T-001') {
       if (!isRefreshing) {
         isRefreshing = true;
 
